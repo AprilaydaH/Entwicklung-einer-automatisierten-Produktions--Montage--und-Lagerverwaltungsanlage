@@ -1,0 +1,147 @@
+// ============================================================================
+// FB_Axis_Digital — Digitale Achsansteuerung (+/-) mit Endlagen / Pos-Bits
+// Datei: scl/FB_Axis_Digital.scl
+//
+// Target_Pos: 0=Home, 1=Pick/Zwischen, 2=Place (oder freie Pos-IDs).
+// Sensor_At_* melden Erreichen der gewünschten Position.
+// Optional Timeout über Timeout_Ms (0 = deaktiviert).
+// ============================================================================
+
+FUNCTION_BLOCK "FB_Axis_Digital"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+
+VAR_INPUT
+    Enable          : Bool;
+    Start           : Bool;   // Flanke
+    Reset           : Bool;
+    Target_Pos      : USInt;  // gewünschte Positions-ID
+    Sensor_At_0     : Bool;   // Home / Pos0
+    Sensor_At_1     : Bool;   // Pos1
+    Sensor_At_2     : Bool;   // Pos2
+    Sensor_At_3     : Bool;   // Pos3 (optional)
+    Current_Guess   : USInt;  // aktuelle Pos-Schätzung (0..3), wenn bekannt
+    Timeout_Ms      : Time := T#10S;
+END_VAR
+
+VAR_OUTPUT
+    Busy            : Bool;
+    Done            : Bool;
+    Error           : Bool;
+    ErrorCode       : UInt;   // 1001 = Timeout, 1002 = ungültiges Target
+    DO_Plus         : Bool;
+    DO_Minus        : Bool;
+    At_Target       : Bool;
+END_VAR
+
+VAR
+    R_Start         : R_TRIG;
+    Active          : Bool;
+    Cmd_Pos         : USInt;
+    TON_Timeout     : TON;
+    Dir_Plus        : Bool;   // TRUE = Plus-Richtung zum Ziel
+END_VAR
+
+VAR_TEMP
+    At0, At1, At2, At3 : Bool;
+    Current         : USInt;
+    Reached         : Bool;
+END_VAR
+
+BEGIN
+    #R_Start(CLK := #Start);
+
+    #At0 := #Sensor_At_0;
+    #At1 := #Sensor_At_1;
+    #At2 := #Sensor_At_2;
+    #At3 := #Sensor_At_3;
+
+    // Aktuelle Position bestimmen
+    IF #At0 THEN
+        #Current := USINT#0;
+    ELSIF #At1 THEN
+        #Current := USINT#1;
+    ELSIF #At2 THEN
+        #Current := USINT#2;
+    ELSIF #At3 THEN
+        #Current := USINT#3;
+    ELSE
+        #Current := #Current_Guess;
+    END_IF;
+
+    IF #Reset THEN
+        #Active := FALSE;
+        #Busy := FALSE;
+        #Done := FALSE;
+        #Error := FALSE;
+        #ErrorCode := UINT#0;
+        #DO_Plus := FALSE;
+        #DO_Minus := FALSE;
+        #TON_Timeout(IN := FALSE, PT := #Timeout_Ms);
+        RETURN;
+    END_IF;
+
+    IF NOT #Enable THEN
+        #Active := FALSE;
+        #Busy := FALSE;
+        #DO_Plus := FALSE;
+        #DO_Minus := FALSE;
+        RETURN;
+    END_IF;
+
+    IF #R_Start.Q THEN
+        IF #Target_Pos > USINT#3 THEN
+            #Error := TRUE;
+            #ErrorCode := UINT#1002;
+            #Active := FALSE;
+            #Busy := FALSE;
+            #Done := FALSE;
+        ELSE
+            #Cmd_Pos := #Target_Pos;
+            #Active := TRUE;
+            #Done := FALSE;
+            #Error := FALSE;
+            #ErrorCode := UINT#0;
+            #Busy := TRUE;
+            #Dir_Plus := (#Cmd_Pos > #Current);
+        END_IF;
+    END_IF;
+
+    #Reached := FALSE;
+    CASE #Cmd_Pos OF
+        USINT#0: #Reached := #At0;
+        USINT#1: #Reached := #At1;
+        USINT#2: #Reached := #At2;
+        USINT#3: #Reached := #At3;
+    END_CASE;
+
+    #At_Target := #Reached;
+
+    IF #Active THEN
+        IF #Reached THEN
+            #DO_Plus := FALSE;
+            #DO_Minus := FALSE;
+            #Active := FALSE;
+            #Busy := FALSE;
+            #Done := TRUE;
+            #TON_Timeout(IN := FALSE, PT := #Timeout_Ms);
+        ELSE
+            #DO_Plus := #Dir_Plus;
+            #DO_Minus := NOT #Dir_Plus;
+            #TON_Timeout(IN := (#Timeout_Ms > T#0MS), PT := #Timeout_Ms);
+            IF #TON_Timeout.Q THEN
+                #DO_Plus := FALSE;
+                #DO_Minus := FALSE;
+                #Active := FALSE;
+                #Busy := FALSE;
+                #Error := TRUE;
+                #ErrorCode := UINT#1001;
+            END_IF;
+        END_IF;
+    ELSE
+        #DO_Plus := FALSE;
+        #DO_Minus := FALSE;
+        #Busy := FALSE;
+    END_IF;
+
+END_FUNCTION_BLOCK

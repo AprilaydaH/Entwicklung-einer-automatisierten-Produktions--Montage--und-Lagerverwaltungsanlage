@@ -1,0 +1,18 @@
+# Byte-Order / Merkmal
+*.asv
+*.~u
+*.zip
+*.rar
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# IDE / TIA exports (lokal)
+*.pdf
+!docs/*.pdf
+
+# Secrets
+.env
+*.pfx

@@ -1,0 +1,74 @@
+// ============================================================================
+// UDT-Vorlage für gldb_FactoryIO_IO
+// In TIA: UDT "UDT_FactoryIO_IO" anlegen, dann DB "gldb_FactoryIO_IO"
+// Datei: scl/gldb_FactoryIO_IO.udt.txt
+//
+// Achs_Modus analog (0): Pos_*/Target_* nutzen
+// Achs_Modus digital (1): X_At_*/Z_At_* und X_Plus/Minus, Z_Plus/Minus nutzen
+// ============================================================================
+
+TYPE "UDT_FactoryIO_IO"
+VERSION : 0.1
+    STRUCT
+        Input : STRUCT
+            // Sicherheit / Sensoren
+            Not_Aus         : Bool;   // TRUE = Not-Aus gedrückt
+            Sensor_Entry    : Bool;   // Teil am Eingangsband / Pick-Zone
+            Sensor_Exit     : Bool;   // Teil am Ausgang
+            Item_Detected   : Bool;   // Greifer hält Teil
+            Moving_X        : Bool;   // Achse X bewegt sich (Analog-Szene)
+            Moving_Z        : Bool;
+
+            // Analog Istwerte (nach Skalierung, z.B. 0…10 oder mm)
+            Pos_X           : Real;
+            Pos_Z           : Real;
+
+            // Digital Positionen X: 0=Home, 1=Pick, 2=Place
+            X_At_Home       : Bool;
+            X_At_Pick       : Bool;
+            X_At_Place      : Bool;
+
+            // Digital Positionen Z: 0=Up, 1=Down
+            Z_At_Up         : Bool;
+            Z_At_Down       : Bool;
+        END_STRUCT;
+
+        Output : STRUCT
+            Conv_Entry      : Bool;
+            Conv_Exit       : Bool;
+            Gripper         : Bool;   // TRUE = greifen / Magnet an
+
+            // Analog Sollwerte
+            Target_X        : Real;
+            Target_Z        : Real;
+
+            // Digital Jog / Fahrt
+            X_Plus          : Bool;
+            X_Minus         : Bool;
+            Z_Plus          : Bool;
+            Z_Minus         : Bool;
+        END_STRUCT;
+    END_STRUCT;
+END_TYPE
+
+
+// ----------------------------------------------------------------------------
+// UDT Config
+TYPE "UDT_PickPlace_Config"
+VERSION : 0.1
+    STRUCT
+        Achs_Modus  : USInt;  // 0 = Analog, 1 = Digital
+        Tol_X       : Real;   // Default z.B. 0.05
+        Tol_Z       : Real;
+        Pos : STRUCT
+            Home_X      : Real;
+            Home_Z      : Real;
+            Pick_X      : Real;
+            Pick_Z      : Real;
+            Pick_Z_Up   : Real;
+            Place_X     : Real;
+            Place_Z     : Real;
+            Place_Z_Up  : Real;
+        END_STRUCT;
+    END_STRUCT;
+END_TYPE

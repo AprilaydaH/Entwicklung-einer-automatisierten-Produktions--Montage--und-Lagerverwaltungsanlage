@@ -1,0 +1,136 @@
+// ============================================================================
+// FB_Gripper — Greifer aufnehmen / ablegen mit Quittierung
+// Datei: scl/FB_Gripper.scl
+// ============================================================================
+
+FUNCTION_BLOCK "FB_Gripper"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+
+VAR_INPUT
+    Enable          : Bool;
+    Grab            : Bool;   // Flanke: greifen
+    Release         : Bool;   // Flanke: ablegen
+    Reset           : Bool;
+    Item_Detected   : Bool;   // Sensor am Greifer (Factory I/O)
+    Grab_Delay      : Time := T#300MS;
+    Release_Delay   : Time := T#300MS;
+    Timeout_Ms      : Time := T#3S;
+END_VAR
+
+VAR_OUTPUT
+    Busy            : Bool;
+    Done            : Bool;
+    Error           : Bool;
+    ErrorCode       : UInt;   // 2001 Timeout Grab, 2002 Timeout Release
+    DO_Gripper      : Bool;   // TRUE = geschlossen / Magnet an
+    Has_Item        : Bool;
+END_VAR
+
+VAR
+    R_Grab          : R_TRIG;
+    R_Release       : R_TRIG;
+    State           : USInt;  // 0 Idle, 1 Grabbing, 2 Holding, 3 Releasing
+    TON_Delay       : TON;
+    TON_Timeout     : TON;
+END_VAR
+
+BEGIN
+    #R_Grab(CLK := #Grab);
+    #R_Release(CLK := #Release);
+
+    IF #Reset THEN
+        #State := USINT#0;
+        #Busy := FALSE;
+        #Done := FALSE;
+        #Error := FALSE;
+        #ErrorCode := UINT#0;
+        #DO_Gripper := FALSE;
+        #Has_Item := FALSE;
+        #TON_Delay(IN := FALSE, PT := #Grab_Delay);
+        #TON_Timeout(IN := FALSE, PT := #Timeout_Ms);
+        RETURN;
+    END_IF;
+
+    IF NOT #Enable THEN
+        #Busy := FALSE;
+        RETURN;
+    END_IF;
+
+    CASE #State OF
+        USINT#0: // Idle
+            #Busy := FALSE;
+            #Done := FALSE;
+            IF #R_Grab.Q THEN
+                #Error := FALSE;
+                #ErrorCode := UINT#0;
+                #DO_Gripper := TRUE;
+                #State := USINT#1;
+                #Busy := TRUE;
+                #TON_Delay(IN := FALSE, PT := #Grab_Delay);
+                #TON_Timeout(IN := FALSE, PT := #Timeout_Ms);
+            ELSIF #R_Release.Q THEN
+                #Error := FALSE;
+                #ErrorCode := UINT#0;
+                #DO_Gripper := FALSE;
+                #State := USINT#3;
+                #Busy := TRUE;
+                #TON_Delay(IN := FALSE, PT := #Release_Delay);
+                #TON_Timeout(IN := FALSE, PT := #Timeout_Ms);
+            END_IF;
+
+        USINT#1: // Grabbing — warten bis Item + Delay
+            #Busy := TRUE;
+            #DO_Gripper := TRUE;
+            #TON_Delay(IN := #Item_Detected, PT := #Grab_Delay);
+            #TON_Timeout(IN := TRUE, PT := #Timeout_Ms);
+            IF #TON_Delay.Q THEN
+                #Has_Item := TRUE;
+                #Done := TRUE;
+                #State := USINT#2;
+                #TON_Timeout(IN := FALSE, PT := #Timeout_Ms);
+            ELSIF #TON_Timeout.Q THEN
+                #Error := TRUE;
+                #ErrorCode := UINT#2001;
+                #DO_Gripper := FALSE;
+                #Has_Item := FALSE;
+                #State := USINT#0;
+                #Busy := FALSE;
+            END_IF;
+
+        USINT#2: // Holding
+            #Busy := FALSE;
+            #DO_Gripper := TRUE;
+            #Has_Item := #Item_Detected;
+            #Done := FALSE;
+            IF #R_Release.Q THEN
+                #DO_Gripper := FALSE;
+                #State := USINT#3;
+                #Busy := TRUE;
+                #TON_Delay(IN := FALSE, PT := #Release_Delay);
+                #TON_Timeout(IN := FALSE, PT := #Timeout_Ms);
+            END_IF;
+
+        USINT#3: // Releasing
+            #Busy := TRUE;
+            #DO_Gripper := FALSE;
+            #TON_Delay(IN := NOT #Item_Detected, PT := #Release_Delay);
+            #TON_Timeout(IN := TRUE, PT := #Timeout_Ms);
+            IF #TON_Delay.Q THEN
+                #Has_Item := FALSE;
+                #Done := TRUE;
+                #State := USINT#0;
+                #Busy := FALSE;
+                #TON_Timeout(IN := FALSE, PT := #Timeout_Ms);
+            ELSIF #TON_Timeout.Q THEN
+                #Error := TRUE;
+                #ErrorCode := UINT#2002;
+                #State := USINT#0;
+                #Busy := FALSE;
+            END_IF;
+
+        ELSE
+            #State := USINT#0;
+    END_CASE;
+
+END_FUNCTION_BLOCK

@@ -1,0 +1,593 @@
+// ============================================================================
+// FB_PickPlace_2Axis — Automatik Pick → Place (2 Achsen X/Z)
+// Datei: scl/FB_PickPlace_2Axis.scl
+//
+// Achs_Modus: 0 = Analog, 1 = Digital (siehe gldb_Config)
+// Sequenz (vereinfacht):
+//   Idle → Wait Entry → Move X Pick → Z Down → Grab → Z Up →
+//   Move X Place → Z Down → Release → Z Up → Home → Done
+// ============================================================================
+
+FUNCTION_BLOCK "FB_PickPlace_2Axis"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+
+VAR_INPUT
+    Auto_Mode           : Bool;
+    Hand_Mode           : Bool;
+    Einricht_Mode       : Bool;
+    Not_Aus             : Bool;   // TRUE = Not-Aus aktiv (Stop)
+
+    HMI_Start           : Bool;   // Auto-Zyklus starten
+    HMI_Stop            : Bool;
+    HMI_Reset           : Bool;
+
+    // Hand / Einricht
+    HMI_Move_X_Plus     : Bool;
+    HMI_Move_X_Minus    : Bool;
+    HMI_Move_Z_Plus     : Bool;
+    HMI_Move_Z_Minus    : Bool;
+    HMI_Grab            : Bool;
+    HMI_Release         : Bool;
+    HMI_Goto_Home       : Bool;
+    HMI_Goto_Pick       : Bool;
+    HMI_Goto_Place      : Bool;
+    HMI_Teach_Home      : Bool;   // Flanke: aktuelle Ist → Home speichern
+    HMI_Teach_Pick      : Bool;
+    HMI_Teach_Place     : Bool;
+
+    // Factory I/O Inputs
+    Sensor_Entry        : Bool;   // Teil am Eingang
+    Sensor_Exit         : Bool;   // Teil am Ausgang (optional freigeben)
+    Item_Detected       : Bool;   // Greifer-Sensor
+    Moving_X            : Bool;
+    Moving_Z            : Bool;
+
+    // Analog Istwerte (skaliert)
+    Ist_X               : Real;
+    Ist_Z               : Real;
+
+    // Digital Positionssensoren X (0=Home, 1=Pick, 2=Place)
+    X_At_0              : Bool;
+    X_At_1              : Bool;
+    X_At_2              : Bool;
+    // Digital Positionssensoren Z (0=Up/Home, 1=Down)
+    Z_At_0              : Bool;
+    Z_At_1              : Bool;
+
+    // Config
+    Achs_Modus          : USInt;  // 0 Analog, 1 Digital
+    Tol_X               : Real := 0.05;
+    Tol_Z               : Real := 0.05;
+
+    // Teach-Punkte Analog (werden intern gehalten; Init aus DB möglich)
+    Pos_Home_X          : Real;
+    Pos_Home_Z          : Real;
+    Pos_Pick_X          : Real;
+    Pos_Pick_Z          : Real;   // Z unten am Pick
+    Pos_Pick_Z_Up       : Real;   // Z oben
+    Pos_Place_X         : Real;
+    Pos_Place_Z         : Real;
+    Pos_Place_Z_Up      : Real;
+END_VAR
+
+VAR_OUTPUT
+    Busy                : Bool;
+    Done_Cycle          : Bool;
+    Error               : Bool;
+    ErrorCode           : UInt;
+    State               : USInt;
+
+    // Outputs → Factory I/O
+    DO_Conv_Entry       : Bool;
+    DO_Conv_Exit        : Bool;
+    DO_Gripper          : Bool;
+
+    AO_Target_X         : Real;
+    AO_Target_Z         : Real;
+
+    DO_X_Plus           : Bool;
+    DO_X_Minus          : Bool;
+    DO_Z_Plus           : Bool;
+    DO_Z_Minus          : Bool;
+
+    // zurückgeschriebene Teach-Punkte (DB speichern)
+    Out_Home_X          : Real;
+    Out_Home_Z          : Real;
+    Out_Pick_X          : Real;
+    Out_Pick_Z          : Real;
+    Out_Pick_Z_Up       : Real;
+    Out_Place_X         : Real;
+    Out_Place_Z         : Real;
+    Out_Place_Z_Up      : Real;
+END_VAR
+
+VAR
+    R_Start             : R_TRIG;
+    R_Stop              : R_TRIG;
+    R_Reset             : R_TRIG;
+    R_TeachHome         : R_TRIG;
+    R_TeachPick         : R_TRIG;
+    R_TeachPlace        : R_TRIG;
+    R_GotoHome          : R_TRIG;
+    R_GotoPick          : R_TRIG;
+    R_GotoPlace         : R_TRIG;
+
+    AxisX_A             : "FB_Axis_Analog";
+    AxisZ_A             : "FB_Axis_Analog";
+    AxisX_D             : "FB_Axis_Digital";
+    AxisZ_D             : "FB_Axis_Digital";
+    Grip                : "FB_Gripper";
+
+    UseAnalog           : Bool;
+    Cmd_X               : Real;
+    Cmd_Z               : Real;
+    Start_X             : Bool;
+    Start_Z             : Bool;
+    Start_Grab          : Bool;
+    Start_Release       : Bool;
+    Axis_Enable         : Bool;
+    Dig_X_Target        : USInt;
+    Dig_Z_Target        : USInt;
+
+    Home_X              : Real;
+    Home_Z              : Real;
+    Pick_X              : Real;
+    Pick_Z              : Real;
+    Pick_Z_Up           : Real;
+    Place_X             : Real;
+    Place_Z             : Real;
+    Place_Z_Up          : Real;
+
+    Init_Done           : Bool;
+END_VAR
+
+VAR_TEMP
+    AxisBusy            : Bool;
+    AxisDone            : Bool;
+    AxisErr             : Bool;
+    GripBusy            : Bool;
+    GripDone            : Bool;
+    GripErr             : Bool;
+END_VAR
+
+BEGIN
+    // --- Init Teach aus Inputs ---
+    IF NOT #Init_Done THEN
+        #Home_X := #Pos_Home_X;
+        #Home_Z := #Pos_Home_Z;
+        #Pick_X := #Pos_Pick_X;
+        #Pick_Z := #Pos_Pick_Z;
+        #Pick_Z_Up := #Pos_Pick_Z_Up;
+        #Place_X := #Pos_Place_X;
+        #Place_Z := #Pos_Place_Z;
+        #Place_Z_Up := #Pos_Place_Z_Up;
+        #Init_Done := TRUE;
+        #State := USINT#0;
+    END_IF;
+
+    #UseAnalog := (#Achs_Modus = USINT#0);
+
+    #R_Start(CLK := #HMI_Start);
+    #R_Stop(CLK := #HMI_Stop);
+    #R_Reset(CLK := #HMI_Reset);
+    #R_TeachHome(CLK := #HMI_Teach_Home);
+    #R_TeachPick(CLK := #HMI_Teach_Pick);
+    #R_TeachPlace(CLK := #HMI_Teach_Place);
+    #R_GotoHome(CLK := #HMI_Goto_Home);
+    #R_GotoPick(CLK := #HMI_Goto_Pick);
+    #R_GotoPlace(CLK := #HMI_Goto_Place);
+
+    #Start_X := FALSE;
+    #Start_Z := FALSE;
+    #Start_Grab := FALSE;
+    #Start_Release := FALSE;
+
+    // --- Not-Aus / Reset ---
+    IF #Not_Aus OR #R_Reset.Q THEN
+        #State := USINT#0;
+        #Busy := FALSE;
+        #Done_Cycle := FALSE;
+        #Error := #Not_Aus;
+        IF #Not_Aus THEN
+            #ErrorCode := UINT#9001;
+        ELSE
+            #Error := FALSE;
+            #ErrorCode := UINT#0;
+        END_IF;
+        #DO_Conv_Entry := FALSE;
+        #DO_Conv_Exit := FALSE;
+        #Axis_Enable := FALSE;
+        #AxisX_A(Enable := FALSE, Reset := TRUE, Ist := #Ist_X);
+        #AxisZ_A(Enable := FALSE, Reset := TRUE, Ist := #Ist_Z);
+        #AxisX_D(Enable := FALSE, Reset := TRUE);
+        #AxisZ_D(Enable := FALSE, Reset := TRUE);
+        #Grip(Enable := FALSE, Reset := TRUE, Item_Detected := #Item_Detected);
+        #AO_Target_X := #AxisX_A.AO_Target;
+        #AO_Target_Z := #AxisZ_A.AO_Target;
+        #DO_X_Plus := FALSE;
+        #DO_X_Minus := FALSE;
+        #DO_Z_Plus := FALSE;
+        #DO_Z_Minus := FALSE;
+        #DO_Gripper := FALSE;
+        #Out_Home_X := #Home_X; #Out_Home_Z := #Home_Z;
+        #Out_Pick_X := #Pick_X; #Out_Pick_Z := #Pick_Z; #Out_Pick_Z_Up := #Pick_Z_Up;
+        #Out_Place_X := #Place_X; #Out_Place_Z := #Place_Z; #Out_Place_Z_Up := #Place_Z_Up;
+        RETURN;
+    END_IF;
+
+    // --- Teach (Einricht) ---
+    IF #Einricht_Mode THEN
+        IF #R_TeachHome.Q THEN
+            #Home_X := #Ist_X;
+            #Home_Z := #Ist_Z;
+        END_IF;
+        IF #R_TeachPick.Q THEN
+            #Pick_X := #Ist_X;
+            #Pick_Z := #Ist_Z;
+            #Pick_Z_Up := #Home_Z; // Up = Home-Z falls nicht separat geteacht
+        END_IF;
+        IF #R_TeachPlace.Q THEN
+            #Place_X := #Ist_X;
+            #Place_Z := #Ist_Z;
+            #Place_Z_Up := #Home_Z;
+        END_IF;
+    END_IF;
+
+    #Axis_Enable := (#Auto_Mode OR #Hand_Mode OR #Einricht_Mode) AND NOT #Not_Aus;
+
+    // =========================================================
+    // HAND / EINRICHT — manuelle Achsen + Greifer
+    // =========================================================
+    IF (#Hand_Mode OR #Einricht_Mode) AND NOT #Auto_Mode THEN
+        #Busy := FALSE;
+        #Done_Cycle := FALSE;
+
+        IF #UseAnalog THEN
+            // Analog Hand: HMI Goto setzt Target; Jog über +/- ändert Target langsam
+            IF #R_GotoHome.Q THEN
+                #Cmd_X := #Home_X; #Cmd_Z := #Home_Z;
+                #Start_X := TRUE; #Start_Z := TRUE;
+            ELSIF #R_GotoPick.Q THEN
+                #Cmd_X := #Pick_X; #Cmd_Z := #Pick_Z_Up;
+                #Start_X := TRUE; #Start_Z := TRUE;
+            ELSIF #R_GotoPlace.Q THEN
+                #Cmd_X := #Place_X; #Cmd_Z := #Place_Z_Up;
+                #Start_X := TRUE; #Start_Z := TRUE;
+            ELSE
+                #Cmd_X := #AO_Target_X;
+                #Cmd_Z := #AO_Target_Z;
+                IF #HMI_Move_X_Plus THEN #Cmd_X := #Cmd_X + 0.02; #Start_X := TRUE; END_IF;
+                IF #HMI_Move_X_Minus THEN #Cmd_X := #Cmd_X - 0.02; #Start_X := TRUE; END_IF;
+                IF #HMI_Move_Z_Plus THEN #Cmd_Z := #Cmd_Z + 0.02; #Start_Z := TRUE; END_IF;
+                IF #HMI_Move_Z_Minus THEN #Cmd_Z := #Cmd_Z - 0.02; #Start_Z := TRUE; END_IF;
+            END_IF;
+
+            #AxisX_A(Enable := #Axis_Enable, Start := #Start_X, Reset := FALSE,
+                     Target := #Cmd_X, Ist := #Ist_X, Moving := #Moving_X, Tol := #Tol_X);
+            #AxisZ_A(Enable := #Axis_Enable, Start := #Start_Z, Reset := FALSE,
+                     Target := #Cmd_Z, Ist := #Ist_Z, Moving := #Moving_Z, Tol := #Tol_Z);
+            #AO_Target_X := #AxisX_A.AO_Target;
+            #AO_Target_Z := #AxisZ_A.AO_Target;
+            #DO_X_Plus := FALSE; #DO_X_Minus := FALSE;
+            #DO_Z_Plus := FALSE; #DO_Z_Minus := FALSE;
+        ELSE
+            // Digital Hand: direkte Jog-Bits
+            #DO_X_Plus := #HMI_Move_X_Plus;
+            #DO_X_Minus := #HMI_Move_X_Minus AND NOT #HMI_Move_X_Plus;
+            #DO_Z_Plus := #HMI_Move_Z_Plus;
+            #DO_Z_Minus := #HMI_Move_Z_Minus AND NOT #HMI_Move_Z_Plus;
+            #AO_Target_X := #Ist_X;
+            #AO_Target_Z := #Ist_Z;
+        END_IF;
+
+        #Start_Grab := #HMI_Grab;
+        #Start_Release := #HMI_Release;
+        #Grip(Enable := #Axis_Enable, Grab := #Start_Grab, Release := #Start_Release,
+              Reset := FALSE, Item_Detected := #Item_Detected);
+        #DO_Gripper := #Grip.DO_Gripper;
+        #DO_Conv_Entry := FALSE;
+        #DO_Conv_Exit := FALSE;
+
+        #Out_Home_X := #Home_X; #Out_Home_Z := #Home_Z;
+        #Out_Pick_X := #Pick_X; #Out_Pick_Z := #Pick_Z; #Out_Pick_Z_Up := #Pick_Z_Up;
+        #Out_Place_X := #Place_X; #Out_Place_Z := #Place_Z; #Out_Place_Z_Up := #Place_Z_Up;
+        RETURN;
+    END_IF;
+
+    // =========================================================
+    // AUTO — State Machine
+    // =========================================================
+    IF NOT #Auto_Mode THEN
+        #State := USINT#0;
+        #Busy := FALSE;
+        #DO_Conv_Entry := FALSE;
+        #DO_Conv_Exit := FALSE;
+        #AxisX_A(Enable := FALSE, Ist := #Ist_X);
+        #AxisZ_A(Enable := FALSE, Ist := #Ist_Z);
+        #AO_Target_X := #Ist_X;
+        #AO_Target_Z := #Ist_Z;
+        #DO_X_Plus := FALSE; #DO_X_Minus := FALSE;
+        #DO_Z_Plus := FALSE; #DO_Z_Minus := FALSE;
+        #Grip(Enable := FALSE, Item_Detected := #Item_Detected);
+        #DO_Gripper := #Grip.DO_Gripper;
+        #Out_Home_X := #Home_X; #Out_Home_Z := #Home_Z;
+        #Out_Pick_X := #Pick_X; #Out_Pick_Z := #Pick_Z; #Out_Pick_Z_Up := #Pick_Z_Up;
+        #Out_Place_X := #Place_X; #Out_Place_Z := #Place_Z; #Out_Place_Z_Up := #Place_Z_Up;
+        RETURN;
+    END_IF;
+
+    IF #R_Stop.Q THEN
+        #State := USINT#0;
+        #Busy := FALSE;
+        #DO_Conv_Entry := FALSE;
+        #DO_Conv_Exit := FALSE;
+    END_IF;
+
+    CASE #State OF
+        USINT#0: // Idle — auf Start warten
+            #Busy := FALSE;
+            #Done_Cycle := FALSE;
+            #DO_Conv_Entry := FALSE;
+            #DO_Conv_Exit := FALSE;
+            IF #R_Start.Q THEN
+                #Error := FALSE;
+                #ErrorCode := UINT#0;
+                #Busy := TRUE;
+                #State := USINT#10;
+            END_IF;
+
+        USINT#10: // Förderband Eingang bis Teil da
+            #Busy := TRUE;
+            #DO_Conv_Entry := TRUE;
+            IF #Sensor_Entry THEN
+                #DO_Conv_Entry := FALSE;
+                #State := USINT#20; // X nach Pick (oben)
+            END_IF;
+
+        USINT#20: // X → Pick, Z → Up
+            #Cmd_X := #Pick_X;
+            #Cmd_Z := #Pick_Z_Up;
+            #Dig_X_Target := USINT#1;
+            #Dig_Z_Target := USINT#0;
+            #Start_X := TRUE;
+            #Start_Z := TRUE;
+            #State := USINT#21;
+
+        USINT#21: // Warten X/Z Pick-Up erreicht
+            ;
+            // Transition nach Achs-Aufruf unten
+
+        USINT#30: // Z → Down (Pick)
+            #Cmd_Z := #Pick_Z;
+            #Dig_Z_Target := USINT#1;
+            #Start_Z := TRUE;
+            #State := USINT#31;
+
+        USINT#31: // Warten Z Down
+            ;
+
+        USINT#40: // Grab
+            #Start_Grab := TRUE;
+            #State := USINT#41;
+
+        USINT#41: // Warten Grab
+            ;
+
+        USINT#50: // Z → Up
+            #Cmd_Z := #Pick_Z_Up;
+            #Dig_Z_Target := USINT#0;
+            #Start_Z := TRUE;
+            #State := USINT#51;
+
+        USINT#51: // Warten Z Up
+            ;
+
+        USINT#60: // X → Place, Z bleibt Up
+            #Cmd_X := #Place_X;
+            #Cmd_Z := #Place_Z_Up;
+            #Dig_X_Target := USINT#2;
+            #Dig_Z_Target := USINT#0;
+            #Start_X := TRUE;
+            #Start_Z := TRUE;
+            #State := USINT#61;
+
+        USINT#61: // Warten Place-Up
+            ;
+
+        USINT#70: // Z → Down (Place)
+            #Cmd_Z := #Place_Z;
+            #Dig_Z_Target := USINT#1;
+            #Start_Z := TRUE;
+            #State := USINT#71;
+
+        USINT#71: // Warten Z Down Place
+            ;
+
+        USINT#80: // Release
+            #Start_Release := TRUE;
+            #State := USINT#81;
+
+        USINT#81: // Warten Release
+            ;
+
+        USINT#90: // Z → Up
+            #Cmd_Z := #Place_Z_Up;
+            #Dig_Z_Target := USINT#0;
+            #Start_Z := TRUE;
+            #State := USINT#91;
+
+        USINT#91: // Warten Z Up
+            ;
+
+        USINT#100: // Exit-Band kurz laufen + Home
+            #DO_Conv_Exit := TRUE;
+            #Cmd_X := #Home_X;
+            #Cmd_Z := #Home_Z;
+            #Dig_X_Target := USINT#0;
+            #Dig_Z_Target := USINT#0;
+            #Start_X := TRUE;
+            #Start_Z := TRUE;
+            #State := USINT#101;
+
+        USINT#101: // Warten Home
+            ;
+
+        USINT#110: // Zyklus fertig
+            #DO_Conv_Exit := FALSE;
+            #Busy := FALSE;
+            #Done_Cycle := TRUE;
+            #State := USINT#0;
+
+        USINT#200: // Fehler halten
+            #Busy := FALSE;
+            #DO_Conv_Entry := FALSE;
+            #DO_Conv_Exit := FALSE;
+
+        ELSE
+            #State := USINT#0;
+    END_CASE;
+
+    // --- Achsen + Greifer zyklisch ---
+    IF #UseAnalog THEN
+        #AxisX_A(Enable := #Axis_Enable AND (#State <> USINT#0) AND (#State <> USINT#10) AND (#State <> USINT#110),
+                 Start := #Start_X, Reset := FALSE,
+                 Target := #Cmd_X, Ist := #Ist_X, Moving := #Moving_X, Tol := #Tol_X);
+        #AxisZ_A(Enable := #Axis_Enable AND (#State <> USINT#0) AND (#State <> USINT#10) AND (#State <> USINT#110),
+                 Start := #Start_Z, Reset := FALSE,
+                 Target := #Cmd_Z, Ist := #Ist_Z, Moving := #Moving_Z, Tol := #Tol_Z);
+        #AO_Target_X := #AxisX_A.AO_Target;
+        #AO_Target_Z := #AxisZ_A.AO_Target;
+        #DO_X_Plus := FALSE; #DO_X_Minus := FALSE;
+        #DO_Z_Plus := FALSE; #DO_Z_Minus := FALSE;
+        #AxisBusy := #AxisX_A.Busy OR #AxisZ_A.Busy;
+        #AxisDone := (NOT #AxisX_A.Busy) AND (NOT #AxisZ_A.Busy) AND (#AxisX_A.Done OR #AxisZ_A.Done OR TRUE);
+        // präziser Done für Wait-States:
+        #AxisErr := #AxisX_A.Error OR #AxisZ_A.Error;
+    ELSE
+        #AxisX_D(Enable := #Axis_Enable AND (#State <> USINT#0) AND (#State <> USINT#10) AND (#State <> USINT#110),
+                 Start := #Start_X, Reset := FALSE, Target_Pos := #Dig_X_Target,
+                 Sensor_At_0 := #X_At_0, Sensor_At_1 := #X_At_1, Sensor_At_2 := #X_At_2,
+                 Sensor_At_3 := FALSE);
+        #AxisZ_D(Enable := #Axis_Enable AND (#State <> USINT#0) AND (#State <> USINT#10) AND (#State <> USINT#110),
+                 Start := #Start_Z, Reset := FALSE, Target_Pos := #Dig_Z_Target,
+                 Sensor_At_0 := #Z_At_0, Sensor_At_1 := #Z_At_1, Sensor_At_2 := FALSE,
+                 Sensor_At_3 := FALSE);
+        #DO_X_Plus := #AxisX_D.DO_Plus;
+        #DO_X_Minus := #AxisX_D.DO_Minus;
+        #DO_Z_Plus := #AxisZ_D.DO_Plus;
+        #DO_Z_Minus := #AxisZ_D.DO_Minus;
+        #AO_Target_X := #Ist_X;
+        #AO_Target_Z := #Ist_Z;
+        #AxisBusy := #AxisX_D.Busy OR #AxisZ_D.Busy;
+        #AxisErr := #AxisX_D.Error OR #AxisZ_D.Error;
+    END_IF;
+
+    #Grip(Enable := #Axis_Enable,
+          Grab := #Start_Grab,
+          Release := #Start_Release,
+          Reset := FALSE,
+          Item_Detected := #Item_Detected);
+    #DO_Gripper := #Grip.DO_Gripper;
+    #GripBusy := #Grip.Busy;
+    #GripDone := #Grip.Done;
+    #GripErr := #Grip.Error;
+
+    IF #AxisErr OR #GripErr THEN
+        #Error := TRUE;
+        IF #GripErr THEN
+            #ErrorCode := #Grip.ErrorCode;
+        ELSIF #UseAnalog THEN
+            IF #AxisX_A.Error THEN #ErrorCode := #AxisX_A.ErrorCode; ELSE #ErrorCode := #AxisZ_A.ErrorCode; END_IF;
+        ELSE
+            IF #AxisX_D.Error THEN #ErrorCode := #AxisX_D.ErrorCode; ELSE #ErrorCode := #AxisZ_D.ErrorCode; END_IF;
+        END_IF;
+        #State := USINT#200;
+    END_IF;
+
+    // --- Wait-State Transitions ---
+    IF #UseAnalog THEN
+        CASE #State OF
+            USINT#21:
+                IF (ABS(#Ist_X - #Pick_X) <= #Tol_X) AND (ABS(#Ist_Z - #Pick_Z_Up) <= #Tol_Z) AND (NOT #Moving_X) AND (NOT #Moving_Z) THEN
+                    #State := USINT#30;
+                END_IF;
+            USINT#31:
+                IF (ABS(#Ist_Z - #Pick_Z) <= #Tol_Z) AND (NOT #Moving_Z) THEN
+                    #State := USINT#40;
+                END_IF;
+            USINT#41:
+                IF #GripDone AND #Grip.Has_Item THEN
+                    #State := USINT#50;
+                END_IF;
+            USINT#51:
+                IF (ABS(#Ist_Z - #Pick_Z_Up) <= #Tol_Z) AND (NOT #Moving_Z) THEN
+                    #State := USINT#60;
+                END_IF;
+            USINT#61:
+                IF (ABS(#Ist_X - #Place_X) <= #Tol_X) AND (ABS(#Ist_Z - #Place_Z_Up) <= #Tol_Z) AND (NOT #Moving_X) AND (NOT #Moving_Z) THEN
+                    #State := USINT#70;
+                END_IF;
+            USINT#71:
+                IF (ABS(#Ist_Z - #Place_Z) <= #Tol_Z) AND (NOT #Moving_Z) THEN
+                    #State := USINT#80;
+                END_IF;
+            USINT#81:
+                IF #GripDone AND (NOT #Grip.Has_Item) THEN
+                    #State := USINT#90;
+                END_IF;
+            USINT#91:
+                IF (ABS(#Ist_Z - #Place_Z_Up) <= #Tol_Z) AND (NOT #Moving_Z) THEN
+                    #State := USINT#100;
+                END_IF;
+            USINT#101:
+                IF (ABS(#Ist_X - #Home_X) <= #Tol_X) AND (ABS(#Ist_Z - #Home_Z) <= #Tol_Z) AND (NOT #Moving_X) AND (NOT #Moving_Z) THEN
+                    #State := USINT#110;
+                END_IF;
+        END_CASE;
+    ELSE
+        CASE #State OF
+            USINT#21:
+                IF #AxisX_D.At_Target AND #AxisZ_D.At_Target AND (NOT #AxisBusy) THEN
+                    #State := USINT#30;
+                END_IF;
+            USINT#31:
+                IF #AxisZ_D.At_Target AND (NOT #AxisZ_D.Busy) THEN
+                    #State := USINT#40;
+                END_IF;
+            USINT#41:
+                IF #GripDone AND #Grip.Has_Item THEN
+                    #State := USINT#50;
+                END_IF;
+            USINT#51:
+                IF #AxisZ_D.At_Target AND (NOT #AxisZ_D.Busy) THEN
+                    #State := USINT#60;
+                END_IF;
+            USINT#61:
+                IF #AxisX_D.At_Target AND #AxisZ_D.At_Target AND (NOT #AxisBusy) THEN
+                    #State := USINT#70;
+                END_IF;
+            USINT#71:
+                IF #AxisZ_D.At_Target AND (NOT #AxisZ_D.Busy) THEN
+                    #State := USINT#80;
+                END_IF;
+            USINT#81:
+                IF #GripDone AND (NOT #Grip.Has_Item) THEN
+                    #State := USINT#90;
+                END_IF;
+            USINT#91:
+                IF #AxisZ_D.At_Target AND (NOT #AxisZ_D.Busy) THEN
+                    #State := USINT#100;
+                END_IF;
+            USINT#101:
+                IF #AxisX_D.At_Target AND #AxisZ_D.At_Target AND (NOT #AxisBusy) THEN
+                    #State := USINT#110;
+                END_IF;
+        END_CASE;
+    END_IF;
+
+    #Out_Home_X := #Home_X; #Out_Home_Z := #Home_Z;
+    #Out_Pick_X := #Pick_X; #Out_Pick_Z := #Pick_Z; #Out_Pick_Z_Up := #Pick_Z_Up;
+    #Out_Place_X := #Place_X; #Out_Place_Z := #Place_Z; #Out_Place_Z_Up := #Place_Z_Up;
+
+END_FUNCTION_BLOCK
