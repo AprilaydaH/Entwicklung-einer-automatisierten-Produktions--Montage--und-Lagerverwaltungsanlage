@@ -1,6 +1,8 @@
-# Abschlussarbeit — Dokumentation
+# Entwicklung einer automatisierten Produktions-, Montage- und Lagerverwaltungsanlage
 
-**Thema:** Fertigungs- und Lageranlage mit RFID · TIA Portal V20 · Factory I/O  
+**Dokumentation der Abschlussarbeit**
+
+**Freigabe-Thema:** Fertigungs- und Lageranlage mit RFID · TIA Portal V20 · Factory I/O  
 
 **Freigabe:** [PDF](01_Projektgrundlagen/Freigabedokument_Abschlussarbeit_Dereje_Hailemariam.pdf) · [Zusammenfassung](01_Projektgrundlagen/Freigabe_Zusammenfassung.md)  
 **Lageplan:** [PDF](01_Projektgrundlagen/Lageplan.pdf) · [Zonenübersicht](01_Projektgrundlagen/Lageplan.md)

@@ -1,6 +1,7 @@
-# Abschlussarbeit — eine Factory, ein Repository
+# Entwicklung einer automatisierten Produktions-, Montage- und Lagerverwaltungsanlage
 
-**Thema:** Entwicklung und Simulation einer automatisierten Fertigungs- und Lageranlage mit RFID-gestützter Produktverfolgung in **TIA Portal V20** und **Factory I/O**
+**Projekttitel** (wie Repository / Abschlussarbeit)  
+**Freigabe-Thema:** Entwicklung und Simulation einer automatisierten Fertigungs- und Lageranlage mit RFID-gestützter Produktverfolgung in **TIA Portal V20** und **Factory I/O**
 
 **Dokumentation:** [`docs/README.md`](docs/README.md)  
 **Lageplan:** [`docs/01_Projektgrundlagen/Lageplan.pdf`](docs/01_Projektgrundlagen/Lageplan.pdf)

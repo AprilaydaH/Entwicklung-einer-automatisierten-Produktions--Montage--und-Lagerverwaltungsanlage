@@ -4,7 +4,9 @@
 **Teilnehmer:** Dereje Hailemariam  
 **Ort / Datum (Teilnehmer):** Berlin, 29.06.2026  
 
-**Thema der Abschlussarbeit:**  
+**Projekttitel:** Entwicklung einer automatisierten Produktions-, Montage- und Lagerverwaltungsanlage  
+
+**Thema der Abschlussarbeit (Freigabe):**  
 Entwicklung und Simulation einer automatisierten Fertigungs- und Lageranlage mit RFID-gestützter Produktverfolgung in TIA Portal und Factory I/O
 
 ---

@@ -2,7 +2,11 @@
 
 ## Projektname
 
-**Offiziell (Freigabe):** Entwicklung und Simulation einer automatisierten Fertigungs- und Lageranlage mit RFID-gestützter Produktverfolgung in TIA Portal und Factory I/O
+**Projekttitel:**  
+Entwicklung einer automatisierten Produktions-, Montage- und Lagerverwaltungsanlage
+
+**Freigabe-Thema (offiziell genehmigt):**  
+Entwicklung und Simulation einer automatisierten Fertigungs- und Lageranlage mit RFID-gestützter Produktverfolgung in TIA Portal und Factory I/O
 
 ## Ein Repository
 
