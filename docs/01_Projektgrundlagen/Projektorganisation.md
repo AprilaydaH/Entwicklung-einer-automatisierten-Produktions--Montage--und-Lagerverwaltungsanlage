@@ -2,60 +2,29 @@
 
 ## Projektname
 
-**Offiziell (Freigabe):**  
-Entwicklung und Simulation einer automatisierten Fertigungs- und Lageranlage mit RFID-gestützter Produktverfolgung in TIA Portal und Factory I/O
+**Offiziell (Freigabe):** Entwicklung und Simulation einer automatisierten Fertigungs- und Lageranlage mit RFID-gestützter Produktverfolgung in TIA Portal und Factory I/O
 
-**Untertitel / Gesamtanlage:**  
-Automatisierte Produktions-, Montage- und Lagerverwaltungsanlage für Kunststoff- und Metallprodukte mit RFID-Identifikation
+## Ein Repository
 
-## Teilnehmer
+Die gesamte Factory laut [Lageplan](Lageplan.md) liegt in **diesem einen Git-Repository** (Zone 1–5, Förderbänder, Hochregallager, ein HMI).
 
-| Rolle | Name |
-|---|---|
-| Verfasser | Dereje Hailemariam |
-| Freigabe | ja (Berlin, 29.06.2026) |
-
-## Projektziel
-
-Entwicklung einer automatisierten Industrieanlage zur:
-
-- Bearbeitung von Kunststoff- und Metallteilen (Base und Deckel getrennt)
-- RFID-Identifikation und Produktverfolgung
-- automatischen Montage (Pick & Place)
-- Palettierung
-- Hochregallagerverwaltung (Ein- und Auslagerung nach Auftrag)
-- Visualisierung über HMI (Touch Panel)
-- Sicherheitsbewertung nach EN ISO 12100 (Schritt für Schritt)
-
-**Quantitativ:** vorgesehene Lagerfächer adressierbar; wichtige Prozesszustände speicherbar.  
-**Qualitativ:** modular, erweiterbar, realistisch in TIA Portal V20 und Factory I/O testbar.
-
-## Factory — Struktur (ein Projekt)
-
-Code und Doku der Hauptmaschinen liegen **in diesem Repository**:
-
-| Subsystem | Pfad | Rolle |
+| Zone | Inhalt | Ordner |
 |---|---|---|
-| Two-Axis Pick & Place | `scl/PickPlace_DigitalAnalog.scl` | Montage Base/Deckel |
-| Palettierer (`FB_Palletizer`) | `scl/FB_Palletizer.scl` | Palettierung |
-| Hochregallager | `scl/Hochregallager/` | Ein-/Auslagerung, Fachverwaltung |
-| Weitere Stationen | *folgt* | Bearbeitung, RFID, Fördertechnik |
+| 1 | Metall CNC | `scl/Zone1_Metall/` |
+| 2 | Kunststoff CNC | `scl/Zone2_Kunststoff/` |
+| 3A/3B | Pick & Place | `scl/Zone3_PickPlace/` |
+| 4A/4B | Palettierer Metal/Plastic | `scl/Zone4_Palettierer/` |
+| 5A/5B | Roboter a–d | `scl/Zone5_Roboter/` |
+| — | Förderbänder | `scl/Foerderbaender/` |
+| — | Hochregallager | `scl/Hochregallager/` |
 
-Später: **ein** Gesamt-HMI (TP) für alle Zonen — siehe [HMI_Gesamtanlage](../03_Technik/HMI_Gesamtanlage.md).
+**HMI:** ein Touch Panel — [HMI_Gesamtanlage](../03_Technik/HMI_Gesamtanlage.md)
 
-## Vorgehensweise
+## Vorgehen
 
-1. Anlagenlayout, Signal- und Variablenstruktur, Betriebsarten  
-2. SPS-Bausteine je Subsystem (Förder, Bearbeitung, RFID, PnP, Palettierung, HRL)  
-3. Lagerverwaltung (Datenbausteine, Suche, Ein-/Auslagerung, Löschen)  
-4. HMI (Fachauswahl, Status, Manual/Auto, Meldungen)  
-5. Simulation Factory I/O  
-6. Tests, Sicherheitsmaßnahmen, Fehlerreaktionen, Dokumentation (EN ISO 12100 / CE)
+1. Maschinen-FBs je Zone fertigstellen (zuerst Zone 4 Palettierer)  
+2. Screens am Gesamt-HMI anbinden  
+3. Förder + CNC + Roboter ergänzen  
+4. Sicherheit / CE dokumentieren  
 
-## Zugehörige Dokumente
-
-- [Kapitel 1 — Projektgrundlagen](README.md)
-- [Maschinengrenzen](Maschinengrenzen.md)
-- [Bestimmungsgemäße Verwendung](Bestimmungsgemaesse_Verwendung.md)
-- [Freigabe-Zusammenfassung](Freigabe_Zusammenfassung.md)
-- [Gesamtindex](../README.md)
+Zurück: [Kapitel 1](README.md) · [docs](../README.md)

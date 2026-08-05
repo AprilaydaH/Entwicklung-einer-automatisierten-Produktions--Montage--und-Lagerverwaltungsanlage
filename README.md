@@ -1,21 +1,20 @@
-# Abschlussarbeit — Fertigungs- und Lageranlage
+# Abschlussarbeit — eine Factory, ein Repository
 
 **Thema:** Entwicklung und Simulation einer automatisierten Fertigungs- und Lageranlage mit RFID-gestützter Produktverfolgung in **TIA Portal V20** und **Factory I/O**
 
-**Dokumentation:** [`docs/README.md`](docs/README.md)
+**Dokumentation:** [`docs/README.md`](docs/README.md)  
+**Lageplan:** [`docs/01_Projektgrundlagen/Lageplan.pdf`](docs/01_Projektgrundlagen/Lageplan.pdf)
 
-## Factory — alles in diesem Projekt
+## Struktur laut Lageplan
 
-| Zone | Subsystem | Code |
+| Zone | Inhalt | Code |
 |---|---|---|
-| 3 | Pick & Place | `scl/PickPlace_DigitalAnalog.scl` |
-| 4 | Palettierer | `scl/FB_Palletizer.scl` (+ OB1-Aufruf) |
-| 5 | **Hochregallager** | `scl/Hochregallager/*.scl` |
+| 1 | Metall CNC Deckel/Base | `scl/Zone1_Metall/` |
+| 2 | Kunststoff CNC Deckel/Base | `scl/Zone2_Kunststoff/` |
+| 3A/3B | Pick & Place | `scl/Zone3_PickPlace/` |
+| 4A/4B | Palettierer Metal/Plastic | `scl/Zone4_Palettierer/` |
+| 5A/5B | Robot stations a–d | `scl/Zone5_Roboter/` |
+| — | Förderbänder | `scl/Foerderbaender/` |
+| — | Hochregallager | `scl/Hochregallager/` |
 
-## Schnellzugriff
-
-- [Projektgrundlagen / Freigabe](docs/01_Projektgrundlagen/)
-- [**HMI Gesamtanlage (1 TP)**](docs/03_Technik/HMI_Gesamtanlage.md)
-- [Palettierer](docs/04_Subsysteme/Palettierer/)
-- [Hochregallager](docs/04_Subsysteme/Hochregallager/)
-- [Pick & Place](docs/04_Subsysteme/PickPlace_2Axis/)
+**Ein HMI** für alle Maschinen: [HMI_Gesamtanlage](docs/03_Technik/HMI_Gesamtanlage.md)

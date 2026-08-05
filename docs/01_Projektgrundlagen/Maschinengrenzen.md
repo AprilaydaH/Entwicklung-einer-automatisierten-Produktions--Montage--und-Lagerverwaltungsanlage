@@ -1,38 +1,24 @@
 # Phase 2 — Grenzen der Maschine
 
-Dieser Abschnitt definiert, was zur Maschine (Factory-Gesamtanlage) gehört und was nicht. Grundlage für Risikobeurteilung und CE-Dokumentation.
+## Zur Maschine gehören (Lageplan)
 
-## Zur Maschine gehören
+- Zone 1: Metall Bearbeitungszentren (Deckel, Base)
+- Zone 2: Kunststoff Bearbeitungszentren (Deckel, Base)
+- Zone 3A/3B: Pick and Place
+- Zone 4A/4B: Palletizer Metal / Plastic
+- Zone 5A/5B: Robot stations a–d
+- Förderbänder zwischen den Zonen
+- Hochregallager
+- RFID (wo vorgesehen)
+- **Ein** HMI (TP) für alle Bereiche
+- SPS (TIA Portal V20), Schaltschrank, Sicherheitskreise (konzeptionell)
 
-- Bearbeitungszentren (Kunststoff / Metall; Base und Deckel) — geplant
-- Montagezellen / Two-Axis Pick & Place — Repo `PickPlace-2Axis-SCL`
-- KUKA-Roboter (soweit in der Szene / Planung vorgesehen) — geplant
-- Fördertechnik — geplant / szenenabhängig
-- RFID-Stationen — geplant
-- Palettierer — Repo `PickPlace-2Axis-SCL`
-- Hochregallager inkl. Lagerverwaltung — `scl/Hochregallager/`
-- HMI (Touch Panel) — **ein** Panel für Hochregal, Pick & Place, Palettierer, CNC und Förderbänder
-- SPS (TIA Portal V20)
-- Schaltschrank (konzeptionell / dokumentiert)
-- Sicherheitssteuerung / Sicherheitskreise (konzeptionell nach EN ISO 12100 / ISO 13849)
+## Nicht Bestandteil
 
-## Nicht Bestandteil der Maschine
+- externe Energieversorgung
+- Gabelstapler / Transport außerhalb der Anlage
+- Bedienpersonal
+- ERP-System
+- **Wasserverbrauch / Wasserwirtschaft**
 
-- externe Energieversorgung (Übergabepunkt)
-- Gabelstapler und innerbetrieblicher Transport außerhalb der Anlage
-- Bedienpersonal (Mensch ist Nutzer, nicht Bestandteil der Maschine)
-- übergeordnetes ERP-System (Schnittstelle kann später beschrieben werden, ist aber nicht Gegenstand der Steuerung)
-- **Wasserverbrauch / Wasserwirtschaft / Tank- oder Füllstandsregelung** (kein Bestandteil dieses Abschlussprojekts)
-
-## Schnittstellen (Systemgrenze)
-
-| Schnittstelle | Beschreibung |
-|---|---|
-| Energie | Übergabe an Schaltschrank |
-| Material | Rohteile in / Fertigprodukte bzw. Paletten aus |
-| Information | HMI-Bedienung; optional später ERP |
-| Simulation | Factory I/O als Abbild der Maschinengrenzen |
-
-## Hinweis Repositories
-
-Die Software der Maschinengrenzen ist auf die Factory-Repos verteilt. Die **funktionale Grenze der Maschine** bleibt die Gesamtanlage; die **Entwicklungseinheiten** sind die genannten Git-Repositories.
+Siehe [Lageplan.md](Lageplan.md).

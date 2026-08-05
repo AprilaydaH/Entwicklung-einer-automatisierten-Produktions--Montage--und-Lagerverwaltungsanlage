@@ -1,9 +1,9 @@
 # Abschlussarbeit — Dokumentation
 
-**Thema:** Entwicklung und Simulation einer automatisierten Fertigungs- und Lageranlage mit RFID-gestützter Produktverfolgung in **TIA Portal V20** und **Factory I/O**
+**Thema:** Fertigungs- und Lageranlage mit RFID · TIA Portal V20 · Factory I/O  
 
-**Teilnehmer:** Dereje Hailemariam · Berlin, 29.06.2026  
-**Freigabe:** [PDF](01_Projektgrundlagen/Freigabedokument_Abschlussarbeit_Dereje_Hailemariam.pdf) · [Zusammenfassung](01_Projektgrundlagen/Freigabe_Zusammenfassung.md)
+**Freigabe:** [PDF](01_Projektgrundlagen/Freigabedokument_Abschlussarbeit_Dereje_Hailemariam.pdf) · [Zusammenfassung](01_Projektgrundlagen/Freigabe_Zusammenfassung.md)  
+**Lageplan:** [PDF](01_Projektgrundlagen/Lageplan.pdf) · [Zonenübersicht](01_Projektgrundlagen/Lageplan.md)
 
 ---
 
@@ -11,49 +11,40 @@
 
 | Kap. | Ordner | Inhalt |
 |---|---|---|
-| **1** | [01_Projektgrundlagen](01_Projektgrundlagen/) | Freigabe, Organisation, Maschinengrenzen, Verwendung |
-| **2** | [02_Sicherheit](02_Sicherheit/) | EN ISO 12100 / 13849 (Phasen 4–11) |
-| **3** | [03_Technik](03_Technik/) | SPS, **ein Gesamt-HMI (TP)**, Netzwerk, E/A |
-| **4** | [04_Subsysteme](04_Subsysteme/) | Pick & Place · Palettierer · Hochregallager · (CNC/Förder folgen) |
-| **5** | [05_CE_Dokumentation](05_CE_Dokumentation/) | CE-Paket (später) |
+| **1** | [01_Projektgrundlagen](01_Projektgrundlagen/) | Freigabe, Lageplan, Grenzen, Verwendung |
+| **2** | [02_Sicherheit](02_Sicherheit/) | EN ISO 12100 |
+| **3** | [03_Technik](03_Technik/) | SPS, **ein Gesamt-HMI**, Netzwerk |
+| **4** | [04_Anlagenbereiche](04_Anlagenbereiche/) | Zone 1–5 · Förder · Hochregal |
+| **5** | [05_CE_Dokumentation](05_CE_Dokumentation/) | CE (später) |
 
 ---
 
-## Factory (Subsysteme)
+## Ein Repository = gesamte Factory
 
-| Zone | Subsystem | Code in diesem Repo | Doku |
-|---|---|---|---|
-| 3 | Two-Axis Pick & Place | `scl/PickPlace_DigitalAnalog.scl` | [PickPlace_2Axis](04_Subsysteme/PickPlace_2Axis/) |
-| 4 | Palettierer (FB) | `scl/FB_Palletizer.scl` | [Palettierer](04_Subsysteme/Palettierer/) |
-| 5 | Hochregallager (FBs) | `scl/Hochregallager/` | [Hochregallager](04_Subsysteme/Hochregallager/) |
-| — | CNC-Workstations | *folgt* | — |
-| — | Förderbänder (Verbindung) | *folgt* | — |
+| Zone | Bereich | Code |
+|---|---|---|
+| 1 | Metall CNC | `scl/Zone1_Metall/` |
+| 2 | Kunststoff CNC | `scl/Zone2_Kunststoff/` |
+| 3A/3B | Pick & Place | `scl/Zone3_PickPlace/` |
+| 4A/4B | Palettierer Metal/Plastic | `scl/Zone4_Palettierer/` |
+| 5A/5B | Roboter a–d | `scl/Zone5_Roboter/` |
+| — | Förderbänder | `scl/Foerderbaender/` |
+| — | Hochregallager | `scl/Hochregallager/` |
 
-**HMI:** **ein** Touch Panel für die gesamte Factory → [HMI_Gesamtanlage.md](03_Technik/HMI_Gesamtanlage.md)
+**HMI:** ein TP → [HMI_Gesamtanlage.md](03_Technik/HMI_Gesamtanlage.md)
 
-**Nicht im Scope:** Wasserverbrauch / Wasserwirtschaft.
-
-```mermaid
-flowchart LR
-  Z3[PickPlace] --> Z4[Palettierer]
-  Z4 --> Z5[Hochregallager]
-  Z1[Bearbeitung] --> Z3
-  Z2[RFID_Foerder] --> Z3
-```
+**Nicht im Scope:** Wasserverbrauch.
 
 ---
 
-## Status / nächste Schritte
+## Status
 
-| Erledigt | Offen (nächste Lieferungen) |
+| Vorhanden | Offen |
 |---|---|
-| Freigabe + Projektgrundlagen | Lastenheft / Pflichtenheft |
-| Palettierer SCL + HMI + OB1 | Anlagenübersicht / Materialfluss |
-| Pick & Place FB | RFID-Konzept |
-| **Hochregallager** in `scl/Hochregallager/` | CNC + Förderbänder |
-| Doku-Gerüst | **Gesamt-HMI** (ein TP), E/A-Liste, CE |
+| Lageplan + Projektgerüst | Zone 1/2 CNC-FBs |
+| Zone 3 Pick&Place FB | Zone 5 Roboter |
+| Zone 4 Palettierer FB (+ 4A/4B Instanzen) | Förderbänder-FBs |
+| Hochregallager FBs | Gesamt-HMI Screens im TP |
+| HMI-Konzept | RFID / Sicherheit ausfüllen |
 
-**Arbeitsweise:** Maschinen-FBs einzeln fertigstellen → Screens am **einen** TP anbinden → Übersicht/Zentral-Stop.
-
-**HMI-Konzept:** [03_Technik/HMI_Gesamtanlage.md](03_Technik/HMI_Gesamtanlage.md)  
-**Palettierer jetzt:** [Test & Inbetriebnahme](04_Subsysteme/Palettierer/Test_und_Inbetriebnahme.md)
+**Weiter mit:** Zone 4 Palettierer testen → [Test_und_Inbetriebnahme](04_Anlagenbereiche/Zone4_Palettierer/Test_und_Inbetriebnahme.md)
