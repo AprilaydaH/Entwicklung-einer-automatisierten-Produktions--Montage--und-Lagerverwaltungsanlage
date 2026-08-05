@@ -22,6 +22,7 @@ Dieser Abschnitt definiert, was zur Maschine (Factory-Gesamtanlage) gehört und 
 - Gabelstapler und innerbetrieblicher Transport außerhalb der Anlage
 - Bedienpersonal (Mensch ist Nutzer, nicht Bestandteil der Maschine)
 - übergeordnetes ERP-System (Schnittstelle kann später beschrieben werden, ist aber nicht Gegenstand der Steuerung)
+- **Wasserverbrauch / Wasserwirtschaft / Tank- oder Füllstandsregelung** (kein Bestandteil dieses Abschlussprojekts)
 
 ## Schnittstellen (Systemgrenze)
 

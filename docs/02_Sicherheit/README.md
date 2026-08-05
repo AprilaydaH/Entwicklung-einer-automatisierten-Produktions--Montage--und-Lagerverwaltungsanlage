@@ -2,6 +2,8 @@
 
 Stub-Ordner für EN ISO 12100 / EN ISO 13849-1. Inhalte werden ergänzt, sobald Dokumente geliefert werden.
 
+Zurück: [docs/README.md](../README.md)
+
 ## Sicherheitszonen der Factory
 
 | Zone | Bereich | Repo / Subsystem | Status |

@@ -30,4 +30,4 @@
 
 ## Sicherheit (Zone 5) — Stub
 
-Gefahren: Regalbediengerät, Lastabsturz. Schutz: Zaun, Wartungstüren, Endschalter, sichere Positionierung (Details in `01_Sicherheit/`).
+Gefahren: Regalbediengerät, Lastabsturz. Schutz: Zaun, Wartungstüren, Endschalter, sichere Positionierung (Details in `docs/02_Sicherheit/`).

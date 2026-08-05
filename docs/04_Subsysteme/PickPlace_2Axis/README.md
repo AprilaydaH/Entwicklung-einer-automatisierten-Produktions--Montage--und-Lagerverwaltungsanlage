@@ -26,4 +26,4 @@ Factory-I/O-Tags (Auszug aus Tagliste): Place X/Z Position, Two-Axis Setpoints â
 
 ## Sicherheit (Zone 3) â€” Stub
 
-Gefahren: Greifer, Kollision. Schutz: Sicherheitszaun, Bereichssicherung, reduzierte Geschwindigkeit (Details in `01_Sicherheit/`).
+Gefahren: Greifer, Kollision. Schutz: Sicherheitszaun, Bereichssicherung, reduzierte Geschwindigkeit (Details in `docs/02_Sicherheit/`).

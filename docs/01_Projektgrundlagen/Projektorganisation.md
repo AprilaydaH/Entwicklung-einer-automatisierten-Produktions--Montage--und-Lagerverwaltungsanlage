@@ -54,6 +54,8 @@ Dieses Repository (`PickPlace-2Axis-SCL`) ist der **Integrationspunkt für die P
 
 ## Zugehörige Dokumente
 
-- [Master-Index](README.md)
-- [Phase 2 — Maschinengrenzen](02_Maschinengrenzen.md)
-- [Phase 3 — Bestimmungsgemäße Verwendung](03_Bestimmungsgemaesse_Verwendung.md)
+- [Kapitel 1 — Projektgrundlagen](README.md)
+- [Maschinengrenzen](Maschinengrenzen.md)
+- [Bestimmungsgemäße Verwendung](Bestimmungsgemaesse_Verwendung.md)
+- [Freigabe-Zusammenfassung](Freigabe_Zusammenfassung.md)
+- [Gesamtindex](../README.md)
