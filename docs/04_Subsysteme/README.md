@@ -1,9 +1,9 @@
 # 4 — Subsysteme
 
-| Zone | Ordner | Repository |
+| Zone | Ordner | Code |
 |---|---|---|
-| 3 Montage | [PickPlace_2Axis](PickPlace_2Axis/) | PickPlace-2Axis-SCL |
-| 4 Palettierer | [Palettierer](Palettierer/) | PickPlace-2Axis-SCL |
-| 5 Hochregal | [Hochregallager](Hochregallager/) | Hochregallager-SCL |
+| 3 Montage | [PickPlace_2Axis](PickPlace_2Axis/) | `scl/PickPlace_DigitalAnalog.scl` |
+| 4 Palettierer | [Palettierer](Palettierer/) | `scl/FB_Palletizer.scl` |
+| 5 Hochregal | [Hochregallager](Hochregallager/) | `scl/Hochregallager/` |
 
 Zurück: [docs/README.md](../README.md)

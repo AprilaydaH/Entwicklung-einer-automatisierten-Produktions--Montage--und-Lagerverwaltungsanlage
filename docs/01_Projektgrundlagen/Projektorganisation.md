@@ -30,18 +30,18 @@ Entwicklung einer automatisierten Industrieanlage zur:
 **Quantitativ:** vorgesehene Lagerfächer adressierbar; wichtige Prozesszustände speicherbar.  
 **Qualitativ:** modular, erweiterbar, realistisch in TIA Portal V20 und Factory I/O testbar.
 
-## Factory — Repository-Struktur
+## Factory — Struktur (ein Projekt)
 
-Die Anlage wird **nicht in einem einzigen Repo** entwickelt, sondern als Factory aus mehreren Repositories:
+Code und Doku der Hauptmaschinen liegen **in diesem Repository**:
 
-| Subsystem | Repository | Rolle in der Factory |
+| Subsystem | Pfad | Rolle |
 |---|---|---|
-| Two-Axis Pick & Place | `PickPlace-2Axis-SCL` | Montage Base/Deckel |
-| Palettierer | `PickPlace-2Axis-SCL` | Palettierung fertiger Produkte |
-| Hochregallager | `Hochregallager-SCL` | Ein-/Auslagerung, Fachverwaltung, Suche |
-| Weitere Stationen | *weitere Repos / später* | Bearbeitung, RFID, Fördertechnik |
+| Two-Axis Pick & Place | `scl/PickPlace_DigitalAnalog.scl` | Montage Base/Deckel |
+| Palettierer (`FB_Palletizer`) | `scl/FB_Palletizer.scl` | Palettierung |
+| Hochregallager | `scl/Hochregallager/` | Ein-/Auslagerung, Fachverwaltung |
+| Weitere Stationen | *folgt* | Bearbeitung, RFID, Fördertechnik |
 
-Dieses Repository (`PickPlace-2Axis-SCL`) ist der **Integrationspunkt für die Projektdokumentation** der Gesamtanlage und enthält die Subsysteme Palettierer und Pick & Place.
+Später: **ein** Gesamt-HMI (TP) für alle Zonen — siehe [HMI_Gesamtanlage](../03_Technik/HMI_Gesamtanlage.md).
 
 ## Vorgehensweise
 

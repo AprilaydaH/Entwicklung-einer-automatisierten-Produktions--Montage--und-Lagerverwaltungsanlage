@@ -1,0 +1,509 @@
+// ============================================================================
+// Bausteinname : Hochregal_Automatik_Betrieb
+// Version      : V1.3
+// Gabel 3 Pos: Links | Mitte (Fahrt = Gabel_Eingefahren) | Rechts
+// Fahrt immer in der Mitte; Regal = RegalSeite; Band = Foerderband_Seite
+// ============================================================================
+// NEU in Interface anlegen:
+//   IN  Offset_Z          : Real   // z.B. 0.01
+//   IN  Foerderband_Seite : USInt  // 1=rechts, sonst links
+// Bestehende Namen beibehalten:
+//   Gabel_Einfahren / Gabel_Eingefahren (= Mitte)
+//   Reset / Stop / Start_FreiesFach
+// ============================================================================
+
+#R_TRIG_Einlagern(CLK := #HMI_Start_Einlagern);
+#R_TRIG_HMI_Auslagern(CLK := #HMI_Start_Auslagern);
+#R_TRIG_Reset(CLK := #Reset);
+#R_TRIG_Stop(CLK := #Stop);
+
+#Fahre_Zu_Position := FALSE;
+#Palette_Aufnehmen := FALSE;
+#Palette_Ablegen := FALSE;
+#Gabel_Rechts_Aus := FALSE;
+#Gabel_Links_Aus := FALSE;
+#Gabel_Einfahren := FALSE;
+#RFID_Lesen := FALSE;
+
+IF #R_TRIG_Reset.Q OR #R_TRIG_Stop.Q OR #Not_Aus THEN
+
+    #State := 0;
+    #Busy := FALSE;
+    #Done := FALSE;
+    #Error := #Not_Aus;
+
+    IF #R_TRIG_Reset.Q THEN
+        #Error := FALSE;
+        "gldb_Meldungen".Status.Meldecode := UINT#1;
+        "gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#0;
+    ELSIF #Not_Aus THEN
+        "gldb_Meldungen".Status.Meldecode := UINT#13;
+        "gldb_Meldungen".Fehler.Fehlercode := UINT#13;
+        "gldb_Meldungen".Fehler.Fehler_Aktiv := TRUE;
+        "gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#13;
+    ELSE
+        "gldb_Meldungen".Status.Meldecode := UINT#2;
+    END_IF;
+
+    #Mode_Einlagern := FALSE;
+    #Mode_Auslagern := FALSE;
+    #Startquelle_Auto := FALSE;
+    #Startquelle_HMI := FALSE;
+
+    #Ziel_Fachnummer := 0;
+    #Regalseite := USINT#0;
+    #Soll_X := #Home_X;
+    #Soll_Z := #Home_Z;
+    #Start_FreiesFach := FALSE;
+    #Paket_Uebernommen := FALSE;
+
+    "gldb_Meldungen".Fehler.Fehler_Aktiv := #Not_Aus;
+END_IF;
+
+IF NOT #Paket_Vor_Regal THEN
+    #Paket_Uebernommen := FALSE;
+END_IF;
+
+IF NOT #Busy AND NOT #Error AND NOT #Einricht_Mode AND NOT #Not_Aus THEN
+
+    IF #Auto_Mode
+        AND #Paket_Vor_Regal
+        AND #RFID_Bereit
+        AND NOT #Paket_Uebernommen THEN
+
+        #Busy := TRUE;
+        #Done := FALSE;
+        #Mode_Einlagern := TRUE;
+        #Mode_Auslagern := FALSE;
+        #Startquelle_Auto := TRUE;
+        #Startquelle_HMI := FALSE;
+        #State := 10;
+        "gldb_Meldungen".Status.Meldecode := UINT#100;
+        "gldb_Meldungen".Fehler.Fehler_Aktiv := FALSE;
+
+    ELSIF #Hand_Mode AND #R_TRIG_Einlagern.Q THEN
+
+        #Busy := TRUE;
+        #Done := FALSE;
+        #Mode_Einlagern := TRUE;
+        #Mode_Auslagern := FALSE;
+        #Startquelle_Auto := FALSE;
+        #Startquelle_HMI := TRUE;
+        #State := 10;
+        "gldb_Meldungen".Status.Meldecode := UINT#101;
+        "gldb_Meldungen".Fehler.Fehler_Aktiv := FALSE;
+
+    ELSIF #Hand_Mode AND #R_TRIG_HMI_Auslagern.Q THEN
+
+        #Busy := TRUE;
+        #Done := FALSE;
+        #Mode_Einlagern := FALSE;
+        #Mode_Auslagern := TRUE;
+        #Startquelle_Auto := FALSE;
+        #Startquelle_HMI := TRUE;
+        #State := 100;
+        "gldb_Meldungen".Status.Meldecode := UINT#200;
+        "gldb_Meldungen".Fehler.Fehler_Aktiv := FALSE;
+
+    END_IF;
+
+END_IF;
+
+CASE #State OF
+
+    0:
+        #Busy := FALSE;
+        #Gabel_Einfahren := TRUE;
+
+        IF #Auto_Mode THEN
+            "gldb_Meldungen".Status.Meldecode := UINT#10;
+        ELSIF #Hand_Mode THEN
+            "gldb_Meldungen".Status.Meldecode := UINT#11;
+        ELSIF #Einricht_Mode THEN
+            "gldb_Meldungen".Status.Meldecode := UINT#12;
+        ELSE
+            "gldb_Meldungen".Status.Meldecode := UINT#0;
+        END_IF;
+
+    // ----- EINLAGERN: Band-Seite → Mitte → Regal-Seite → Mitte → Home -----
+
+    10:
+        "gldb_Meldungen".Status.Meldecode := UINT#110;
+        #RFID_Lesen := TRUE;
+
+        IF #RFID_Gueltig THEN
+            "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Artikelnummer := #RFID_Artikelnummer;
+            "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Materialart := #RFID_Materialart;
+            "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.ProductTyp := #RFID_ProduktTyp;
+            "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.RFID_CODE := #RFID_Code;
+            #State := 20;
+            #Start_FreiesFach := TRUE;
+        ELSIF #RFID_Fehler THEN
+            #Error := TRUE;
+            #State := 900;
+            "gldb_Meldungen".Status.Meldecode := UINT#911;
+            "gldb_Meldungen".Fehler.Fehlercode := UINT#911;
+            "gldb_Meldungen".Fehler.Fehler_Aktiv := TRUE;
+            "gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#7;
+        END_IF;
+
+    20:
+        "gldb_Meldungen".Status.Meldecode := UINT#120;
+        #instFreiesFachSuchen(Start := #Start_FreiesFach);
+        #Start_FreiesFach := FALSE;
+
+        IF #instFreiesFachSuchen.Gefunden THEN
+            #Ziel_Fachnummer := USINT_TO_INT(#instFreiesFachSuchen.Fachnummer);
+            "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Fachnummer :=
+                #instFreiesFachSuchen.Fachnummer;
+            #Regalseite := "gldb_LagerverwaltungData".Fach[#Ziel_Fachnummer].RegalSeite;
+            #State := 22;
+        ELSIF #instFreiesFachSuchen.Lager_Voll OR #instFreiesFachSuchen.Fehler THEN
+            #Error := TRUE;
+            #State := 900;
+            "gldb_Meldungen".Status.Meldecode := UINT#912;
+            "gldb_Meldungen".Fehler.Fehlercode := UINT#912;
+            "gldb_Meldungen".Fehler.Fehler_Aktiv := TRUE;
+            "gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#10;
+        END_IF;
+
+    22: // Gabel Förderband-Seite
+        "gldb_Meldungen".Status.Meldecode := UINT#122;
+        IF #Foerderband_Seite = USINT#1 THEN
+            #Gabel_Rechts_Aus := TRUE;
+            IF #Gabel_Rechts_Ausgefahren THEN
+                #State := 30;
+            END_IF;
+        ELSE
+            #Gabel_Links_Aus := TRUE;
+            IF #Gabel_Links_Ausgefahren THEN
+                #State := 30;
+            END_IF;
+        END_IF;
+
+    30: // Aufnehmen am Band
+        "gldb_Meldungen".Status.Meldecode := UINT#130;
+        #Palette_Aufnehmen := TRUE;
+        IF #Palette_Aufgenommen THEN
+            #State := 32;
+        END_IF;
+
+    32: // Gabel Mitte
+        "gldb_Meldungen".Status.Meldecode := UINT#132;
+        #Gabel_Einfahren := TRUE;
+        IF #Gabel_Eingefahren THEN
+            #State := 40;
+        END_IF;
+
+    40: // Fach über Ruhe-Z
+        "gldb_Meldungen".Status.Meldecode := UINT#140;
+        #Soll_X := "gldb_LagerverwaltungData".Fach[#Ziel_Fachnummer].Position_X;
+        #Soll_Z := "gldb_LagerverwaltungData".Fach[#Ziel_Fachnummer].Position_Z
+                   + #Offset_Z;
+        #Regalseite := "gldb_LagerverwaltungData".Fach[#Ziel_Fachnummer].RegalSeite;
+        "gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#11;
+        #State := 50;
+
+    50: // Fahren nur in Mitte
+        "gldb_Meldungen".Status.Meldecode := UINT#150;
+        IF NOT #Gabel_Eingefahren THEN
+            #Gabel_Einfahren := TRUE;
+        ELSE
+            #Fahre_Zu_Position := TRUE;
+            IF #Position_Erreicht THEN
+                "gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#12;
+                #State := 60;
+            END_IF;
+        END_IF;
+
+    60: // Gabel Regal-Seite
+        "gldb_Meldungen".Status.Meldecode := UINT#160;
+        IF #Regalseite = USINT#1 THEN
+            #Gabel_Rechts_Aus := TRUE;
+            IF #Gabel_Rechts_Ausgefahren THEN
+                #State := 65;
+            END_IF;
+        ELSE
+            #Gabel_Links_Aus := TRUE;
+            IF #Gabel_Links_Ausgefahren THEN
+                #State := 65;
+            END_IF;
+        END_IF;
+
+    65: // Absenken Ablegen
+        "gldb_Meldungen".Status.Meldecode := UINT#165;
+        #Soll_X := "gldb_LagerverwaltungData".Fach[#Ziel_Fachnummer].Position_X;
+        #Soll_Z := "gldb_LagerverwaltungData".Fach[#Ziel_Fachnummer].Position_Z;
+        #Fahre_Zu_Position := TRUE;
+        IF #Position_Erreicht THEN
+            #State := 70;
+        END_IF;
+
+    70:
+        "gldb_Meldungen".Status.Meldecode := UINT#170;
+        #Palette_Ablegen := TRUE;
+        IF #Palette_Abgelegt THEN
+            #State := 72;
+        END_IF;
+
+    72: // Mitte
+        "gldb_Meldungen".Status.Meldecode := UINT#172;
+        #Gabel_Einfahren := TRUE;
+        IF #Gabel_Eingefahren THEN
+            #State := 90;
+        END_IF;
+
+    90:
+        "gldb_Meldungen".Status.Meldecode := UINT#190;
+        "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Fachnummer :=
+            INT_TO_USINT(#Ziel_Fachnummer);
+        #instEinlagern(Execute := TRUE);
+        #instLagerstatus();
+        #instFachanzeigen(
+            Enable := TRUE,
+            Fachnummer := INT_TO_UINT(#Ziel_Fachnummer)
+        );
+        IF #Startquelle_Auto THEN
+            #Paket_Uebernommen := TRUE;
+        END_IF;
+        #State := 300;
+
+    // ----- AUSLAGERN: Mitte → Regal → Mitte → Band → Mitte → Home -----
+
+    100:
+        "gldb_Meldungen".Status.Meldecode := UINT#210;
+
+        IF ("gldb_AktuellerFach_HMI".Auswahl.Ausgewaeltes_Fach >= UINT#1)
+            AND ("gldb_AktuellerFach_HMI".Auswahl.Ausgewaeltes_Fach <= UINT#54) THEN
+
+            #Ziel_Fachnummer :=
+                UINT_TO_INT("gldb_AktuellerFach_HMI".Auswahl.Ausgewaeltes_Fach);
+            "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Fachnummer :=
+                INT_TO_USINT(#Ziel_Fachnummer);
+            #State := 120;
+        ELSE
+            #State := 110;
+        END_IF;
+
+    110:
+        "gldb_Meldungen".Status.Meldecode := UINT#220;
+        #instSuchen();
+
+        IF ("gldb_AktuellerFach_HMI".Meldung.Info_Code = UINT#9)
+            AND ("gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Fachnummer >= USINT#1)
+            AND ("gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Fachnummer <= USINT#54) THEN
+            #Ziel_Fachnummer :=
+                USINT_TO_INT("gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Fachnummer);
+            #State := 120;
+        ELSE
+            #Error := TRUE;
+            #State := 900;
+            "gldb_Meldungen".Status.Meldecode := UINT#921;
+            "gldb_Meldungen".Fehler.Fehlercode := UINT#921;
+            "gldb_Meldungen".Fehler.Fehler_Aktiv := TRUE;
+            "gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#8;
+        END_IF;
+
+    120:
+        IF (#Ziel_Fachnummer >= 1) AND (#Ziel_Fachnummer <= 54) THEN
+            IF "gldb_LagerverwaltungData".Fach[#Ziel_Fachnummer].Gesperrt THEN
+                #Error := TRUE;
+                #State := 900;
+                "gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#15;
+                "gldb_Meldungen".Status.Meldecode := UINT#924;
+                "gldb_Meldungen".Fehler.Fehler_Aktiv := TRUE;
+            ELSIF "gldb_LagerverwaltungData".Fach[#Ziel_Fachnummer].Belegt THEN
+                #State := 125;
+            ELSE
+                #Error := TRUE;
+                #State := 900;
+                "gldb_Meldungen".Status.Meldecode := UINT#922;
+                "gldb_Meldungen".Fehler.Fehlercode := UINT#922;
+                "gldb_Meldungen".Fehler.Fehler_Aktiv := TRUE;
+                "gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#5;
+            END_IF;
+        ELSE
+            #Error := TRUE;
+            #State := 900;
+            "gldb_Meldungen".Status.Meldecode := UINT#923;
+            "gldb_Meldungen".Fehler.Fehlercode := UINT#923;
+            "gldb_Meldungen".Fehler.Fehler_Aktiv := TRUE;
+            "gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#3;
+        END_IF;
+
+    125:
+        "gldb_Meldungen".Status.Meldecode := UINT#225;
+        #Gabel_Einfahren := TRUE;
+        IF #Gabel_Eingefahren THEN
+            #State := 130;
+        END_IF;
+
+    130:
+        "gldb_Meldungen".Status.Meldecode := UINT#230;
+        #Soll_X := "gldb_LagerverwaltungData".Fach[#Ziel_Fachnummer].Position_X;
+        #Soll_Z := "gldb_LagerverwaltungData".Fach[#Ziel_Fachnummer].Position_Z;
+        #Regalseite := "gldb_LagerverwaltungData".Fach[#Ziel_Fachnummer].RegalSeite;
+        "gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#11;
+        #State := 140;
+
+    140:
+        "gldb_Meldungen".Status.Meldecode := UINT#240;
+        IF NOT #Gabel_Eingefahren THEN
+            #Gabel_Einfahren := TRUE;
+        ELSE
+            #Fahre_Zu_Position := TRUE;
+            IF #Position_Erreicht THEN
+                "gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#12;
+                #State := 150;
+            END_IF;
+        END_IF;
+
+    150: // Regal-Seite
+        "gldb_Meldungen".Status.Meldecode := UINT#250;
+        IF #Regalseite = USINT#1 THEN
+            #Gabel_Rechts_Aus := TRUE;
+            IF #Gabel_Rechts_Ausgefahren THEN
+                #State := 155;
+            END_IF;
+        ELSE
+            #Gabel_Links_Aus := TRUE;
+            IF #Gabel_Links_Ausgefahren THEN
+                #State := 155;
+            END_IF;
+        END_IF;
+
+    155: // Anheben Pick
+        "gldb_Meldungen".Status.Meldecode := UINT#255;
+        #Soll_X := "gldb_LagerverwaltungData".Fach[#Ziel_Fachnummer].Position_X;
+        #Soll_Z := "gldb_LagerverwaltungData".Fach[#Ziel_Fachnummer].Position_Z
+                   + #Offset_Z;
+        #Fahre_Zu_Position := TRUE;
+        IF #Position_Erreicht THEN
+            #State := 160;
+        END_IF;
+
+    160:
+        "gldb_Meldungen".Status.Meldecode := UINT#260;
+        #Palette_Aufnehmen := TRUE;
+        IF #Palette_Aufgenommen THEN
+            #State := 162;
+        END_IF;
+
+    162:
+        "gldb_Meldungen".Status.Meldecode := UINT#262;
+        #Gabel_Einfahren := TRUE;
+        IF #Gabel_Eingefahren THEN
+            #State := 180;
+        END_IF;
+
+    180:
+        "gldb_Meldungen".Status.Meldecode := UINT#280;
+        "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Fachnummer :=
+            INT_TO_USINT(#Ziel_Fachnummer);
+        #instAuslagern(Execute := TRUE);
+        #instLagerstatus();
+        #instFachanzeigen(
+            Enable := TRUE,
+            Fachnummer := INT_TO_UINT(#Ziel_Fachnummer)
+        );
+        #State := 190;
+
+    190: // Ausgabe über Ruhe-Z
+        "gldb_Meldungen".Status.Meldecode := UINT#290;
+        #Soll_X := #Ausgabe_X;
+        #Soll_Z := #Ausgabe_Z + #Offset_Z;
+        IF NOT #Gabel_Eingefahren THEN
+            #Gabel_Einfahren := TRUE;
+        ELSE
+            #Fahre_Zu_Position := TRUE;
+            IF #Position_Erreicht THEN
+                #State := 192;
+            END_IF;
+        END_IF;
+
+    192: // Gabel Band-Seite
+        "gldb_Meldungen".Status.Meldecode := UINT#292;
+        IF #Foerderband_Seite = USINT#1 THEN
+            #Gabel_Rechts_Aus := TRUE;
+            IF #Gabel_Rechts_Ausgefahren THEN
+                #State := 195;
+            END_IF;
+        ELSE
+            #Gabel_Links_Aus := TRUE;
+            IF #Gabel_Links_Ausgefahren THEN
+                #State := 195;
+            END_IF;
+        END_IF;
+
+    195:
+        "gldb_Meldungen".Status.Meldecode := UINT#295;
+        #Soll_X := #Ausgabe_X;
+        #Soll_Z := #Ausgabe_Z;
+        #Fahre_Zu_Position := TRUE;
+        IF #Position_Erreicht THEN
+            #State := 200;
+        END_IF;
+
+    200:
+        "gldb_Meldungen".Status.Meldecode := UINT#300;
+        #Palette_Ablegen := TRUE;
+        IF #Palette_Abgelegt THEN
+            #State := 202;
+        END_IF;
+
+    202:
+        "gldb_Meldungen".Status.Meldecode := UINT#302;
+        #Gabel_Einfahren := TRUE;
+        IF #Gabel_Eingefahren THEN
+            #State := 300;
+        END_IF;
+
+    300:
+        "gldb_Meldungen".Status.Meldecode := UINT#400;
+        #Soll_X := #Home_X;
+        #Soll_Z := #Home_Z;
+        IF NOT #Gabel_Eingefahren THEN
+            #Gabel_Einfahren := TRUE;
+        ELSE
+            #Fahre_Zu_Position := TRUE;
+            IF #Position_Erreicht THEN
+                #State := 310;
+            END_IF;
+        END_IF;
+
+    310:
+        #Busy := FALSE;
+        #Done := TRUE;
+        #Gabel_Einfahren := TRUE;
+
+        IF #Mode_Einlagern THEN
+            "gldb_Meldungen".Status.Meldecode := UINT#500;
+            "gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#1;
+        ELSE
+            "gldb_Meldungen".Status.Meldecode := UINT#502;
+            "gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#4;
+        END_IF;
+
+        #Mode_Einlagern := FALSE;
+        #Mode_Auslagern := FALSE;
+        #Startquelle_Auto := FALSE;
+        #Startquelle_HMI := FALSE;
+        #State := 0;
+
+    900:
+        #Busy := FALSE;
+        #Done := FALSE;
+        #Error := TRUE;
+        #Gabel_Einfahren := TRUE;
+
+    ELSE
+        #State := 900;
+        #Error := TRUE;
+        "gldb_Meldungen".Status.Meldecode := UINT#999;
+        "gldb_Meldungen".Fehler.Fehlercode := UINT#999;
+        "gldb_Meldungen".Fehler.Fehler_Aktiv := TRUE;
+
+END_CASE;
+
+#State_Out := #State;
+#Ziel_Fachnummer_Out := #Ziel_Fachnummer;

@@ -4,17 +4,18 @@
 
 **Dokumentation:** [`docs/README.md`](docs/README.md)
 
-## Factory-Repos
+## Factory — alles in diesem Projekt
 
 | Zone | Subsystem | Code |
 |---|---|---|
 | 3 | Pick & Place | `scl/PickPlace_DigitalAnalog.scl` |
-| 4 | Palettierer | `scl/FB_Palletizer.scl` + Tags/UDT |
-| 5 | Hochregallager | Repo [`Hochregallager-SCL`](../Hochregallager-SCL) |
+| 4 | Palettierer | `scl/FB_Palletizer.scl` (+ OB1-Aufruf) |
+| 5 | **Hochregallager** | `scl/Hochregallager/*.scl` |
 
 ## Schnellzugriff
 
 - [Projektgrundlagen / Freigabe](docs/01_Projektgrundlagen/)
-- [Palettierer-Doku](docs/04_Subsysteme/Palettierer/)
-- [HMI Palettierer](docs/04_Subsysteme/Palettierer/HMI_Organisation.md)
-- [Sicherheit (Stubs)](docs/02_Sicherheit/)
+- [**HMI Gesamtanlage (1 TP)**](docs/03_Technik/HMI_Gesamtanlage.md)
+- [Palettierer](docs/04_Subsysteme/Palettierer/)
+- [Hochregallager](docs/04_Subsysteme/Hochregallager/)
+- [Pick & Place](docs/04_Subsysteme/PickPlace_2Axis/)

@@ -10,8 +10,8 @@ Dieser Abschnitt definiert, was zur Maschine (Factory-Gesamtanlage) gehört und 
 - Fördertechnik — geplant / szenenabhängig
 - RFID-Stationen — geplant
 - Palettierer — Repo `PickPlace-2Axis-SCL`
-- Hochregallager inkl. Lagerverwaltung — Repo `Hochregallager-SCL`
-- HMI (Touch Panel)
+- Hochregallager inkl. Lagerverwaltung — `scl/Hochregallager/`
+- HMI (Touch Panel) — **ein** Panel für Hochregal, Pick & Place, Palettierer, CNC und Förderbänder
 - SPS (TIA Portal V20)
 - Schaltschrank (konzeptionell / dokumentiert)
 - Sicherheitssteuerung / Sicherheitskreise (konzeptionell nach EN ISO 12100 / ISO 13849)

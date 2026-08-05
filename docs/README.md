@@ -13,20 +13,23 @@
 |---|---|---|
 | **1** | [01_Projektgrundlagen](01_Projektgrundlagen/) | Freigabe, Organisation, Maschinengrenzen, Verwendung |
 | **2** | [02_Sicherheit](02_Sicherheit/) | EN ISO 12100 / 13849 (Phasen 4–11) |
-| **3** | [03_Technik](03_Technik/) | SPS, HMI-TP, Netzwerk, E/A (gesamt) |
-| **4** | [04_Subsysteme](04_Subsysteme/) | Pick & Place · Palettierer · Hochregallager |
+| **3** | [03_Technik](03_Technik/) | SPS, **ein Gesamt-HMI (TP)**, Netzwerk, E/A |
+| **4** | [04_Subsysteme](04_Subsysteme/) | Pick & Place · Palettierer · Hochregallager · (CNC/Förder folgen) |
 | **5** | [05_CE_Dokumentation](05_CE_Dokumentation/) | CE-Paket (später) |
 
 ---
 
-## Factory (Subsysteme / Repos)
+## Factory (Subsysteme)
 
-| Zone | Subsystem | Repo | Doku |
+| Zone | Subsystem | Code in diesem Repo | Doku |
 |---|---|---|---|
-| 3 | Two-Axis Pick & Place | dieses Repo | [04_Subsysteme/PickPlace_2Axis](04_Subsysteme/PickPlace_2Axis/) |
-| 4 | Palettierer | dieses Repo | [04_Subsysteme/Palettierer](04_Subsysteme/Palettierer/) |
-| 5 | Hochregallager | `Hochregallager-SCL` | [04_Subsysteme/Hochregallager](04_Subsysteme/Hochregallager/) |
-| 1–2 | Bearbeitung Metall/Kunststoff | *folgt* | — |
+| 3 | Two-Axis Pick & Place | `scl/PickPlace_DigitalAnalog.scl` | [PickPlace_2Axis](04_Subsysteme/PickPlace_2Axis/) |
+| 4 | Palettierer (FB) | `scl/FB_Palletizer.scl` | [Palettierer](04_Subsysteme/Palettierer/) |
+| 5 | Hochregallager (FBs) | `scl/Hochregallager/` | [Hochregallager](04_Subsysteme/Hochregallager/) |
+| — | CNC-Workstations | *folgt* | — |
+| — | Förderbänder (Verbindung) | *folgt* | — |
+
+**HMI:** **ein** Touch Panel für die gesamte Factory → [HMI_Gesamtanlage.md](03_Technik/HMI_Gesamtanlage.md)
 
 **Nicht im Scope:** Wasserverbrauch / Wasserwirtschaft.
 
@@ -45,9 +48,12 @@ flowchart LR
 | Erledigt | Offen (nächste Lieferungen) |
 |---|---|
 | Freigabe + Projektgrundlagen | Lastenheft / Pflichtenheft |
-| Palettierer SCL + HMI | Anlagenübersicht / Materialfluss |
+| Palettierer SCL + HMI + OB1 | Anlagenübersicht / Materialfluss |
 | Pick & Place FB | RFID-Konzept |
-| Hochregallager (Schwester-Repo) | Sicherheit Phase 4–11 ausfüllen |
-| Doku-Gerüst | Gesamt-HMI, E/A-Liste, CE |
+| **Hochregallager** in `scl/Hochregallager/` | CNC + Förderbänder |
+| Doku-Gerüst | **Gesamt-HMI** (ein TP), E/A-Liste, CE |
 
-**Arbeitsweise:** Du lieferst das nächste Dokument oder den nächsten Code → wir ordnen es hier ein und arbeiten weiter.
+**Arbeitsweise:** Maschinen-FBs einzeln fertigstellen → Screens am **einen** TP anbinden → Übersicht/Zentral-Stop.
+
+**HMI-Konzept:** [03_Technik/HMI_Gesamtanlage.md](03_Technik/HMI_Gesamtanlage.md)  
+**Palettierer jetzt:** [Test & Inbetriebnahme](04_Subsysteme/Palettierer/Test_und_Inbetriebnahme.md)

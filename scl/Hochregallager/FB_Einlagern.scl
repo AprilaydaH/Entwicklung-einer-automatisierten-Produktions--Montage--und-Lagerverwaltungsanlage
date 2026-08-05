@@ -1,0 +1,88 @@
+// ============================================================================
+// Bausteinname : FB_Einlagern
+// Version      : V1.3
+// INTERFACE:
+//   IN  Execute : Bool
+//   OUT Done, Error : Bool; Info_Code : UInt; Fachnummer : USInt
+//   TEMP iFach : Int; RetValTime : Int
+// ============================================================================
+
+#Done := FALSE;
+#Error := FALSE;
+#Info_Code := UINT#0;
+#Fachnummer := USINT#0;
+
+IF NOT #Execute THEN
+    RETURN;
+END_IF;
+
+"gldb_AktuellerFach_HMI".Meldung.Funktion_Meldung_Ok := FALSE;
+"gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#0;
+
+#iFach := USINT_TO_INT("gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Fachnummer);
+
+IF (#iFach < 1) OR (#iFach > 54) THEN
+    #iFach := UINT_TO_INT("gldb_AktuellerFach_HMI".Auswahl.Ausgewaeltes_Fach);
+END_IF;
+
+IF (#iFach < 1) OR (#iFach > 54) THEN
+    #Error := TRUE;
+    #Info_Code := UINT#3;
+    "gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#3;
+    RETURN;
+END_IF;
+
+IF "gldb_LagerverwaltungData".Fach[#iFach].Gesperrt THEN
+    #Error := TRUE;
+    #Info_Code := UINT#15;
+    "gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#15;
+    RETURN;
+END_IF;
+
+IF "gldb_LagerverwaltungData".Fach[#iFach].Belegt THEN
+    #Error := TRUE;
+    #Info_Code := UINT#2;
+    "gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#2;
+    RETURN;
+END_IF;
+
+IF "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.RFID_CODE = UDINT#0 THEN
+    #Error := TRUE;
+    #Info_Code := UINT#7;
+    "gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#7;
+    RETURN;
+END_IF;
+
+"gldb_LagerverwaltungData".Fach[#iFach].Fachnummer := INT_TO_USINT(#iFach);
+"gldb_LagerverwaltungData".Fach[#iFach].Artikelnummer :=
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Artikelnummer;
+"gldb_LagerverwaltungData".Fach[#iFach].Materialart :=
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Materialart;
+"gldb_LagerverwaltungData".Fach[#iFach].ProductTyp :=
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.ProductTyp;
+"gldb_LagerverwaltungData".Fach[#iFach].Kennzeichnung :=
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Kennzeichnung;
+"gldb_LagerverwaltungData".Fach[#iFach]."Datum eingelagert" :=
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell."Datum eingelagert";
+"gldb_LagerverwaltungData".Fach[#iFach].RFID_CODE :=
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.RFID_CODE;
+"gldb_LagerverwaltungData".Fach[#iFach].Inf_Text :=
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Inf_Text;
+
+#RetValTime := RD_LOC_T(
+    OUT => "gldb_LagerverwaltungData".Fach[#iFach].Datum_Ziffer
+);
+
+"gldb_LagerverwaltungData".Fach[#iFach].Belegt := TRUE;
+
+"gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Fachnummer := INT_TO_USINT(#iFach);
+"gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Belegt := TRUE;
+"gldb_AktuellerFach_HMI".Auswahl.Ausgewaeltes_Fach := INT_TO_UINT(#iFach);
+
+"gldb_LagerverwaltungData".Ziel_Fachnummer := #iFach;
+
+#Fachnummer := INT_TO_USINT(#iFach);
+#Done := TRUE;
+#Info_Code := UINT#1;
+"gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#1;
+"gldb_AktuellerFach_HMI".Meldung.Funktion_Meldung_Ok := TRUE;

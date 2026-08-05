@@ -1,0 +1,88 @@
+//Author: Dereje Hailemariam
+//Datum: 05.08.2026
+//Beschreibung: OB1 — nur Aufruf der FB-Instanz "FB_Palletizer_DB"
+//              Gesamte Palettierer-Logik liegt im FB "FB_Palletizer".
+//============================================================================
+
+ORGANIZATION_BLOCK "OB1_Main"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 1.0
+
+BEGIN
+    "FB_Palletizer_DB"(
+        // --- HMI commands ---
+        HMI_Start                   := "HMI_Start",
+        HMI_Stop                    := "HMI_Stop",
+        HMI_Reset                   := "HMI_Reset",
+        HMI_Auto                    := "HMI_Auto",
+        HMI_SingleCycle             := "HMI_SingleCycle",
+
+        // --- Manual jog ---
+        Man_Emit_Stackable_Box      := "Man_Emit_Stackable_Box",
+        Man_Roller_Conveyor         := "Man_Roller_Conveyor",
+        Man_Push                    := "Man_Push",
+        Man_Turn                    := "Man_Turn",
+        Man_Clamp                   := "Man_Clamp",
+        Man_Belt_Fwd                := "Man_Belt_Fwd",
+        Man_Belt_Rev                := "Man_Belt_Rev",
+        Man_Chain_Fwd               := "Man_Chain_Fwd",
+        Man_Chain_Rev               := "Man_Chain_Rev",
+        Man_Open_Plate              := "Man_Open_Plate",
+        Man_Elevator_Up             := "Man_Elevator_Up",
+        Man_Elevator_Down           := "Man_Elevator_Down",
+        Man_Move_To_Limit           := "Man_Move_To_Limit",
+        Man_Warning_Light           := "Man_Warning_Light",
+
+        // --- Sensors ---
+        Stackable_Box_Present       := "Stackable_Box_Present",
+        Stackable_Box_At_Palletizer := "Stackable_Box_At_Palletizer",
+        Assembled_Part_Present      := "Assembled_Part_Present",
+        Clamped                     := "Clamped",
+        Plate_Limit                 := "Plate_Limit",
+        Pusher_Limit                := "Pusher_Limit",
+        Elevator_Moving             := "Elevator_Moving",
+        Elev_Back_Limit             := "Elev_Back_Limit",
+        Elev_Front_Limit            := "Elev_Front_Limit",
+
+        // --- Recipe ---
+        Belt_Run_Time               := "Belt_Run_Time",
+        Plate_Open_Time             := "Plate_Open_Time",
+        Unload_Time                 := "Unload_Time",
+        Assemblies_Per_Layer        := "Assemblies_Per_Layer",
+
+        // --- Actuators ---
+        Warning_Light               => "Warning_Light",
+        Emit_Stackable_Box          => "Emit_Stackable_Box",
+        Roller_Conveyor             => "Roller_Conveyor",
+        Push                        => "Push",
+        Turn                        => "Turn",
+        Clamp                       => "Clamp",
+        Belt_Fwd                    => "Belt_Fwd",
+        Belt_Rev                    => "Belt_Rev",
+        Chain_Fwd                   => "Chain_Fwd",
+        Chain_Rev                   => "Chain_Rev",
+        Open_Plate                  => "Open_Plate",
+        Elevator_Up                 => "Elevator_Up",
+        Elevator_Down               => "Elevator_Down",
+        Move_To_Limit               => "Move_To_Limit",
+
+        // --- Status ---
+        Stackable_Box_Ready         => "Stackable_Box_Ready",
+        Loading_Box_Active          => "Loading_Box_Active",
+        Busy                        => "Busy",
+        Done                        => "Done",
+        State                       => "State",
+        Assembly_Count              => "Assembly_Count",
+
+        // --- HMI feedback ---
+        HMI_Lamp_Ready              => "HMI_Lamp_Ready",
+        HMI_Lamp_Running            => "HMI_Lamp_Running",
+        HMI_Lamp_Done               => "HMI_Lamp_Done",
+        HMI_Lamp_Stopped            => "HMI_Lamp_Stopped",
+        HMI_Lamp_Auto               => "HMI_Lamp_Auto",
+        HMI_Lamp_Manual             => "HMI_Lamp_Manual",
+        HMI_Cycle_Count             => "HMI_Cycle_Count",
+        HMI_Step_Text_ID            => "HMI_Step_Text_ID"
+    );
+
+END_ORGANIZATION_BLOCK

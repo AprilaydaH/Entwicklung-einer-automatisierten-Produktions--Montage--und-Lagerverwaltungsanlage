@@ -1,0 +1,53 @@
+// ============================================================================
+// Bausteinname : FB_Freies_Fach_Suchen
+// Version      : V1.2
+// INTERFACE:
+//   IN  Start : Bool
+//   OUT Gefunden, Lager_Voll, Fehler : Bool; Fachnummer : USInt; Fehlercode : UInt
+//   STAT R_TRIG_Start : R_TRIG
+//   TEMP i : Int
+// ============================================================================
+
+#R_TRIG_Start(CLK := #Start);
+
+IF #R_TRIG_Start.Q THEN
+
+    #Gefunden := FALSE;
+    #Lager_Voll := FALSE;
+    #Fachnummer := USINT#0;
+    #Fehler := FALSE;
+    #Fehlercode := UINT#0;
+
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Fachnummer := USINT#0;
+
+    FOR #i := 1 TO 54 DO
+        IF (NOT "gldb_LagerverwaltungData".Fach[#i].Belegt)
+            AND (NOT "gldb_LagerverwaltungData".Fach[#i].Gesperrt) THEN
+
+            #Gefunden := TRUE;
+            #Fachnummer := INT_TO_USINT(#i);
+
+            "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Fachnummer := #Fachnummer;
+            "gldb_AktuellerFach_HMI".Auswahl.Ausgewaeltes_Fach := INT_TO_UINT(#i);
+
+            "gldb_Meldungen".Status.Meldecode := UINT#120;
+            "gldb_Meldungen".Fehler.Fehlercode := UINT#0;
+            "gldb_Meldungen".Fehler.Fehler_Aktiv := FALSE;
+            "gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#14;
+
+            RETURN;
+        END_IF;
+    END_FOR;
+
+    #Lager_Voll := TRUE;
+    #Fehler := TRUE;
+    #Fehlercode := UINT#912;
+
+    "gldb_LagerverwaltungData".Lager_Voll := TRUE;
+
+    "gldb_Meldungen".Status.Meldecode := UINT#912;
+    "gldb_Meldungen".Fehler.Fehlercode := UINT#912;
+    "gldb_Meldungen".Fehler.Fehler_Aktiv := TRUE;
+    "gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#10;
+
+END_IF;

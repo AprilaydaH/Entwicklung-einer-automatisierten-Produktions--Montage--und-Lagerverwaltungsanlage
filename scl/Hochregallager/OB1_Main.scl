@@ -1,0 +1,137 @@
+// ============================================================================
+// Main [OB1] — Hochregallager V1.3
+// Datei: scl/OB1_Main.scl
+//
+// In TIA: Main als SCL anlegen, TEMP-Variablen unten anlegen,
+// Instanz-DBs / Multiinstanzen verdrahten.
+// ============================================================================
+//
+// TEMP in OB1 anlegen:
+//   Mode_Auto, Mode_Hand, Mode_Einricht : Bool
+//   Fahre, Aufnehmen, Ablegen, GabelR, GabelL, GabelMitte, RFID_Cmd : Bool
+//
+// Instanz-DBs (Namen anpassen):
+//   fb_Datenverwaltung_Lager_DB : FB_Datenverwaltung_Lager
+//   instLoeschen                : FB_Loeschen
+//   instSuchen_HMI              : FB_Suchen
+//   instFreiesFach_HMI          : FB_Freies_Fach_Suchen
+//   instAutomatik               : Hochregal_Automatik_Betrieb
+//   instMeldung                 : FB_Meldung
+// ============================================================================
+
+// =====================================================
+// 0) Modi (Priorität: Einricht > Auto > Hand)
+//    HMI-Tags: Mode_Einricht, Mode_Auto, Mode_Hand
+// =====================================================
+#Mode_Einricht := "Mode_Einricht";
+#Mode_Auto := "Mode_Auto" AND NOT #Mode_Einricht;
+#Mode_Hand := "Mode_Hand" AND NOT #Mode_Einricht AND NOT #Mode_Auto;
+
+// =====================================================
+// 1) Datenverwaltung — immer zyklisch
+// =====================================================
+"fb_Datenverwaltung_Lager_DB"(
+    Initialisieren := "HMI_Initialisieren",
+    Reset_Meldung := "HMI_Reset_Meldung",
+    Position_Speichern := "HMI_Pos_Speichern",
+    HMI_Fachnummer := "HMI_Fachnummer",
+    Einricht_Mode := #Mode_Einricht,
+    Ist_X := "Ist_X",
+    Ist_Z := "Ist_Z"
+);
+
+// =====================================================
+// 2) HMI Datenfunktionen (ohne Mechanik)
+// =====================================================
+
+// Löschen: Button halten/setzen → Execute eine Flanke reicht;
+// besser: Button als Impuls oder selbst R_TRIG in OB1
+"instLoeschen"(Execute := "HMI_Loeschen" AND (#Mode_Hand OR #Mode_Einricht));
+
+// Suche: bei TRUE einmal pro Zyklus — Button nur kurz oder Flanke verwenden
+IF "HMI_Suchen" THEN
+    "instSuchen_HMI"();
+END_IF;
+
+"instFreiesFach_HMI"(Start := "HMI_FreiesFach");
+
+// =====================================================
+// 3) Automatik
+//    WICHTIG: Sensor-/Aktor-Mapping an Factory I/O anpassen!
+//    Unten: Beispiel mit gldb_FactoryIO_IO (strukturiert).
+//    Falls DB noch flach ist: FI_* / FO_* Namen verwenden.
+// =====================================================
+"instAutomatik"(
+    Auto_Mode := #Mode_Auto,
+    Hand_Mode := #Mode_Hand,
+    Einricht_Mode := #Mode_Einricht,
+    Not_Aus := "gldb_FactoryIO_IO".Input.NotAus,
+
+    HMI_Start_Einlagern := "HMI_Start_Einlagern",
+    HMI_Start_Auslagern := "HMI_Start_Auslagern",
+    Reset := "HMI_Reset",
+    Stop := "HMI_Stop",
+
+    Paket_Vor_Regal := "gldb_FactoryIO_IO".Input.Paket_Anwesend,
+    RFID_Bereit := TRUE,
+    RFID_Gueltig := "gldb_FactoryIO_IO".Input.RFID_Gelesen,
+    RFID_Fehler := FALSE,
+    RFID_Artikelnummer := UINT#0,
+    RFID_Materialart := USINT#0,
+    RFID_ProduktTyp := UINT#0,
+    RFID_Code := INT_TO_UDINT("gldb_FactoryIO_IO".Input.RFID_ID),
+
+    Palette_Aufgenommen := "Palette_Aufgenommen",   // PLC-Tag / Factory
+    Palette_Abgelegt := "Palette_Abgelegt",
+    Position_Erreicht := "gldb_FactoryIO_IO".Input.Ziel_Erreicht,
+    Gabel_Rechts_Ausgefahren := "Gabel_Rechts_Ausgefahren",
+    Gabel_Links_Ausgefahren := "Gabel_Links_Ausgefahren",
+    Gabel_Eingefahren := "Gabel_Eingefahren",
+
+    Home_X := "Home_X",
+    Home_Z := "Home_Z",
+    Ausgabe_X := "Ausgabe_X",
+    Ausgabe_Z := "Ausgabe_Z",
+
+    Offset_Z := 0.01,
+    Foerderband_Seite := USINT#1,
+
+    Busy => #unused_Busy,           // optional: an HMI
+    Done => #unused_Done,
+    Error => #unused_Error,
+    State_Out => "HMI_State",
+    Ziel_Fachnummer_Out => "HMI_Ziel_Fach",
+
+    Fahre_Zu_Position => #Fahre,
+    Soll_X => "gldb_FactoryIO_IO".Output.Ziel_X,
+    Soll_Z => "gldb_FactoryIO_IO".Output.Ziel_Z,
+    Palette_Aufnehmen => #Aufnehmen,
+    Palette_Ablegen => #Ablegen,
+    Gabel_Rechts_Aus => #GabelR,
+    Gabel_Links_Aus => #GabelL,
+    Gabel_Einfahren => #GabelMitte,
+    RFID_Lesen => #RFID_Cmd
+);
+
+// Aktoren → Factory I/O
+"gldb_FactoryIO_IO".Output.Fahre_Ziel := #Fahre;
+"gldb_FactoryIO_IO".Mode.Automatik_Betrieb := #Mode_Auto;
+"gldb_FactoryIO_IO".Output.Einlagern_Aktiv := #Mode_Auto OR (#Mode_Hand AND "HMI_Start_Einlagern");
+"gldb_FactoryIO_IO".Output.Auslagern_Aktiv := #Mode_Hand AND "HMI_Start_Auslagern";
+
+// Gabel / Palette: eigene Tags oder FO_* ergänzen
+"Gabel_Rechts_Cmd" := #GabelR;
+"Gabel_Links_Cmd" := #GabelL;
+"Gabel_Mitte_Cmd" := #GabelMitte;
+"Palette_Aufnehmen_Cmd" := #Aufnehmen;
+"Palette_Ablegen_Cmd" := #Ablegen;
+"RFID_Lesen_Cmd" := #RFID_Cmd;
+
+// =====================================================
+// 4) Meldung — IMMER zuletzt
+// =====================================================
+"instMeldung"();
+
+// Hinweis:
+// FB_Lagerstatus NICHT extra in OB1, wenn Datenverwaltung schon zählt.
+// Text-Zeile: entweder Datenverwaltung erweitern ODER hier "instLagerstatus"() aufrufen.

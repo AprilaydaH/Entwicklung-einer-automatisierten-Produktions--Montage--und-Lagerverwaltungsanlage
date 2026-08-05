@@ -1,0 +1,115 @@
+// ============================================================================
+// Bausteinname : FB_Datenverwaltung_Lager
+// Version      : V1.2
+// Beschreibung : Fachnummern, HMI-Sync, Lagerstatus, Einricht-Positionen
+//                Pfade: gldb_AktuellerFach_HMI.{Auswahl|Lagerstatus|Meldung}
+//                       gldb_Meldungen.{Status|Fehler}
+// ============================================================================
+
+#R_TRIG_Initialisieren(CLK := #Initialisieren);
+#R_TRIG_Reset_Meldung(CLK := #Reset_Meldung);
+#R_TRIG_Pos_Speichern(CLK := #Position_Speichern);
+
+#Fertig := FALSE;
+#Fehler := FALSE;
+#Fehlercode := UINT#0;
+#HMI_Fach_Gueltig := FALSE;
+#HMI_Fach_Belegt := FALSE;
+
+IF #R_TRIG_Reset_Meldung.Q THEN
+    "gldb_AktuellerFach_HMI".Meldung.Funktion_Meldung_Ok := FALSE;
+    "gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#0;
+    "gldb_AktuellerFach_HMI".Meldung.Info_Text := '';
+    "gldb_Meldungen".Status.Meldung := '';
+    "gldb_Meldungen".Fehler.Fehler_Aktiv := FALSE;
+END_IF;
+
+IF NOT #Init_done THEN
+    FOR #i := 1 TO 54 DO
+        "gldb_LagerverwaltungData".Fach[#i].Fachnummer := INT_TO_USINT(#i);
+    END_FOR;
+    #Init_done := TRUE;
+    #Fertig := TRUE;
+    "gldb_Meldungen".Status.Meldung := 'Lagerverwaltung initialisiert';
+END_IF;
+
+IF #R_TRIG_Initialisieren.Q THEN
+    FOR #i := 1 TO 54 DO
+        "gldb_LagerverwaltungData".Fach[#i].Fachnummer := INT_TO_USINT(#i);
+    END_FOR;
+    #Fertig := TRUE;
+    "gldb_Meldungen".Status.Meldung := 'Fachnummern neu initialisiert';
+END_IF;
+
+#iFach := UINT_TO_INT(#HMI_Fachnummer);
+
+IF (#iFach >= 1) AND (#iFach <= 54) THEN
+    #HMI_Fach_Gueltig := TRUE;
+    #HMI_Fach_Belegt := "gldb_LagerverwaltungData".Fach[#iFach].Belegt;
+
+    "gldb_AktuellerFach_HMI".Auswahl.Ausgewaeltes_Fach := #HMI_Fachnummer;
+
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Fachnummer :=
+        "gldb_LagerverwaltungData".Fach[#iFach].Fachnummer;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Belegt :=
+        "gldb_LagerverwaltungData".Fach[#iFach].Belegt;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Gesperrt :=
+        "gldb_LagerverwaltungData".Fach[#iFach].Gesperrt;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Artikelnummer :=
+        "gldb_LagerverwaltungData".Fach[#iFach].Artikelnummer;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Materialart :=
+        "gldb_LagerverwaltungData".Fach[#iFach].Materialart;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.ProductTyp :=
+        "gldb_LagerverwaltungData".Fach[#iFach].ProductTyp;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Kennzeichnung :=
+        "gldb_LagerverwaltungData".Fach[#iFach].Kennzeichnung;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell."Datum eingelagert" :=
+        "gldb_LagerverwaltungData".Fach[#iFach]."Datum eingelagert";
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Datum_Ziffer :=
+        "gldb_LagerverwaltungData".Fach[#iFach].Datum_Ziffer;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.RFID_CODE :=
+        "gldb_LagerverwaltungData".Fach[#iFach].RFID_CODE;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Position_X :=
+        "gldb_LagerverwaltungData".Fach[#iFach].Position_X;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Position_Z :=
+        "gldb_LagerverwaltungData".Fach[#iFach].Position_Z;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.RegalSeite :=
+        "gldb_LagerverwaltungData".Fach[#iFach].RegalSeite;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Inf_Text :=
+        "gldb_LagerverwaltungData".Fach[#iFach].Inf_Text;
+ELSE
+    IF #HMI_Fachnummer <> UINT#0 THEN
+        #Fehler := TRUE;
+        #Fehlercode := UINT#101;
+        "gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#3;
+    END_IF;
+END_IF;
+
+IF #R_TRIG_Pos_Speichern.Q THEN
+    IF #Einricht_Mode AND #HMI_Fach_Gueltig THEN
+        "gldb_LagerverwaltungData".Fach[#iFach].Position_X := #Ist_X;
+        "gldb_LagerverwaltungData".Fach[#iFach].Position_Z := #Ist_Z;
+        "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Position_X := #Ist_X;
+        "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Position_Z := #Ist_Z;
+        "gldb_AktuellerFach_HMI".Meldung.Funktion_Meldung_Ok := TRUE;
+        "gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#16;
+    ELSE
+        #Fehler := TRUE;
+        #Fehlercode := UINT#102;
+    END_IF;
+END_IF;
+
+#Anzahl_Belegt := UINT#0;
+
+FOR #i := 1 TO 54 DO
+    IF "gldb_LagerverwaltungData".Fach[#i].Belegt THEN
+        #Anzahl_Belegt := #Anzahl_Belegt + UINT#1;
+    END_IF;
+END_FOR;
+
+#Anzahl_Frei := UINT#54 - #Anzahl_Belegt;
+
+"gldb_AktuellerFach_HMI".Lagerstatus.Anzahl_Belegt := #Anzahl_Belegt;
+"gldb_AktuellerFach_HMI".Lagerstatus.Anzahl_Frei := #Anzahl_Frei;
+"gldb_LagerverwaltungData".Lager_Voll := (#Anzahl_Frei = UINT#0);
+"gldb_LagerverwaltungData".Lager_Leer := (#Anzahl_Belegt = UINT#0);

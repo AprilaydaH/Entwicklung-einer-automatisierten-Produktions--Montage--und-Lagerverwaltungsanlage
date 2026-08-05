@@ -1,0 +1,98 @@
+// ============================================================================
+// Bausteinname : FB_Suchen
+// Version      : V1.5
+// TEMP: Gefunden, Such_RFID, Such_Artikel, Such_Fach, iLaufvar,
+//       sFachnummer, sArtikelnummer, sRFID
+// ============================================================================
+
+#Gefunden := FALSE;
+"gldb_AktuellerFach_HMI".Meldung.Funktion_Meldung_Ok := FALSE;
+"gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#0;
+
+#Such_RFID := "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.RFID_CODE;
+#Such_Artikel := "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Artikelnummer;
+#Such_Fach := "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Fachnummer;
+
+IF #Such_RFID <> UDINT#0 THEN
+    FOR #iLaufvar := 1 TO 54 DO
+        IF "gldb_LagerverwaltungData".Fach[#iLaufvar].RFID_CODE = #Such_RFID THEN
+            #Gefunden := TRUE;
+            EXIT;
+        END_IF;
+    END_FOR;
+
+ELSIF #Such_Artikel <> UINT#0 THEN
+    FOR #iLaufvar := 1 TO 54 DO
+        IF "gldb_LagerverwaltungData".Fach[#iLaufvar].Artikelnummer = #Such_Artikel THEN
+            #Gefunden := TRUE;
+            EXIT;
+        END_IF;
+    END_FOR;
+
+ELSIF (#Such_Fach >= USINT#1) AND (#Such_Fach <= USINT#54) THEN
+    #iLaufvar := USINT_TO_INT(#Such_Fach);
+    #Gefunden := TRUE;
+END_IF;
+
+IF #Gefunden THEN
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Fachnummer :=
+        "gldb_LagerverwaltungData".Fach[#iLaufvar].Fachnummer;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Materialart :=
+        "gldb_LagerverwaltungData".Fach[#iLaufvar].Materialart;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Artikelnummer :=
+        "gldb_LagerverwaltungData".Fach[#iLaufvar].Artikelnummer;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.ProductTyp :=
+        "gldb_LagerverwaltungData".Fach[#iLaufvar].ProductTyp;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Kennzeichnung :=
+        "gldb_LagerverwaltungData".Fach[#iLaufvar].Kennzeichnung;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell."Datum eingelagert" :=
+        "gldb_LagerverwaltungData".Fach[#iLaufvar]."Datum eingelagert";
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Datum_Ziffer :=
+        "gldb_LagerverwaltungData".Fach[#iLaufvar].Datum_Ziffer;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.RFID_CODE :=
+        "gldb_LagerverwaltungData".Fach[#iLaufvar].RFID_CODE;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Belegt :=
+        "gldb_LagerverwaltungData".Fach[#iLaufvar].Belegt;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Gesperrt :=
+        "gldb_LagerverwaltungData".Fach[#iLaufvar].Gesperrt;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Position_X :=
+        "gldb_LagerverwaltungData".Fach[#iLaufvar].Position_X;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Position_Z :=
+        "gldb_LagerverwaltungData".Fach[#iLaufvar].Position_Z;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.RegalSeite :=
+        "gldb_LagerverwaltungData".Fach[#iLaufvar].RegalSeite;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Inf_Text :=
+        "gldb_LagerverwaltungData".Fach[#iLaufvar].Inf_Text;
+
+    "gldb_AktuellerFach_HMI".Auswahl.Ausgewaeltes_Fach := INT_TO_UINT(#iLaufvar);
+    "gldb_AktuellerFach_HMI".Lagerstatus.Anzeige_noch_Frei :=
+        NOT "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Belegt;
+
+    "gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#9;
+    "gldb_AktuellerFach_HMI".Meldung.Funktion_Meldung_Ok := TRUE;
+
+    #sFachnummer := USINT_TO_STRING(
+        "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Fachnummer);
+    #sArtikelnummer := UINT_TO_STRING(
+        "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Artikelnummer);
+    #sRFID := UDINT_TO_STRING(
+        "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.RFID_CODE);
+
+    "gldb_AktuellerFach_HMI".Meldung.Info_Text := CONCAT(
+        IN1 := CONCAT(IN1 := 'Gefunden | Fach: ', IN2 := #sFachnummer),
+        IN2 := CONCAT(
+            IN1 := CONCAT(IN1 := ' | Artikel: ', IN2 := #sArtikelnummer),
+            IN2 := CONCAT(IN1 := ' | RFID: ', IN2 := #sRFID)
+        )
+    );
+ELSE
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Fachnummer := USINT#0;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Belegt := FALSE;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Artikelnummer := UINT#0;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.RFID_CODE := UDINT#0;
+    "gldb_AktuellerFach_HMI".Lagerstatus.Anzeige_noch_Frei := TRUE;
+
+    "gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#8;
+    "gldb_AktuellerFach_HMI".Meldung.Info_Text := 'Kein passendes Fach gefunden';
+    "gldb_AktuellerFach_HMI".Meldung.Funktion_Meldung_Ok := FALSE;
+END_IF;

@@ -1,0 +1,32 @@
+// ============================================================================
+// Bausteinname : FB_Lagerstatus
+// Version      : V1.5
+// TEMP: iLaufvar : Int; Anzahl_Belegt, Anzahl_Frei : UInt;
+//       sFrei, sBelegt : String[10]
+// ============================================================================
+
+#Anzahl_Belegt := UINT#0;
+
+FOR #iLaufvar := 1 TO 54 DO
+    IF "gldb_LagerverwaltungData".Fach[#iLaufvar].Belegt THEN
+        #Anzahl_Belegt := #Anzahl_Belegt + UINT#1;
+    END_IF;
+END_FOR;
+
+#Anzahl_Frei := UINT#54 - #Anzahl_Belegt;
+
+"gldb_AktuellerFach_HMI".Lagerstatus.Anzahl_Belegt := #Anzahl_Belegt;
+"gldb_AktuellerFach_HMI".Lagerstatus.Anzahl_Frei := #Anzahl_Frei;
+"gldb_LagerverwaltungData".Lager_Voll := (#Anzahl_Frei = UINT#0);
+"gldb_LagerverwaltungData".Lager_Leer := (#Anzahl_Belegt = UINT#0);
+
+#sFrei := UINT_TO_STRING(#Anzahl_Frei);
+#sBelegt := UINT_TO_STRING(#Anzahl_Belegt);
+
+"gldb_AktuellerFach_HMI".Lagerstatus.Lagerstatus_Text := CONCAT(
+    IN1 := CONCAT(IN1 := 'Frei: ', IN2 := #sFrei),
+    IN2 := CONCAT(
+        IN1 := CONCAT(IN1 := ' | Belegt: ', IN2 := #sBelegt),
+        IN2 := ' | Gesamt: 54'
+    )
+);

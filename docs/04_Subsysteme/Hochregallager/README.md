@@ -1,33 +1,45 @@
 # Subsystem — Hochregallager (Zone 5)
 
+**Maschinenlogik:** Function Blocks unter `scl/Hochregallager/`  
 **Sicherheitszone:** 5 — Hochregallager  
-**Repository:** [`Hochregallager-SCL`](../../../../Hochregallager-SCL) (Schwester-Repo unter `Projects/`)  
+**Teil dieses Abschlussprojekts** (nicht externes Nebenprojekt)  
 **Factory-Rolle:** Einlagern, Auslagern, Fachverwaltung, Suche (RFID / Artikel / Fach)
 
-## Code (im Repo `Hochregallager-SCL`)
+## Code (`scl/Hochregallager/`)
 
-| Baustein / Datei | Funktion |
+| Datei | Baustein |
 |---|---|
-| `UDT_Fach` | Fach-Datentyp |
-| `FB_Einlagern` / `FB_Auslagern` / `FB_Loeschen` | Buchungen |
-| `FB_Suchen` / `FB_Freies_Fach_Suchen` | Suche |
-| `FB_Datenverwaltung_Lager` / `FB_Lagerstatus` / `FB_Meldung` | Verwaltung / Status |
-| `Hochregal_Automatik_Betrieb` | Automatik inkl. Offset_Z |
+| `UDT_Fach.udt.txt` | Fach-Datentyp |
+| `FB_Einlagern.scl` | Fach einbuchen |
+| `FB_Auslagern.scl` | Fach ausbuchen |
+| `FB_Loeschen.scl` | Datensatz löschen |
+| `FB_Datenverwaltung_Lager.scl` | Init, HMI-Sync, Status |
+| `FB_Freies_Fach_Suchen.scl` | Erstes freies Fach |
+| `FB_Lagerstatus.scl` | Zählen + Status-Text |
+| `FB_Meldung.scl` | Info_Code → Info_Text |
+| `FB_Suchen.scl` | Suche RFID / Artikel / Fach |
+| `Hochregal_Automatik_Betrieb.scl` | Automatik + Offset_Z |
+| `OB1_Main.scl` | Aufrufreihenfolge der FBs |
 
-## Dokumentation (im Repo `Hochregallager-SCL`)
+## Dokumentation
 
-- `README.md`
-- `VARIABLES.md`, `INFO_CODES.md`
-- `docs/Hochregallager_Dokumentation.md` (+ PDF falls erzeugt)
+| Dokument | Inhalt |
+|---|---|
+| [Hochregallager_Dokumentation.md](Hochregallager_Dokumentation.md) | Gesamtdoku |
+| [VARIABLES.md](VARIABLES.md) | Variablen |
+| [INFO_CODES.md](INFO_CODES.md) | Melde-/Info-Codes |
+| [README_SCL.md](README_SCL.md) | Kurzüberblick Bausteine |
 
-## Schnittstellen in der Factory (konzeptionell)
+## Schnittstellen in der Factory
 
-| Von / Nach | Signal / Material |
+| Von / Nach | Material / Signal |
 |---|---|
 | ← Palettierer / Fördertechnik | einzulagernde Einheiten |
-| ← HMI | Fachauswahl, Aufträge |
-| → Produktion | Auslagerung Roh-/Fertigteile nach Auftrag |
+| ← HMI (später Gesamt-TP) | Fachauswahl, Aufträge |
+| → Produktion | Auslagerung nach Auftrag |
 
 ## Sicherheit (Zone 5) — Stub
 
-Gefahren: Regalbediengerät, Lastabsturz. Schutz: Zaun, Wartungstüren, Endschalter, sichere Positionierung (Details in `docs/02_Sicherheit/`).
+Gefahren: Regalbediengerät, Lastabsturz. Schutz: Zaun, Wartungstüren, Endschalter (Details in `docs/02_Sicherheit/`).
+
+Zurück: [04_Subsysteme](../README.md) · [docs](../../README.md)
