@@ -1,7 +1,8 @@
 //Author: Dereje Hailemariam
 //Datum: 05.08.2026
-//Beschreibung: OB1 — nur Aufruf der FB-Instanz "FB_Palletizer_DB"
+//Beschreibung: OB1 — Beispiel-Aufruf einer FB-Instanz "FB_Palletizer_DB"
 //              Gesamte Palettierer-Logik liegt im FB "FB_Palletizer".
+//              Für Zone 4A/4B: zweiten Aufruf mit eigener Instanz + eigenen Tags anlegen.
 //============================================================================
 
 ORGANIZATION_BLOCK "OB1_Main"

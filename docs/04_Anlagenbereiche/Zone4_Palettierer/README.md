@@ -10,7 +10,7 @@ Zwei Instanzen: `FB_Palletizer_4A` (Metal), `FB_Palletizer_4B` (Plastic)
 | Datei | Beschreibung |
 |---|---|
 | `FB_Palletizer.scl` | Sequenz + HMI Auto/Manual |
-| `OB1_Palletizer.scl` | Beispiel-Aufruf (Tags verdrahten je Instanz) |
+| `OB1_Palletizer.scl` | Beispiel-Aufruf (eine Instanz, für 4A/4B duplizieren) |
 | `UDT_Palletizer.scl` | optionale UDT |
 | `PLC_Tags_Palletizer.csv` / `.xlsx` | Tag-Vorlage (je Linie eigene Adressen) |
 
@@ -19,7 +19,7 @@ Zwei Instanzen: `FB_Palletizer_4A` (Metal), `FB_Palletizer_4B` (Plastic)
 | Dokument | Inhalt |
 |---|---|
 | [Palletizer_Dokumentation.md](Palletizer_Dokumentation.md) | Sequenz, I/O |
-| [HMI_Organisation.md](HMI_Organisation.md) | Zonen-Screen (Teil des Gesamt-HMI) |
+| [HMI_Organisation.md](HMI_Organisation.md) | Zonen-Screen inkl. 4A/4B Instanzkonzept |
 | [Test_und_Inbetriebnahme.md](Test_und_Inbetriebnahme.md) | Import + Tests |
 
 Zurück: [04_Anlagenbereiche](../README.md)

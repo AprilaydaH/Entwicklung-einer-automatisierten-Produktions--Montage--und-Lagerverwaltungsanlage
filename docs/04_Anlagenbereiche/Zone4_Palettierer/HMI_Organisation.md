@@ -2,7 +2,8 @@
 
 **Panel:** WinCC / Comfort Panel (or Unified)  
 **PLC FB:** `FB_Palletizer` v2.1  
-**Tag source:** `scl/PLC_Tags_Palletizer.csv` / `.xlsx`
+**Tag source:** `scl/Zone4_Palettierer/PLC_Tags_Palletizer.csv` / `.xlsx`  
+**Instanzen:** `4A_Metal` und `4B_Plastic` (jeweils eigener FB-Instanz-DB + eigene HMI-Tags)
 
 ---
 
@@ -27,6 +28,27 @@ Organize the HMI into **4 screens** + a permanent header bar.
 | **Recipe** | Times + assemblies per layer | Supervisor |
 | **Diagnostics** | Busy/Done/sensors/actuators raw | Technician |
 
+> Für Zone 4 werden diese Screens **zweimal** verwendet (4A und 4B), entweder als:
+> 1) zwei Subscreens/Popup-Container in einem Zone-4-Bild, oder  
+> 2) zwei getrennte Bilder `Zone4A_Palletizer` und `Zone4B_Palletizer`.
+
+---
+
+## 1.1 Instanzkonzept (wichtig)
+
+Für das Gesamt-HMI dürfen 4A und 4B **keine gemeinsamen M-Adressen** nutzen.  
+Verwende pro Instanz einen eigenen Tag-Präfix:
+
+- `Z4A_*` für Metal-Palettierer
+- `Z4B_*` für Plastic-Palettierer
+
+Beispiel:
+
+- `Z4A_HMI_Start`, `Z4A_HMI_Stop`, `Z4A_HMI_Auto`
+- `Z4B_HMI_Start`, `Z4B_HMI_Stop`, `Z4B_HMI_Auto`
+
+Die Objektstruktur bleibt identisch, nur Tag-Bindings unterscheiden sich je Instanz.
+
 ---
 
 ## 2. Tag groups (logical organization)
@@ -43,6 +65,11 @@ Use these groups in WinCC (folders / HMI tag tables) — same names as PLC tags.
 | **Recipe** | `Belt_Run_Time`, `Plate_Open_Time`, `Unload_Time`, `Assemblies_Per_Layer` | HMI ↔ PLC | Recipe |
 | **Sensors** | `Stackable_Box_*`, `Assembled_Part_Present`, `Clamped`, `Plate_Limit`, `Pusher_Limit`, `Elevator_*`, `Elev_*` | PLC → HMI | Manual + Diagnostics |
 | **Actuators** | `Warning_Light`, `Emit_*`, `Roller_*`, `Push`…`Move_To_Limit` | PLC → HMI (monitor) | Diagnostics |
+
+Instanzbeispiel:
+
+- 4A Cmd-Gruppe: `Z4A_HMI_Start`, `Z4A_HMI_Stop`, ...
+- 4B Cmd-Gruppe: `Z4B_HMI_Start`, `Z4B_HMI_Stop`, ...
 
 ---
 
@@ -235,6 +262,15 @@ flowchart LR
 
 ## 11. Binding checklist (WinCC → PLC)
 
+### Instanzaufteilung (empfohlen)
+
+Beispiel für nicht überlappende Adressräume:
+
+- **Zone 4A:** `%M40...`, `%MW44...`, `%MD52...`
+- **Zone 4B:** `%M80...`, `%MW84...`, `%MD92...`
+
+Alternative (besser): komplett symbolische DB-Bindung ohne feste Merkeradressen.
+
 ### Commands (write)
 
 - [ ] `HMI_Start` `%M0.0`  
@@ -255,6 +291,12 @@ flowchart LR
 ### Recipe (read/write)
 
 - [ ] `%MD20`, `%MD24`, `%MD28`, `%MW32`  
+
+Für 4A/4B je Instanz separat prüfen:
+
+- [ ] 4A: alle Cmd/Man/Lamp/Info/Recipe-Tags gebunden
+- [ ] 4B: alle Cmd/Man/Lamp/Info/Recipe-Tags gebunden
+- [ ] keine Adressüberschneidung mit Zone 3 / Hochregal / anderen Bereichen
 
 ---
 
