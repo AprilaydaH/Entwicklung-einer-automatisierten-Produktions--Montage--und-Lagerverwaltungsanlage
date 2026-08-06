@@ -19,3 +19,14 @@
 | — | Hochregallager | `scl/Hochregallager/` |
 
 **Ein HMI** für alle Maschinen: [HMI_Gesamtanlage](docs/03_Technik/HMI_Gesamtanlage.md)
+
+## Lokal auf diesem PC
+
+| Was | Pfad |
+|---|---|
+| Git-Repo (Code + Doku) | `C:\Users\derej\Projects\PickPlace-2Axis-SCL` |
+| Factory I/O Szenen (Kopie) | `simulation/FactoryIO/` |
+| TIA `.ap20` | OneDrive `...\Abschlussprojekt\Abschlussprojekt\` |
+| OneDrive organisiert | `...\Weiterbildung\Abschlussprojekt\01_Dokumente` … `04_Git_Repository_Hinweis` |
+
+Einmal synchronisieren: `.\scripts\organize-local.ps1`
