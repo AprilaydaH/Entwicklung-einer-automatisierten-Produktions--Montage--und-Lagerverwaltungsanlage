@@ -1,0 +1,15 @@
+//============================================================================
+// UDT_HMI_Lagerstatus
+//============================================================================
+
+TYPE
+    "UDT_HMI_Lagerstatus" : STRUCT
+        Anzahl_Belegt       : UInt;
+        Anzahl_Frei         : UInt;
+        Anzeige_noch_Frei   : Bool;
+        Lagerstatus_Text    : String[80];
+        Belegt              : Array[1..54] of Bool;   // HMI rack: occupied
+        Ziel                : Array[1..54] of Bool;   // HMI rack: HMI_Ziel_Fach
+        Farbe               : Array[1..54] of USInt;  // 0 frei · 1–3 Farbe · 4 metall · 5 gesperrt
+    END_STRUCT;
+END_TYPE

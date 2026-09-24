@@ -1,0 +1,9 @@
+Name;Path;Data Type;Logical Address;Comment
+HMI_Prod_Planned_PerDay;Plant_HMI;DInt;%MD320;RW — type daily target on Übersicht
+HMI_Prod_Actual_PerDay;Plant_HMI;DInt;%MD324;R — pallets stored today (W1+W2)
+HMI_Prod_Day_Stamp;Plant_HMI;DInt;%MD328;R — YYMMDD of Actual (remanent)
+HMI_Prod_Reset_Day;Plant_HMI;Bool;%M78.0;Momentary — force Actual := 0
+HMI_Prod_Actual_Metal_PerDay;Plant_HMI;DInt;%MD332;R — W2 Einlagern today
+HMI_Prod_Actual_Plastic_PerDay;Plant_HMI;DInt;%MD336;R — W1 Einlagern today
+HMI_Plant_Start;Plant_HMI;Bool;%M58.0;Momentary — Übersicht Produktion Start (see PLC_Tags_Plant_Start_Stop.csv)
+HMI_Plant_Stop;Plant_HMI;Bool;%M58.1;Momentary — Übersicht Produktion Stop

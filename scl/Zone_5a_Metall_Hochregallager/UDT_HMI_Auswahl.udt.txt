@@ -1,0 +1,10 @@
+//============================================================================
+// UDT_HMI_Auswahl — needs UDT_Fach first
+//============================================================================
+
+TYPE
+    "UDT_HMI_Auswahl" : STRUCT
+        Ausgewaeltes_Fach   : UInt;       // HMI selection 1..54
+        Fachaktuell         : "UDT_Fach"; // working / display record
+    END_STRUCT;
+END_TYPE

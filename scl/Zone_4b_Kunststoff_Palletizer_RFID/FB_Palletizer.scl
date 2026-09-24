@@ -1,0 +1,414 @@
+//============================================================================
+// Author: Dereje Hailemariam
+// Datum: 11.08.2026
+// Version: 3.0.0
+// Beschreibung: Palletizer via Factory I/O Gantry Pick & Place
+//
+// Process I/O:
+//   Gantry: X/Y/Z Set Point & Position (V), C(+), Grab, Moving-*, Box Detected, C Limit
+//   Pallet: Emit_Pallet (out), Pallet_Present (in)
+//
+// Sequence (2 assemblies per pallet):
+//    5  Emit pallet IF NOT Pallet_Present
+//   10  Go to pick XY, Z=Safe
+//   20  Z down to Pick_Z
+//   30  Grab
+//   40  Z up to Safe
+//   50  Rotate C(+) if Use_Rotate
+//   60  Move to place XY (slot 1 or 2), Z=Safe
+//   70  Z down to Place_Z
+//   80  Drop (Grab OFF)
+//   90  Z up to Safe
+//  100  Count; if < 2 → 10 else → 5 (new pallet) / Done
+//============================================================================
+
+FUNCTION_BLOCK "FB_Palletizer"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 3.1
+
+VAR_INPUT
+    HMI_Start                   : Bool;
+    HMI_Stop                    : Bool;
+    HMI_Reset                   : Bool;
+    HMI_Auto                    : Bool := TRUE;
+    HMI_SingleCycle             : Bool := FALSE;
+
+    X_Pos_V                     : Real;
+    Y_Pos_V                     : Real;
+    Z_Pos_V                     : Real;
+    Moving_Z                    : Bool;
+    Moving_XY                   : Bool;
+    Box_Detected                : Bool;
+    C_Limit                     : Bool;
+    Pallet_Present              : Bool;
+
+    Pick_X_V                    : Real := 1.1;
+    Pick_Y_V                    : Real := 6.4;
+    Pick_Z_V                    : Real := 8.4;
+    Place1_X_V                  : Real := 6.1;
+    Place1_Y_V                  : Real := 6.4;
+    Place1_Z_V                  : Real := 10.0;
+    Place2_X_V                  : Real := 7.1;
+    Place2_Y_V                  : Real := 6.4;
+    Place2_Z_V                  : Real := 10.0;
+    Safe_Z_V                    : Real := 0.0;
+    Tol_V                       : Real := 0.25;
+    Step_Delay                  : Time := T#200MS;
+    Grab_Delay                  : Time := T#500MS;
+    Drop_Delay                  : Time := T#500MS;
+    Emit_Time                   : Time := T#2S;
+    Use_Rotate                  : Bool := FALSE;
+    Assemblies_Per_Pallet       : Int  := 2;
+END_VAR
+
+VAR_OUTPUT
+    X_SetPoint_V                : Real;
+    Y_SetPoint_V                : Real;
+    Z_SetPoint_V                : Real;
+    C_Plus                      : Bool;
+    Grab                        : Bool;
+    Emit_Pallet                 : Bool;
+    Warning_Light               : Bool;
+
+    Pallet_Ready                : Bool := FALSE;
+    Loading_Pallet_Active       : Bool := FALSE;
+    Busy                        : Bool := FALSE;
+    Done                        : Bool := FALSE;
+    State                       : Int := 0;
+    Assembly_Count              : Int := 0;
+
+    HMI_Lamp_Ready              : Bool;
+    HMI_Lamp_Running            : Bool;
+    HMI_Lamp_Done               : Bool;
+    HMI_Lamp_Stopped            : Bool;
+    HMI_Lamp_Auto               : Bool;
+    HMI_Lamp_Manual             : Bool;
+    HMI_Cycle_Count             : Int;
+    HMI_Step_Text_ID            : Int;
+END_VAR
+
+VAR
+    R_Reset                     : R_TRIG;
+    Auto_Run                    : Bool := FALSE;
+    Step                        : Int := 0;
+    Step_Old                    : Int := -1;
+    TON_Step                    : TON;
+    TON_Grab                    : TON;
+    TON_Drop                    : TON;
+    TON_Emit                    : TON;
+    Cycle_Count                 : Int := 0;
+    Target_X_V                  : Real;
+    Target_Y_V                  : Real;
+    Target_Z_V                  : Real;
+END_VAR
+
+VAR_TEMP
+    Step_Changed                : Bool;
+    At_XY                       : Bool;
+    At_Z                        : Bool;
+    At_XYZ                      : Bool;
+END_VAR
+
+BEGIN
+    #R_Reset(CLK := #HMI_Reset);
+
+    //--- Stop / Reset ---
+    IF #HMI_Stop OR #R_Reset.Q THEN
+        #Auto_Run := FALSE;
+        #Step := 0;
+        #Step_Old := -1;
+        #Busy := FALSE;
+        #Done := TRUE;
+        #Loading_Pallet_Active := FALSE;
+        #Pallet_Ready := FALSE;
+        #Assembly_Count := 0;
+        IF #R_Reset.Q THEN
+            #Cycle_Count := 0;
+            #HMI_Cycle_Count := 0;
+        END_IF;
+        #Grab := FALSE;
+        #C_Plus := FALSE;
+        #Emit_Pallet := FALSE;
+        #Warning_Light := FALSE;
+        #X_SetPoint_V := 0.0;
+        #Y_SetPoint_V := 0.0;
+        #Z_SetPoint_V := #Safe_Z_V;
+        #TON_Step(IN := FALSE, PT := #Step_Delay);
+        #TON_Grab(IN := FALSE, PT := #Grab_Delay);
+        #TON_Drop(IN := FALSE, PT := #Drop_Delay);
+        #TON_Emit(IN := FALSE, PT := #Emit_Time);
+
+        #HMI_Lamp_Ready := FALSE;
+        #HMI_Lamp_Running := FALSE;
+        #HMI_Lamp_Done := #Done;
+        #HMI_Lamp_Stopped := #HMI_Stop;
+        #HMI_Lamp_Auto := #HMI_Auto;
+        #HMI_Lamp_Manual := NOT #HMI_Auto;
+        #HMI_Cycle_Count := #Cycle_Count;
+        #HMI_Step_Text_ID := 0;
+        #State := 0;
+        RETURN;
+    END_IF;
+
+    //--- Manual: no jog (no Push/Turn/Clamp/conveyor) — outputs safe ---
+    IF NOT #HMI_Auto THEN
+        #Auto_Run := FALSE;
+        #Busy := FALSE;
+        #Step := 0;
+        #Step_Old := -1;
+        #Loading_Pallet_Active := FALSE;
+        #Grab := FALSE;
+        #C_Plus := FALSE;
+        #Emit_Pallet := FALSE;
+        #Warning_Light := FALSE;
+        #X_SetPoint_V := 0.0;
+        #Y_SetPoint_V := 0.0;
+        #Z_SetPoint_V := #Safe_Z_V;
+        #HMI_Lamp_Ready := FALSE;
+        #HMI_Lamp_Running := FALSE;
+        #HMI_Lamp_Done := #Done;
+        #HMI_Lamp_Stopped := FALSE;
+        #HMI_Lamp_Auto := FALSE;
+        #HMI_Lamp_Manual := TRUE;
+        #HMI_Cycle_Count := #Cycle_Count;
+        #HMI_Step_Text_ID := 0;
+        #State := 0;
+        RETURN;
+    END_IF;
+
+    //--- Auto start ---
+    IF NOT #Auto_Run AND (#Step = 0) THEN
+        IF #Done AND NOT #HMI_Start THEN
+            #Warning_Light := TRUE;
+            #Grab := FALSE;
+            #C_Plus := FALSE;
+            #Emit_Pallet := FALSE;
+            #Busy := FALSE;
+            #Z_SetPoint_V := #Safe_Z_V;
+            #HMI_Lamp_Ready := TRUE;
+            #HMI_Lamp_Running := FALSE;
+            #HMI_Lamp_Done := TRUE;
+            #HMI_Lamp_Stopped := FALSE;
+            #HMI_Lamp_Auto := TRUE;
+            #HMI_Lamp_Manual := FALSE;
+            #HMI_Cycle_Count := #Cycle_Count;
+            #HMI_Step_Text_ID := 0;
+            #State := 0;
+            RETURN;
+        END_IF;
+
+        #Auto_Run := TRUE;
+        #Done := FALSE;
+        #Busy := TRUE;
+        #Assembly_Count := 0;
+        #Loading_Pallet_Active := FALSE;
+        #Pallet_Ready := FALSE;
+        #Step := 5; // emit if necessary
+    END_IF;
+
+    IF NOT #Auto_Run THEN
+        #State := #Step;
+        #HMI_Step_Text_ID := #Step;
+        RETURN;
+    END_IF;
+
+    #Step_Changed := (#Step <> #Step_Old);
+    IF #Step_Changed THEN
+        #Step_Old := #Step;
+        #TON_Step(IN := FALSE, PT := #Step_Delay);
+        #TON_Grab(IN := FALSE, PT := #Grab_Delay);
+        #TON_Drop(IN := FALSE, PT := #Drop_Delay);
+        #TON_Emit(IN := FALSE, PT := #Emit_Time);
+    END_IF;
+    #TON_Step(IN := TRUE, PT := #Step_Delay);
+
+    // Select pallet slot from Assembly_Count (0 → slot1, 1 → slot2)
+    IF #Assembly_Count = 0 THEN
+        #Target_X_V := #Place1_X_V;
+        #Target_Y_V := #Place1_Y_V;
+        #Target_Z_V := #Place1_Z_V;
+    ELSE
+        #Target_X_V := #Place2_X_V;
+        #Target_Y_V := #Place2_Y_V;
+        #Target_Z_V := #Place2_Z_V;
+    END_IF;
+
+    #At_XY := (ABS(#X_Pos_V - #X_SetPoint_V) <= #Tol_V)
+          AND (ABS(#Y_Pos_V - #Y_SetPoint_V) <= #Tol_V)
+          AND (NOT #Moving_XY);
+    #At_Z := (ABS(#Z_Pos_V - #Z_SetPoint_V) <= #Tol_V) AND (NOT #Moving_Z);
+    #At_XYZ := #At_XY AND #At_Z;
+
+    #Busy := TRUE;
+    #Warning_Light := TRUE;
+    #C_Plus := FALSE;
+    #Emit_Pallet := FALSE; // default OFF; step 5 turns on when needed
+
+    CASE #Step OF
+
+        // 5: Emit pallet only if not already present
+        5:
+            #Grab := FALSE;
+            #Loading_Pallet_Active := FALSE;
+            #Z_SetPoint_V := #Safe_Z_V;
+
+            IF #Pallet_Present THEN
+                #Emit_Pallet := FALSE;
+                #Pallet_Ready := TRUE;
+                IF #TON_Step.Q THEN
+                    #Step := 10;
+                END_IF;
+            ELSE
+                #Emit_Pallet := TRUE;
+                #Pallet_Ready := FALSE;
+                #TON_Emit(IN := TRUE, PT := #Emit_Time);
+                IF #TON_Emit.Q AND #TON_Step.Q THEN
+                    #Emit_Pallet := FALSE;
+                    #Pallet_Ready := TRUE;
+                    #Step := 10;
+                END_IF;
+            END_IF;
+
+        10: // Pick XY @ Safe Z
+            #Grab := FALSE;
+            #Loading_Pallet_Active := FALSE;
+            #X_SetPoint_V := #Pick_X_V;
+            #Y_SetPoint_V := #Pick_Y_V;
+            #Z_SetPoint_V := #Safe_Z_V;
+            IF #At_XYZ AND #TON_Step.Q THEN
+                #Step := 20;
+            END_IF;
+
+        20: // Z down pick
+            #Grab := FALSE;
+            #X_SetPoint_V := #Pick_X_V;
+            #Y_SetPoint_V := #Pick_Y_V;
+            #Z_SetPoint_V := #Pick_Z_V;
+            IF #At_Z AND #TON_Step.Q THEN
+                #Step := 30;
+            END_IF;
+
+        30: // Grab
+            #Grab := TRUE;
+            #Loading_Pallet_Active := TRUE;
+            #X_SetPoint_V := #Pick_X_V;
+            #Y_SetPoint_V := #Pick_Y_V;
+            #Z_SetPoint_V := #Pick_Z_V;
+            #TON_Grab(IN := TRUE, PT := #Grab_Delay);
+            IF #TON_Grab.Q AND #TON_Step.Q THEN
+                #Step := 40;
+            END_IF;
+
+        40: // Z up Safe
+            #Grab := TRUE;
+            #Loading_Pallet_Active := TRUE;
+            #X_SetPoint_V := #Pick_X_V;
+            #Y_SetPoint_V := #Pick_Y_V;
+            #Z_SetPoint_V := #Safe_Z_V;
+            IF #At_Z AND #TON_Step.Q THEN
+                IF #Use_Rotate THEN
+                    #Step := 50;
+                ELSE
+                    #Step := 60;
+                END_IF;
+            END_IF;
+
+        50: // Optional C(+)
+            #Grab := TRUE;
+            #X_SetPoint_V := #Pick_X_V;
+            #Y_SetPoint_V := #Pick_Y_V;
+            #Z_SetPoint_V := #Safe_Z_V;
+            #C_Plus := NOT #C_Limit;
+            IF #C_Limit AND #TON_Step.Q THEN
+                #Step := 60;
+            END_IF;
+
+        60: // Move to pallet slot XY @ Safe Z
+            #Grab := TRUE;
+            #X_SetPoint_V := #Target_X_V;
+            #Y_SetPoint_V := #Target_Y_V;
+            #Z_SetPoint_V := #Safe_Z_V;
+            IF #At_XYZ AND #TON_Step.Q THEN
+                #Step := 70;
+            END_IF;
+
+        70: // Z down place
+            #Grab := TRUE;
+            #X_SetPoint_V := #Target_X_V;
+            #Y_SetPoint_V := #Target_Y_V;
+            #Z_SetPoint_V := #Target_Z_V;
+            IF #At_Z AND #TON_Step.Q THEN
+                #Step := 80;
+            END_IF;
+
+        80: // Drop
+            #Grab := FALSE;
+            #Loading_Pallet_Active := FALSE;
+            #X_SetPoint_V := #Target_X_V;
+            #Y_SetPoint_V := #Target_Y_V;
+            #Z_SetPoint_V := #Target_Z_V;
+            #TON_Drop(IN := TRUE, PT := #Drop_Delay);
+            IF #TON_Drop.Q AND #TON_Step.Q THEN
+                #Step := 90;
+            END_IF;
+
+        90: // Z up after drop
+            #Grab := FALSE;
+            #X_SetPoint_V := #Target_X_V;
+            #Y_SetPoint_V := #Target_Y_V;
+            #Z_SetPoint_V := #Safe_Z_V;
+            IF #At_Z AND #TON_Step.Q THEN
+                #Step := 100;
+            END_IF;
+
+        100: // Count — 2 assemblies per pallet
+            #Grab := FALSE;
+            #C_Plus := FALSE;
+            #Emit_Pallet := FALSE;
+            #Loading_Pallet_Active := FALSE;
+            #Assembly_Count := #Assembly_Count + 1;
+
+            IF #Assembly_Count >= #Assemblies_Per_Pallet THEN
+                // Pallet full
+                #Cycle_Count := #Cycle_Count + 1;
+                #HMI_Cycle_Count := #Cycle_Count;
+                #Assembly_Count := 0;
+                #Pallet_Ready := FALSE;
+
+                IF #HMI_SingleCycle THEN
+                    #Auto_Run := FALSE;
+                    #Busy := FALSE;
+                    #Done := TRUE;
+                    #Warning_Light := FALSE;
+                    #Step := 0;
+                ELSE
+                    #Done := FALSE;
+                    #Busy := TRUE;
+                    #Step := 5; // emit next pallet if necessary
+                END_IF;
+            ELSE
+                // Next assembly on same pallet (no emit)
+                #Done := FALSE;
+                #Busy := TRUE;
+                #Step := 10;
+            END_IF;
+
+        ELSE
+            #Step := 0;
+            #Auto_Run := FALSE;
+            #Busy := FALSE;
+            #Emit_Pallet := FALSE;
+
+    END_CASE;
+
+    #HMI_Lamp_Ready := (#Step = 0) AND NOT #Auto_Run;
+    #HMI_Lamp_Running := #Auto_Run;
+    #HMI_Lamp_Done := #Done;
+    #HMI_Lamp_Stopped := FALSE;
+    #HMI_Lamp_Auto := TRUE;
+    #HMI_Lamp_Manual := FALSE;
+    #HMI_Cycle_Count := #Cycle_Count;
+    #HMI_Step_Text_ID := #Step;
+    #State := #Step;
+
+END_FUNCTION_BLOCK

@@ -1,0 +1,38 @@
+//============================================================================
+// Author: Dereje Hailemariam
+// Datum: 31.08.2026
+// Version: 1.0
+// Beschreibung: 5b warning light + alarm siren (Factory I/O outputs)
+//
+// Call in Main OB1 AFTER Automatik (needs HRL_Busy / HRL_Error).
+// Wire OUT → FIO tags (verify driver addresses):
+//   Warning_Light_5 => "5b_Warning Light 5"   (often %A14.2)
+//   Alarm_Siren_2   => "5b_Alarm Siren 2"     (often %A14.4)
+//============================================================================
+
+FUNCTION_BLOCK "FB_Warehouse_Actuators"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 1.0
+
+VAR_INPUT
+    Enable                      : Bool := TRUE;
+    HRL_Busy                    : Bool := FALSE;
+    HRL_Error                   : Bool := FALSE;
+    Not_Aus                     : Bool := FALSE;
+END_VAR
+
+VAR_OUTPUT
+    Warning_Light_5             : Bool;
+    Alarm_Siren_2               : Bool;
+END_VAR
+
+BEGIN
+    IF NOT #Enable THEN
+        #Warning_Light_5 := FALSE;
+        #Alarm_Siren_2 := FALSE;
+        RETURN;
+    END_IF;
+
+    #Warning_Light_5 := #HRL_Busy AND NOT #Not_Aus;
+    #Alarm_Siren_2   := #HRL_Error OR #Not_Aus;
+END_FUNCTION_BLOCK

@@ -1,0 +1,75 @@
+Category;Name;DataType;LogicalAddress;Comment
+01_Mode;Mode_Einricht;Bool;%M60.0;Priority: Einricht > Auto > Hand
+00_Startup;OB100_Startup_Init;Bool;%M59.0;OB100 pulse — Automatik Reset first OB1 scan, then FALSE
+01_Mode;Mode_Auto;Bool;%M60.1;
+01_Mode;Mode_Hand;Bool;%M60.2;
+01_Mode;Not_Aus;Bool;%M60.3;
+02_HMI;HMI_Initialisieren;Bool;%M60.4;Pulse — reset Fach numbers
+02_HMI;HMI_Reset_Meldung;Bool;%M60.5;Pulse — acknowledge message
+02_HMI;HMI_Pos_Speichern;Bool;%M60.6;Pulse — save Ist_X/Z to selected Fach (Einricht)
+02_HMI;HMI_Raster_Berechnen;Bool;%M60.7;Pulse — fill all 54 from Basis+Pitch
+02_HMI;HMI_Loeschen;Bool;%M61.0;
+02_HMI;HMI_Suchen;Bool;%M61.1;
+02_HMI;HMI_FreiesFach;Bool;%M61.2;
+02_HMI;HMI_Start_Einlagern;Bool;%M61.3;
+02_HMI;HMI_Start_Auslagern;Bool;%M61.4;
+02_HMI;HMI_Reset;Bool;%M61.5;Automatik reset
+02_HMI;HMI_Stop;Bool;%M61.6;Automatik stop
+02_HMI;HMI_Fachnummer;UInt;%MW80;Selected slot 1..54 (HMI pick)
+03_Raster;HMI_Pitch_X;Real;%MD84;Column pitch (0 = keep DB)
+03_Raster;HMI_Pitch_Z;Real;%MD88;Level pitch (0 = keep DB)
+03_Raster;HMI_Spalten;Int;%MW92;Grid columns (0 = keep DB, default 6)
+03_Raster;HMI_Spalten_Rechts;Int;%MW94;Right-rack columns (0 = keep DB, default 3)
+04_Process;Paket_Vor_Regal;Bool;%M62.0;Pallet at warehouse (from 5b_Pallet_vor_Regal)
+04_Process;Paket_Fuer_Hochregal;Bool;%M62.1;Paket_Vor_Regal AND (Combo_Done OR Pallet_Tagged)
+04_Process;Palette_Aufgenommen;Bool;%M62.2;Derived in OB1 (no FIO load sensor)
+04_Process;Palette_Abgelegt;Bool;%M62.3;Derived in OB1
+04_Process;Position_Erreicht;Bool;%M62.4;NOT Moving AND |Ist−Soll| ≤ Pos_Tol (Stacker FB)
+04_Process;Gabel_Rechts_Ausgefahren;Bool;%M62.5;From E14.1 or direct FIO wire
+04_Process;Gabel_Links_Ausgefahren;Bool;%M62.6;From E14.0 or direct FIO wire
+04_Process;Gabel_Eingefahren;Bool;%M62.7;From E14.2 or direct FIO wire
+05_Position;Ist_X;Real;%MD96;Crane actual X
+05_Position;Ist_Z;Real;%MD100;Crane actual Z
+05_Position;Soll_X;Real;%MD104;Command X (Automatik or manual override)
+05_Position;Soll_Z;Real;%MD108;Command Z
+05_Position;HMI_Soll_X;Real;%MD152;Setup: manual target X (Einricht)
+05_Position;HMI_Soll_Z;Real;%MD156;Setup: manual target Z (Einricht)
+05_Position;HMI_Jog_Step;Real;%MD160;Setup: ± jog step (0.01)
+02_HMI;HMI_Copy_Ist_to_Soll;Bool;%M61.7;Pulse — copy Ist to Soll (Einricht)
+02_HMI;HMI_Soll_X_Plus;Bool;%M65.7;Pulse — Soll X + step
+02_HMI;HMI_Soll_X_Minus;Bool;%M66.0;Pulse — Soll X − step
+02_HMI;HMI_Soll_Z_Plus;Bool;%M66.1;Pulse — Soll Z + step
+02_HMI;HMI_Soll_Z_Minus;Bool;%M66.2;Pulse — Soll Z − step
+02_HMI;HMI_Copy_Ist_to_Band;Bool;%M66.3;Pulse — copy Ist_X/Z → Band_X/Z (Einricht)
+05_Position;Home_X;Real;%MD112;Teach home
+05_Position;Home_Z;Real;%MD116;
+05_Position;Ausgabe_X;Real;%MD120;Teach output conveyor
+05_Position;Ausgabe_Z;Real;%MD124;
+05_Position;Band_X;Real;%MD164;V2.4 unused by Automatik (hardcoded X=0) — optional teach/monitor
+05_Position;Band_Z;Real;%MD168;V2.4 unused — Automatik Band pick Z hardcoded 0.0
+05_Position;Band_Z_Lift;Real;%MD172;Lift after pick — teach 0.4 (%MD172), wired to Automatik Band_Z_Lift IN
+06_Out;5b_Warning Light 5;Bool;%A14.2;FIO — ON while HRL_Busy (FB_Warehouse_Actuators)
+06_Out;5b_Alarm Siren 2;Bool;%A14.4;FIO — ON on HRL_Error OR Not_Aus (FB_Warehouse_Actuators)
+06_Out;Fahre_Zu_Position;Bool;%M63.0;Internal — no FIO output
+06_Out;Palette_Aufnehmen_Cmd;Bool;%M63.1;
+06_Out;Palette_Ablegen_Cmd;Bool;%M63.2;
+06_Out;Gabel_Rechts_Cmd;Bool;%M63.3;
+06_Out;Gabel_Links_Cmd;Bool;%M63.4;
+06_Out;Gabel_Mitte_Cmd;Bool;%M63.5;
+07_Status;HRL_Busy;Bool;%M64.0;
+07_Status;HRL_Done;Bool;%M64.1;
+07_Status;HRL_Error;Bool;%M64.2;
+07_Status;HRL_Mode_Auto;Bool;%M64.3;
+07_Status;HRL_Mode_Hand;Bool;%M64.4;
+07_Status;HRL_Mode_Einricht;Bool;%M64.5;Output only — do NOT wire to Einricht_Mode input
+07_Status;HMI_State;Int;%MW128;Automatik state
+07_Status;HMI_Ziel_Fach;Int;%MW130;Target slot from Automatik (not HMI_Fachnummer)
+07_Status;HRL_Anzahl_Belegt;UInt;%MW132;
+07_Status;HRL_Anzahl_Frei;UInt;%MW134;
+07_Status;HRL_Occ_0;Byte;%MB400;PUT/GET occupancy bits Fach 1–8 (Lagerverwaltung Online)
+07_Status;HRL_Occ_1;Byte;%MB401;Fach 9–16
+07_Status;HRL_Occ_2;Byte;%MB402;Fach 17–24
+07_Status;HRL_Occ_3;Byte;%MB403;Fach 25–32
+07_Status;HRL_Occ_4;Byte;%MB404;Fach 33–40
+07_Status;HRL_Occ_5;Byte;%MB405;Fach 41–48
+07_Status;HRL_Occ_6;Byte;%MB406;Fach 49–54 (bits 0–5)

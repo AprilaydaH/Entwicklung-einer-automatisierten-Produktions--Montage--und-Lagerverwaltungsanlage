@@ -1,0 +1,90 @@
+//============================================================================
+// Author: Dereje Hailemariam
+// Datum: 26.08.2026
+// Version: 1.2
+// From PLCTags26.08.xlsx — use 2b_HMI_RFID_* @ M30 (RFID_Busy etc. do NOT exist)
+//
+// Allow_Write := 4b_Done(1) @ M10.0
+// Write pulse := 2b_HMI_RFID_Write @ M20.0  (NOT M20.1)
+//============================================================================
+
+ORGANIZATION_BLOCK "OB1_Main"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 1.2
+
+BEGIN
+    "FB_VisionReader_Plastic"(
+        Enable                      := TRUE,
+        Vision_Lid_Value            := "2b_Vision Sensor Lid (Value)",
+        Vision_Base_Value           := "2b_Vision Sensor Base(Value)",
+
+        Allow_Write                 := "4b_Done(1)",
+
+        RFID_Bereit                 := "2b_HMI_RFID_Bereit",
+        RFID_Busy                   := "2b_HMI_RFID_Busy",
+        RFID_Done                   := "2b_HMI_RFID_Done",
+        Reset                       := "2b_HMI_RFID_Reset",
+
+        Both_Ready                  => "2b_VisionData_Both_Ready",
+        Color_Code                  => "2b_VisionData_Color_Code",
+
+        Materialart                 => "2b_VisionData_Materialart",
+        ProductTyp                  => "2b_VisionData_ProductType",
+        Artikelnummer               => "2b_VisionData_Artikelnumber",
+        RFID_Code                   => "2b_VisionData_RFID_CODE",
+
+        Write_Req                   => "2b_HMI_RFID_Write",
+        Combo_Done                  => "2b_VisionData_Combo_Done",
+        Busy                        => "Vision_Busy",
+        Error                       => "Vision_Error",
+        State                       => "2b_VisionData_State"
+    );
+
+    "RFID_Read_Write_DB_1"(
+        Execute                     := FALSE,
+        HMI_Read                    := FALSE,
+        HMI_Write                   := "2b_HMI_RFID_Write",
+        HMI_Check                   := FALSE,
+        HMI_Clear                   := FALSE,
+        HMI_Reset                   := "2b_HMI_RFID_Reset",
+        RFID_Lesen                  := FALSE,
+
+        Op_Mode                     := 10,
+
+        Command_ID                  := "4b_RFID Reader 2 Command ID",
+        Status                      := "4b_RFID Reader 2 Status",
+        Read_Data                   := "4b_RFID Reader 2 Read Data",
+
+        Memory_Index                := 0,
+        Write_Data                  := 0,
+
+        RFID_Code_In                := "2b_VisionData_RFID_CODE",
+        Artikelnummer_In            := "2b_VisionData_Artikelnumber",
+        Materialart_In              := "2b_VisionData_Materialart",
+        ProductTyp_In               := "2b_VisionData_ProductType",
+
+        Timeout                     := T#5S,
+
+        Execute_Command             => "4b_RFID Reader 2 Execute Command",
+        Command                     => "4b_RFID Reader 2 Command",
+        Memory_Index_Out            => "4b_RFID Reader 2 Memory Index",
+        Write_Data_Out              => "4b_RFID Reader 2 Write Data",
+
+        Busy                        => "2b_HMI_RFID_Busy",
+        Done                        => "2b_HMI_RFID_Done",
+        Error                       => "RFID_Error",
+        Status_Code                 => "RFID_Status_Code",
+
+        RFID_Bereit                 => "2b_HMI_RFID_Bereit",
+        RFID_Gueltig                => "RFID_Gueltig",
+        RFID_Fehler                 => "RFID_Fehler",
+
+        RFID_Code_Out               => "RFID_Code_Out",
+        Artikelnummer_Out           => "RFID_Artikelnummer_Out",
+        Materialart_Out             => "RFID_Materialart_Out",
+        ProductTyp_Out              => "RFID_ProductTyp_Out",
+
+        Pallet_Tagged               => "RFID_Pallet_Tagged"
+    );
+
+END_ORGANIZATION_BLOCK

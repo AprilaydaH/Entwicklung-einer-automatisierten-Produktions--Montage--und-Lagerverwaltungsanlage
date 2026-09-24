@@ -1,0 +1,20 @@
+Category;Name;DataType;LogicalAddress;Comment
+01_FIO_IN;5b_RFID Reader 5 Status;DInt;%ED150;Factory I/O Reader 5
+01_FIO_IN;5b_RFID Reader 5 Read Data;DInt;%ED154;
+01_FIO_IN;5b_RFID Reader 5 Command ID;DInt;%ED158;
+02_FIO_OUT;5b_RFID Reader 5 Execute Command;Bool;%A13.7;
+02_FIO_OUT;5b_RFID Reader 5 Command;DInt;%AD124;
+02_FIO_OUT;5b_RFID Reader 5 Write Data;DInt;%AD128;
+02_FIO_OUT;5b_RFID Reader 5 Memory Index;DInt;%AD132;
+03_Status;RFID_5b_Busy;Bool;%M65.1;Reader 5 FB status
+03_Status;RFID_5b_Done;Bool;%M65.2;
+03_Status;RFID_5b_Error;Bool;%M65.3;
+03_Status;RFID_5b_State;Int;%MW136;
+03_Status;RFID_5b_Status_Code;Int;%MW138;
+03_Status;RFID_5b_Bereit;Bool;%M65.4;→ Automatik RFID_Bereit
+03_Status;RFID_5b_Gueltig;Bool;%M65.5;→ Automatik RFID_Gueltig
+03_Status;RFID_5b_Fehler;Bool;%M65.6;→ Automatik RFID_Fehler
+03_Status;RFID_5b_Code_Out;UDInt;%MD140;→ Automatik RFID_Code
+03_Status;RFID_5b_Artikelnummer_Out;UInt;%MW144;
+03_Status;RFID_5b_Materialart_Out;USInt;%MB146;
+03_Status;RFID_5b_ProductTyp_Out;UInt;%MW148;

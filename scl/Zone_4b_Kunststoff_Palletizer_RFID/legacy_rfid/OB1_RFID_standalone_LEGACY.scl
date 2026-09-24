@@ -1,0 +1,53 @@
+//============================================================================
+// LEGACY — standalone RFID test OB1 (no Vision / no Hochregallager)
+// Use: ../OB1_Plastic_Warehouse.scl or ../OB1_Vision_RFID_before_Pallet.scl
+//============================================================================
+
+ORGANIZATION_BLOCK "OB1_Main"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 1.0
+
+BEGIN
+    "FB_RFID_1"(
+        Execute                     := FALSE,
+        HMI_Read                    := "HMI_RFID_Read",
+        HMI_Write                   := "HMI_RFID_Write",
+        HMI_Check                   := "HMI_RFID_Check",
+        HMI_Clear                   := "HMI_RFID_Clear",
+        HMI_Reset                   := "HMI_RFID_Reset",
+        RFID_Lesen                  := "RFID_Lesen",
+        Op_Mode                     := 10,
+        Command_ID                  := "RFID_Command_ID",
+        Status                      := "RFID_Status",
+        Read_Data                   := "RFID_Read_Data",
+        Memory_Index                := "RFID_Memory_Index_HMI",
+        Write_Data                  := "RFID_Write_Data_HMI",
+        RFID_Code_In                := "RFID_Code_In",
+        Artikelnummer_In            := "RFID_Artikelnummer_In",
+        Materialart_In              := "RFID_Materialart_In",
+        ProductTyp_In               := "RFID_ProductTyp_In",
+        Execute_Command             => "RFID_Execute_Command",
+        Command                     => "RFID_Command",
+        Memory_Index_Out            => "RFID_Memory_Index",
+        Write_Data_Out              => "RFID_Write_Data",
+        Busy                        => "RFID_Busy",
+        Done                        => "RFID_Done",
+        Error                       => "RFID_Error",
+        State                       => "RFID_State",
+        Status_Code                 => "RFID_Status_Code",
+        Tag_Present                 => "RFID_Tag_Present",
+        Serial_Number               => "RFID_Serial_Number",
+        Data_Out                    => "RFID_Data_Out",
+        RFID_Code_Out               => "RFID_Code_Out",
+        Artikelnummer_Out           => "RFID_Artikelnummer_Out",
+        Materialart_Out             => "RFID_Materialart_Out",
+        ProductTyp_Out              => "RFID_ProductTyp_Out",
+        HMI_Lamp_Ready              => "RFID_Lamp_Ready",
+        HMI_Lamp_Running            => "RFID_Lamp_Running",
+        HMI_Lamp_Done               => "RFID_Lamp_Done",
+        HMI_Lamp_Error              => "RFID_Lamp_Error",
+        RFID_Bereit                 => "RFID_Bereit",
+        RFID_Gueltig                => "RFID_Gueltig",
+        RFID_Fehler                 => "RFID_Fehler"
+    );
+END_ORGANIZATION_BLOCK

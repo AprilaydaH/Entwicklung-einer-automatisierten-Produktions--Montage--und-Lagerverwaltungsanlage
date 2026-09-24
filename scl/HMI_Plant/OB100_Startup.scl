@@ -1,0 +1,123 @@
+//============================================================================
+// OB100 — Startup (STOP → RUN), einmalig, nicht zyklisch
+// CPU 1518F-4 PN/DP · TIA V20 · SCL
+//
+// TIA: Programmbausteine → Add new block → Organization block
+//      Number 100 · Language SCL · Name OB100
+//      Body ersetzen durch den BEGIN…END unten (oder ganzen Block einfügen).
+//
+// Tag (TIA c.xlsx): OB100_Startup_Init  Bool  %M59.0
+//
+// OB1 anpassen (ein Scan nach OB100):
+//   NW 28 Automatik Reset := "HMI_Reset_W2" OR "OB100_Startup_Init"
+//   NW 29 Automatik Reset := "HMI_Reset"    OR "OB100_Startup_Init"
+//   OB1 nach NW 29: FB_Plant_Start_Stop_DB  (HMI-Satz OR FIO-Satz)
+//   Letztes Netzwerk OB1:  "OB100_Startup_Init" := FALSE;
+//
+// Produktion nach RUN = AUS. Start erst über HMI (%M58) oder FIO-Taster (%E9).
+// FIO-Eingänge %E9.1–.4 NICHT schreiben (nur lesen).
+// FIO-Lampen %A15.5–.7 hier AUS; Ready kommt im ersten OB1-Scan vom FB.
+//
+// NICHT anfassen: gldb_LagerverwaltungData / _W2 (Belegung bleibt retentiv)
+// F-Programm bleibt unberührt (OB100 ist nicht Failsafe).
+//============================================================================
+
+ORGANIZATION_BLOCK "OB100"
+{ S7_Optimized_Access := 'TRUE' }
+TITLE = 'Startup STOP to RUN'
+
+BEGIN
+
+    "OB100_Startup_Init" := TRUE;
+
+    // --- Warehouse_1 Kunststoff (Zone 5B) — kein Auto nach Power-On ---
+    "Mode_Auto" := FALSE;
+    "Mode_Hand" := FALSE;
+    "Mode_Einricht" := FALSE;
+
+    "HMI_Initialisieren" := FALSE;
+    "HMI_Reset_Meldung" := FALSE;
+    "HMI_Pos_Speichern" := FALSE;
+    "HMI_Raster_Berechnen" := FALSE;
+    "HMI_Loeschen" := FALSE;
+    "HMI_Suchen" := FALSE;
+    "HMI_FreiesFach" := FALSE;
+    "HMI_Start_Einlagern" := FALSE;
+    "HMI_Start_Auslagern" := FALSE;
+    "HMI_Reset" := FALSE;
+    "HMI_Stop" := FALSE;
+    "HMI_Copy_Ist_to_Soll" := FALSE;
+    "HMI_Soll_X_Plus" := FALSE;
+    "HMI_Soll_X_Minus" := FALSE;
+    "HMI_Soll_Z_Plus" := FALSE;
+    "HMI_Soll_Z_Minus" := FALSE;
+    // "HMI_Copy_Ist_to_Band" — nicht in TIA (c.xlsx). Nur _W2 existiert (%M76.3).
+    // "HMI_Copy_Ist_to_Band" := FALSE;
+
+    "Fahre_Zu_Position" := FALSE;
+    "Palette_Aufnehmen_Cmd" := FALSE;
+    "Palette_Ablegen_Cmd" := FALSE;
+    "Gabel_Rechts_Cmd" := FALSE;
+    "Gabel_Links_Cmd" := FALSE;
+    "Gabel_Mitte_Cmd" := FALSE;
+
+    "HRL_Busy" := FALSE;
+    "HRL_Done" := FALSE;
+    "HRL_Error" := FALSE;
+    "HMI_State" := 0;
+    "HMI_Ziel_Fach" := 0;
+
+    // --- Warehouse_2 Metall (Zone 5A) ---
+    "Mode_Auto_W2" := FALSE;
+    "Mode_Hand_W2" := FALSE;
+    "Mode_Einricht_W2" := FALSE;
+
+    "HMI_Initialisieren_W2" := FALSE;
+    "HMI_Reset_Meldung_W2" := FALSE;
+    "HMI_Pos_Speichern_W2" := FALSE;
+    "HMI_Raster_Berechnen_W2" := FALSE;
+    "HMI_Loeschen_W2" := FALSE;
+    "HMI_Suchen_W2" := FALSE;
+    "HMI_FreiesFach_W2" := FALSE;
+    "HMI_Start_Einlagern_W2" := FALSE;
+    "HMI_Start_Auslagern_W2" := FALSE;
+    "HMI_Reset_W2" := FALSE;
+    "HMI_Stop_W2" := FALSE;
+    "HMI_Copy_Ist_to_Soll_W2" := FALSE;
+    "HMI_Soll_X_Plus_W2" := FALSE;
+    "HMI_Soll_X_Minus_W2" := FALSE;
+    "HMI_Soll_Z_Plus_W2" := FALSE;
+    "HMI_Soll_Z_Minus_W2" := FALSE;
+    "HMI_Copy_Ist_to_Band_W2" := FALSE;
+
+    "Fahre_Zu_Position_W2" := FALSE;
+    "Palette_Aufnehmen_Cmd_W2" := FALSE;
+    "Palette_Ablegen_Cmd_W2" := FALSE;
+    "Gabel_Rechts_Cmd_W2" := FALSE;
+    "Gabel_Links_Cmd_W2" := FALSE;
+    "Gabel_Mitte_Cmd_W2" := FALSE;
+
+    "HRL_2_Busy" := FALSE;
+    "HRL_2_Done" := FALSE;
+    "HRL_2_Error" := FALSE;
+    "HMI_State_W2" := 0;
+    "HMI_Ziel_Fach_W2" := 0;
+
+    // --- RFID Write-Pulse (kein Job 11 direkt nach RUN) ---
+    "2b_HMI_RFID_Write" := FALSE;
+    "2a_Metal_HMI_RFID_Write" := FALSE;
+
+    // --- Set 1 HMI merkers (TP). Set 2 FIO buttons %E9 are INPUTS — do not write. ---
+    "HMI_Plant_Start" := FALSE;
+    "HMI_Plant_Stop" := FALSE;
+    "HMI_Plant_Not_Aus" := FALSE;
+    "HMI_Plant_Reset" := FALSE;
+    "Plant_Running" := FALSE;
+    "Plant_Not_Aus" := FALSE;
+    "Plant_Enable" := FALSE;
+    "Plant_Ready" := FALSE;
+    "Main_Green_Stack_Light" := FALSE;
+    "Main_Red_Light" := FALSE;
+    "Main_Start_Button_Light" := FALSE;
+
+END_ORGANIZATION_BLOCK

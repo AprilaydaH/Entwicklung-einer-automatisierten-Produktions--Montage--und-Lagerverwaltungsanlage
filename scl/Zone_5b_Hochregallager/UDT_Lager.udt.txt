@@ -1,0 +1,24 @@
+//============================================================================
+// UDT_LagerverwaltungData — create AFTER UDT_Fach + UDT_Lager_Raster
+//
+// TIA:
+//   1) UDT_Fach
+//   2) UDT_Lager_Raster.udt.txt
+//   3) this file — member Raster : UDT_Lager_Raster
+//
+// Global DB: gldb_LagerverwaltungData : UDT_LagerverwaltungData
+//
+// Meldungen types are separate files:
+//   UDT_Meldungen_Status / UDT_Meldungen_Fehler / UDT_Meldungen
+//============================================================================
+
+TYPE
+    "UDT_LagerverwaltungData" : STRUCT
+        Fach                : Array[1..54] of "UDT_Fach";
+        Lager_Voll          : Bool;
+        Lager_Leer          : Bool;
+        Ziel_Fachnummer     : Int;
+        // Data type in TIA = UDT_Lager_Raster (must already exist!)
+        Raster              : "UDT_Lager_Raster";
+    END_STRUCT;
+END_TYPE

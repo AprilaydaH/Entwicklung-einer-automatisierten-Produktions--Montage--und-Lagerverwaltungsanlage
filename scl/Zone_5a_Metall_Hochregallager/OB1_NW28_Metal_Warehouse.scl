@@ -1,0 +1,201 @@
+//============================================================================
+// OB1 Network 28
+// TIA: Zone_5a__Metal_Components_Warehouse
+// Warehouse_2 — metal Hochregal (Stacker Crane 1)
+//
+// Create instance DBs first, then paste. Rename instances if TIA used
+// different DB names (only the quoted instance names below must match).
+//
+// Required DBs: gldb_LagerverwaltungData_W2, gldb_AktuellerFach_HMI_W2,
+//               gldb_Meldungen_W2
+// Occupancy map: gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt/Farbe/Ziel[1..54]
+// Automatik DB multi-instance: instEinlagern (FB_Einlagern_W2)
+// Do not call Lagerstatus from Automatik — Datenverwaltung_W2 already updates counts.
+//
+// Split into several networks under NW 28 if you prefer — keep this order.
+//============================================================================
+
+// ----- 1) Mode Select (IN_OUT radio) -----
+"FB_Warehouse_Mode_Select_W2_DB"(
+    Mode_Einricht := "Mode_Einricht_W2",
+    Mode_Auto := "Mode_Auto_W2",
+    Mode_Hand := "Mode_Hand_W2"
+);
+
+// Mode lamps: TIA has Mode_*_W2 only (no HRL2_Mode_* tags in c.xlsx)
+
+// ----- 2) Gate — sensor + Vision_Combo_Done OR 4a write Done -----
+"FB_Warehouse_Gate_W2_DB"(
+    Enable := TRUE,
+    Sensor_Pallet_Vor_Regal := "5a_Metal_Palette_vor_regal",
+    Vision_Combo_Done := "2a_Metal_VisionData_Combo_Done",
+    RFID_Pallet_Tagged := "4a_RFID_Done",
+    Paket_Vor_Regal => "Paket_Vor_Regal_W2",
+    Paket_Fuer_Hochregal => "Paket_Fuer_Hochregal_W2"
+);
+
+// ----- 3) Datenverwaltung -----
+"fb_Datenverwaltung_Lager_W2_DB"(
+    Initialisieren := "HMI_Initialisieren_W2",
+    Reset_Meldung := "HMI_Reset_Meldung_W2",
+    Position_Speichern := "HMI_Pos_Speichern_W2",
+    Raster_Berechnen := "HMI_Raster_Berechnen_W2",
+    HMI_Fachnummer := "HMI_Fachnummer_W2",
+    Einricht_Mode := "Mode_Einricht_W2",
+    Ist_X := "Ist_X_W2",
+    Ist_Z := "Ist_Z_W2",
+    Pitch_X := "HMI_Pitch_X_W2",
+    Pitch_Z := "HMI_Pitch_Z_W2",
+    Spalten := "HMI_Spalten_W2",
+    Spalten_Rechts := "HMI_Spalten_Rechts_W2",
+    Anzahl_Belegt => "HRL_2_Anzahl_Belegt",
+    Anzahl_Frei => "HRL_2_Anzahl_Frei"
+);
+
+// ----- 3b) Data commands -----
+"instLoeschen_W2"(Execute := "HMI_Loeschen_W2" AND ("Mode_Hand_W2" OR "Mode_Einricht_W2"));
+
+"instSuchen_W2"(Execute := "HMI_Suchen_W2");
+
+"instFreiesFach_W2"(Start := "HMI_FreiesFach_W2");
+
+// 4a / vision → Fachaktuell only in Auto or while Automatik is busy.
+// Hand/Einricht keep typed search fields; Datenverwaltung no longer copies every scan.
+IF ("Mode_Auto_W2" OR "HRL_2_Busy") AND ("4a_RFID_Code_Out" <> UDINT#0) THEN
+    "gldb_AktuellerFach_HMI_W2".Auswahl.Fachaktuell.RFID_CODE :=
+        "4a_RFID_Code_Out";
+    "gldb_AktuellerFach_HMI_W2".Auswahl.Fachaktuell.Artikelnummer :=
+        "4a_RFID_Artikelnummer_Out";
+    "gldb_AktuellerFach_HMI_W2".Auswahl.Fachaktuell.Materialart := USINT#2;
+    "gldb_AktuellerFach_HMI_W2".Auswahl.Fachaktuell.Kennzeichnung := 'Metall';
+ELSIF ("Mode_Auto_W2" OR "HRL_2_Busy") AND ("2a_Metal_VisionData_RFID_CODE" <> UDINT#0) THEN
+    "gldb_AktuellerFach_HMI_W2".Auswahl.Fachaktuell.RFID_CODE :=
+        "2a_Metal_VisionData_RFID_CODE";
+    "gldb_AktuellerFach_HMI_W2".Auswahl.Fachaktuell.Artikelnummer :=
+        "2a_Metal_VisionData_Artikelnummer";
+    "gldb_AktuellerFach_HMI_W2".Auswahl.Fachaktuell.Materialart := USINT#2;
+    "gldb_AktuellerFach_HMI_W2".Auswahl.Fachaktuell.Kennzeichnung := 'Metall';
+END_IF;
+
+// ----- 4) Automatik V5.6 (product from 4a write / Fachaktuell) -----
+"Hochregal_Automatik_Betrieb_W2_DB"(
+    Auto_Mode := "Mode_Auto_W2",
+    Hand_Mode := "Mode_Hand_W2",
+    Einricht_Mode := "Mode_Einricht_W2",
+    Not_Aus := "Not_Aus_W2",
+
+    HMI_Start_Einlagern := "HMI_Start_Einlagern_W2",
+    HMI_Start_Auslagern := "HMI_Start_Auslagern_W2",
+    Reset := "HMI_Reset_W2" OR "OB100_Startup_Init",
+    Stop := "HMI_Stop_W2",
+
+    Paket_Vor_Regal := "Paket_Fuer_Hochregal_W2",
+
+    // Reader 0 unused — do not take 5a_RFID_Fehler (that was State 900)
+    RFID_Busy := FALSE,
+    RFID_Bereit := TRUE,
+    RFID_Gueltig := FALSE,
+    RFID_Fehler := FALSE,
+    RFID_Artikelnummer := "4a_RFID_Artikelnummer_Out",
+    RFID_Materialart := USINT#2,
+    RFID_ProduktTyp := UINT#0,
+    RFID_Code := "4a_RFID_Code_Out",
+
+    Palette_Aufgenommen := "Palette_Aufgenommen_W2",
+    Palette_Abgelegt := "Palette_Abgelegt_W2",
+    Position_Erreicht := "Position_Erricht_W2",
+    Gabel_Rechts_Ausgefahren := "Gabel_Rechts_Ausgefahren_W2",
+    Gabel_Links_Ausgefahren := "Gabel_Links_Ausgefahren_W2",
+    Gabel_Eingefahren := "Gabel_Eingefahren_W2",
+
+    Ist_X := "Ist_X_W2",
+    Ist_Z := "Ist_Z_W2",
+    Home_X := "Home_X_W2",
+    Home_Z := "Home_Z_W2",
+    Ausgabe_X := "Ausgabe_X_W2",
+    Ausgabe_Z := "Ausgabe_Z_W2",
+    Band_X := "Band_X_W2",
+    Band_Z := "Band_Z_W2",
+    Band_Z_Lift := "Band_Z_Lift_W2",
+
+    Offset_Z := 0.2,
+    Foerderband_Seite := USINT#1,
+
+    Soll_X := "Soll_X_W2",
+    Soll_Z := "Soll_Z_W2",
+
+    Busy => "HRL_2_Busy",
+    Done => "HRL_2_Done",
+    Error => "HRL_2_Error",
+    State_Out => "HMI_State_W2",
+    Ziel_Fachnummer_Out => "HMI_Ziel_Fach_W2"
+);
+
+// ----- 5) Manual Soll (after Automatik, before Stacker) -----
+"FB_Warehouse_Manual_Soll_W2_DB"(
+    Enable := TRUE,
+    Einricht_Mode := "Mode_Einricht_W2",
+    Automatik_Busy := "HRL_2_Busy",
+    Not_Aus := "Not_Aus_W2",
+    Ist_X := "Ist_X_W2",
+    Ist_Z := "Ist_Z_W2",
+    Copy_Ist_to_Soll := "HMI_Copy_Ist_to_Soll_W2",
+    Copy_Ist_to_Band := "HMI_Copy_Ist_to_Band_W2",
+    Soll_X_Plus := "HMI_Soll_X_Plus_W2",
+    Soll_X_Minus := "HMI_Soll_X_Minus_W2",
+    Soll_Z_Plus := "HMI_Soll_Z_Plus_W2",
+    Soll_Z_Minus := "HMI_Soll_Z_Minus_W2",
+    Jog_Step := "HMI_Jog_Step_W2",
+    Soll_X := "Soll_X_W2",
+    Soll_Z := "Soll_Z_W2",
+    HMI_Soll_X := "HMI_Soll_X_W2",
+    HMI_Soll_Z := "HMI_Soll_Z_W2",
+    Band_X := "Band_X_W2",
+    Band_Z := "Band_Z_W2"
+);
+
+// ----- 6) Stacker I/O — Crane 1 -----
+"FB_Warehouse_Stacker_IO_W2_DB"(
+    Enable := TRUE,
+    FIO_Ist_X := "5a_Stacker Crane 1 X Position (V)",
+    FIO_Ist_Z := "5a_Stacker Crane 1 Z Position (V)",
+    FIO_Moving_X := "5a_Stacker Crane 1 Moving-X",
+    FIO_Moving_Z := "5a_Stacker Crane 1 Moving-Z",
+    FIO_Gabel_Links := "5a_Stacker Crane 1 Left Limit",
+    FIO_Gabel_Rechts := "5a_Stacker Crane 1 Right Limit",
+    FIO_Gabel_Mitte := "5a_Stacker Crane 1 Middle Limit",
+    FIO_Pallet_Vor_Regal := "5a_Metal_Palette_vor_regal",
+    Gabel_Links_Cmd := "Gabel_Links_Cmd_W2",
+    Gabel_Rechts_Cmd := "Gabel_Rechts_Cmd_W2",
+    Palette_Aufnehmen_Cmd := "Palette_Aufnehmen_Cmd_W2",
+    Palette_Ablegen_Cmd := "Palette_Ablegen_Cmd_W2",
+    Pick_FIO_Fallback_En := TRUE,
+    Place_FIO_Fallback_En := TRUE,
+    Soll_X := "Soll_X_W2",
+    Soll_Z := "Soll_Z_W2",
+    Ist_X => "Ist_X_W2",
+    Ist_Z => "Ist_Z_W2",
+    Position_Erreicht => "Position_Erricht_W2",
+    Gabel_Links_Ausgefahren => "Gabel_Links_Ausgefahren_W2",
+    Gabel_Rechts_Ausgefahren => "Gabel_Rechts_Ausgefahren_W2",
+    Gabel_Eingefahren => "Gabel_Eingefahren_W2",
+    FIO_Soll_X => "5a_Stacker Crane 1 X Set Point (V)",
+    FIO_Soll_Z => "5a_Stacker Crane 1 Z Set Point (V)",
+    FIO_Gabel_Links_Out => "5a_Stacker Crane 1 (Left)",
+    FIO_Gabel_Rechts_Out => "5a_Stacker Crane 1 (Right)",
+    Palette_Aufgenommen => "Palette_Aufgenommen_W2",
+    Palette_Abgelegt => "Palette_Abgelegt_W2"
+);
+
+// ----- 7) Light / siren -----
+"FB_Warehouse_Actuators_W2_DB"(
+    Enable := TRUE,
+    HRL_Busy := "HRL_2_Busy",
+    HRL_Error := "HRL_2_Error",
+    Not_Aus := "Not_Aus_W2",
+    Warning_Light_5 => "5a_Warning Light 4",
+    Alarm_Siren_2 => "5a_Alarm Siren 0"
+);
+
+// ----- 8) Meldung (last) -----
+"instMeldung_W2"();

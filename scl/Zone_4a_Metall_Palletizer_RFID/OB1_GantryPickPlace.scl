@@ -1,0 +1,62 @@
+//============================================================================
+// Author: Dereje Hailemariam
+// Datum: 11.08.2026
+// Zone: 4A — 3-axis Pick and Place full auto v2.4 (NW 14)
+// Flow: HOME → wait pallet+part → pick → place 1 → Done → wait pallet gone → …
+//============================================================================
+
+ORGANIZATION_BLOCK "OB1_Main"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 1.0
+
+BEGIN
+    "FB_GantryPickPlace_4A"(
+        HMI_Start                   := "4a_HMI_Start" AND "Plant_Enable",
+        HMI_Stop                    := "4a_HMI_Stop" OR NOT "Plant_Enable",
+        HMI_Reset                   := "HMI_Reset",
+
+        X_Pos_V                     := "Gantry_X_Pos_V",
+        Y_Pos_V                     := "Gantry_Y_Pos_V",
+        Z_Pos_V                     := "Gantry_Z_Pos_V",
+        Moving_Z                    := "Gantry_Moving_Z",
+        Moving_XY                   := "Gantry_Moving_XY",
+        Box_Detected                := "Gantry_Box_Detected",
+        C_Limit                     := "Gantry_C_Limit",
+        Pallet_Present              := "4a_pallet_at_palletizer",
+        Assembled_Part_Present      := "4a_at_Palletizer_Band_set",
+
+        Home_X_V                    := 0.0,
+        Home_Y_V                    := 0.0,
+        Home_Z_V                    := 0.0,
+        Pick_X_V                    := 1.1,
+        Pick_Y_V                    := 6.4,
+        Pick_Z_V                    := 8.4,
+        Place1_X_V                  := 6.1,
+        Place1_Y_V                  := 6.4,
+        Place1_Z_V                  := 10.0,
+        Place2_X_V                  := 7.1,
+        Place2_Y_V                  := 6.4,
+        Place2_Z_V                  := 10.0,
+        Safe_Z_V                    := 0.0,
+        Assemblies_Per_Pallet       := 1,
+
+        X_SetPoint_V                => "Gantry_X_SetPoint_V",
+        Y_SetPoint_V                => "Gantry_Y_SetPoint_V",
+        Z_SetPoint_V                => "Gantry_Z_SetPoint_V",
+        C_Plus                      => "Gantry_C_Plus",
+        Grab                        => "Gantry_Grab",
+        Emit_Pallet                 => "Emit_Pallet",
+        Warning_Light               => "4a_Warning_Light_1",
+
+        Busy                        => "Busy",
+        Done                        => "Done",
+        State                       => "State",
+        Assembly_Count              => "Assembly_Count",
+        HMI_Lamp_Ready              => "HMI_Lamp_Ready",
+        HMI_Lamp_Running            => "HMI_Lamp_Running",
+        HMI_Lamp_Done               => "HMI_Lamp_Done",
+        HMI_Lamp_Stopped            => "HMI_Lamp_Stopped",
+        HMI_Cycle_Count             => "HMI_Cycle_Count"
+    );
+
+END_ORGANIZATION_BLOCK

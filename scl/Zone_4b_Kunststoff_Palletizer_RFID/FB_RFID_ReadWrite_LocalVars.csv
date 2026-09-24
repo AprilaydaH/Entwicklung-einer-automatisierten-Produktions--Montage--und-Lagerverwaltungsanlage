@@ -1,0 +1,17 @@
+Section;Name;DataType;Default;Comment
+VAR;R_Execute;R_TRIG;;Execute rising edge
+VAR;R_Read;R_TRIG;;HMI_Read edge
+VAR;R_Write;R_TRIG;;HMI_Write edge
+VAR;R_Check;R_TRIG;;HMI_Check edge
+VAR;R_Clear;R_TRIG;;HMI_Clear edge
+VAR;R_Reset;R_TRIG;;HMI_Reset edge
+VAR;R_Lesen;R_TRIG;;Hochregal RFID_Lesen edge
+VAR;TON_Timeout;TON;;Wait for Command ID
+VAR;Step;Int;0;Sequence step
+VAR;Next_Step;Int;0;Step after hardware handshake
+VAR;Job;Int;0;Active Op_Mode (0/1/2/3/4/10/11)
+VAR;Cmd_ID_Start;DInt;0;Command ID before Execute pulse
+VAR_TEMP;Start_Job;Bool;;Start request this scan
+VAR_TEMP;Timeout_Run;Bool;;TON run this scan (step 125)
+OUTPUT;Write_Preview;DInt;0;Always mirrors RFID_Code_In for HMI
+OUTPUT;Pallet_Tagged;Bool;FALSE;TRUE after successful Job 11

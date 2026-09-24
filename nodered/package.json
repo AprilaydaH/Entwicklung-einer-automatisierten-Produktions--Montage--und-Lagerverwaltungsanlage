@@ -1,0 +1,13 @@
+{
+  "name": "pickplace-nodered",
+  "private": true,
+  "description": "Browser dashboard for Warehouse_1 and Warehouse_2 merker tags (S7 PUT/GET)",
+  "scripts": {
+    "start": "node-red -u ."
+  },
+  "dependencies": {
+    "node-red": "^4.0.9",
+    "node-red-contrib-s7": "^3.1.0",
+    "node-red-dashboard": "^3.6.5"
+  }
+}

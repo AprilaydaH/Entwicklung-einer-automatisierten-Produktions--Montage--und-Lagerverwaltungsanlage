@@ -1,0 +1,38 @@
+﻿// Warehouse_2 Metal mirror — separate DBs/tags from Warehouse_1
+//============================================================================
+// FB_Warehouse_Gate_W2 — NW28 Metal warehouse gate
+//
+// Paket_Fuer_Hochregal := sensor AND (Vision_Combo_Done OR RFID_Pallet_Tagged)
+// Vision_Combo_Done ← Zone 2A "2a_VisionData_Combo_Done" (%M56.0)
+// RFID_Pallet_Tagged ← 4a_RFID_Done (write OK at Reader 1)
+// Sensor: 5a_Metal_Pallet_vor_Regal %E15.0
+//============================================================================
+
+FUNCTION_BLOCK "FB_Warehouse_Gate_W2"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 1.1
+
+VAR_INPUT
+    Enable                      : Bool := TRUE;
+    Sensor_Pallet_Vor_Regal     : Bool := FALSE;
+    Vision_Combo_Done           : Bool := FALSE;
+    RFID_Pallet_Tagged          : Bool := FALSE;
+END_VAR
+
+VAR_OUTPUT
+    Paket_Vor_Regal             : Bool;
+    Paket_Fuer_Hochregal        : Bool;
+END_VAR
+
+BEGIN
+    IF NOT #Enable THEN
+        #Paket_Vor_Regal := FALSE;
+        #Paket_Fuer_Hochregal := FALSE;
+        RETURN;
+    END_IF;
+
+    #Paket_Vor_Regal := #Sensor_Pallet_Vor_Regal;
+
+    #Paket_Fuer_Hochregal := #Paket_Vor_Regal
+        AND (#Vision_Combo_Done OR #RFID_Pallet_Tagged);
+END_FUNCTION_BLOCK

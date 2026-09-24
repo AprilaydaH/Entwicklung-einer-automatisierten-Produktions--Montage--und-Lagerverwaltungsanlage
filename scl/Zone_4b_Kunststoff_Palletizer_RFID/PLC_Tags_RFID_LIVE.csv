@@ -1,0 +1,35 @@
+Category;Name;DataType;LogicalAddress;Comment
+01_Start;4b_Done(1);Bool;%M10.0;Allow_Write
+01_HMI;2b_HMI_RFID_Write;Bool;%M20.0;Vision Write_Req AND RFID HMI_Write — ONE bit
+01_HMI;2a_VisionData_Write_Req;Bool;%M20.1;DO NOT use for RFID HMI_Write (different bit)
+01_HMI;2b_HMI_RFID_Bereit;Bool;%M30.0;Vision RFID_Bereit + FB RFID_Bereit
+01_HMI;2b_HMI_RFID_Busy;Bool;%M30.1;Vision RFID_Busy + FB Busy
+01_HMI;2b_HMI_RFID_Done;Bool;%M30.4;Vision RFID_Done + FB Done
+01_HMI;2b_HMI_RFID_Reset;Bool;%M30.5;Clear Status 10
+02_CREATE;RFID_Error;Bool;%M30.2;CREATE — FB Error out
+02_CREATE;RFID_Gueltig;Bool;%M30.3;CREATE — FB Gueltig out
+02_CREATE;RFID_Fehler;Bool;%M30.6;CREATE — FB Fehler out
+02_CREATE;RFID_Status_Code;Int;%MW44;CREATE — 10=timeout
+02_CREATE;RFID_Pallet_Tagged;Bool;%M22.5;CREATE — write OK gate
+02_CREATE;RFID_Code_Out;UDInt;%MD56;CREATE if needed
+02_CREATE;RFID_Artikelnummer_Out;UInt;%MW60;CREATE if needed
+02_CREATE;RFID_Materialart_Out;USInt;%MB62;CREATE if needed
+02_CREATE;RFID_ProductTyp_Out;UInt;%MW64;CREATE if needed
+03_Vision;2b_Vision Sensor Lid (Value);DInt;%ID142;
+03_Vision;2b_Vision Sensor Base(Value);DInt;%ID146;
+03_Vision;2b_VisionData_RFID_CODE;UDInt;%MD42;
+03_Vision;2b_VisionData_Artikelnumber;UInt;%MW28;spelling Artikelnumber in TIA
+03_Vision;2b_VisionData_Materialart;USInt;%MB46;
+03_Vision;2b_VisionData_ProductType;UInt;%MW38;
+03_Vision;2b_VisionData_Both_Ready;Bool;%M40.1;
+03_Vision;2b_VisionData_Combo_Done;Bool;%M40.0;
+04_FIO_R2;4b_RFID Reader 2 Status;DInt;%ID130;
+04_FIO_R2;4b_RFID Reader 2 Read Data;DInt;%ID134;
+04_FIO_R2;4b_RFID Reader 2 Command ID;DInt;%ID138;
+04_FIO_R2;4b_RFID Reader 2 Execute Command;Bool;%Q11.1;
+04_FIO_R2;4b_RFID Reader 2 Command;DInt;%QD104;
+04_FIO_R2;4b_RFID Reader 2 Write Data;DInt;%QD108;
+04_FIO_R2;4b_RFID Reader 2 Memory Index;DInt;%QD112;
+05_MISSING_IN_EXPORT;RFID_Busy;Bool;—;DOES NOT EXIST — use 2b_HMI_RFID_Busy
+05_MISSING_IN_EXPORT;RFID_Done;Bool;—;DOES NOT EXIST — use 2b_HMI_RFID_Done
+05_MISSING_IN_EXPORT;RFID_Bereit;Bool;—;DOES NOT EXIST — use 2b_HMI_RFID_Bereit

@@ -1,0 +1,20 @@
+//============================================================================
+// UDT_RFID_Product — product data written/read on RFID tag (pallet)
+// Matches FB_RFID_ReadWrite memory indexes 0..3 + Color for HMI
+//
+// Tag DWORD index:
+//   0  RFID_CODE
+//   1  Artikelnummer
+//   2  Materialart
+//   3  ProductTyp
+//============================================================================
+
+TYPE
+    "UDT_RFID_Product" : STRUCT
+        RFID_CODE           : UDInt;  // index 0 — YYMMDD*1000+Mat*100+Color
+        Artikelnummer       : UInt;   // index 1 — YY*1000+Mat*100+Color
+        Materialart         : USInt;  // index 2 — 1=Plastic 2=Metal
+        ProductTyp          : UInt;   // index 3 — Lid*10+Base or metal type
+        Color_Code          : USInt;  // decoded / from Vision (not a tag index)
+    END_STRUCT;
+END_TYPE

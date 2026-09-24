@@ -1,0 +1,66 @@
+//============================================================================
+// OB1 Network 15 — Zone 4A metal RFID (Reader 1)
+// Instance: %DB103 "RFID_Read_Write_DB_3"  (= FB16 RFID_Read_Write)
+//
+// Live FIO: Reader 1  %AD76/80/84  %A9.0  %ED102/106/110
+// Product:  RFID_Code_In ← 2a Vision YYMMDD; Materialart := 2
+// After Job 11: Pallet_Tagged / Done / RFID_Code_Out → Warehouse_2
+//
+// Op_Mode := 10  (product read) — HMI_Write still starts Job 11
+//============================================================================
+
+"RFID_Read_Write_DB_3"(
+    Execute                     := FALSE,
+    HMI_Read                    := FALSE,
+    HMI_Write                   := "2a_Metal_HMI_RFID_Write",
+    HMI_Check                   := FALSE,
+    HMI_Clear                   := FALSE,
+    HMI_Reset                   := FALSE,
+    RFID_Lesen                  := FALSE,
+
+    Op_Mode                     := 10,
+
+    Command_ID                  := "4a_RFID Reader 1 Command ID",
+    Status                      := "4a_RFID Reader 1 Status",
+    Read_Data                   := "4a_RFID Reader 1 Read Data",
+
+    Memory_Index                := 0,
+    Write_Data                  := 0,
+
+    RFID_Code_In                := "2a_Metal_VisionData_RFID_CODE",
+    Artikelnummer_In            := "2a_Metal_VisionData_Artikelnummer",
+    Materialart_In              := USINT#2,
+    ProductTyp_In               := UINT#0,
+
+    Timeout                     := T#15S,
+    Tag_Wait_Time               := T#3M,
+    Execute_Hold                := T#100MS,
+
+    Execute_Command             => "4a_RFID Reader 1 Execute Command",
+    Command                     => "4a_RFID Reader 1 Command",
+    Memory_Index_Out            => "4a_RFID Reader 1 Memory Index",
+    Write_Data_Out              => "4a_RFID Reader 1 Write Data",
+
+    Busy                        => "4a_RFID_Busy",
+    Done                        => "4a_RFID_Done",
+    Error                       => "4a_RFID_Error",
+    State                       => "4a_RFID_State",
+    Status_Code                 => "4a_RFID_Status_Code",
+
+    Tag_Present                 => "4a_RFID_Tag_Present",
+    Serial_Number               => "4a_RFID_Serial_Number",
+    Data_Out                    => "4a_RFID_Data_Out",
+
+    RFID_Code_Out               => "4a_RFID_Code_Out",
+    Artikelnummer_Out           => "4a_RFID_Artikelnummer",
+    Materialart_Out             => "4a_RFID_Materialart",
+    ProductTyp_Out              => "4a_RFID_ProductTyp",
+
+    RFID_Bereit                 => "4a_RFID_Bereit",
+    RFID_Gueltig                => "4a_RFID_Gueltig",
+    RFID_Fehler                 => "4a_RFID_Fehler"
+
+    // Optional after CREATE %M57.3:
+    // Pallet_Tagged            => "4a_RFID_Pallet_Tagged"
+);
+

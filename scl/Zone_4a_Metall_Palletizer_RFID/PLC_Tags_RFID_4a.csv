@@ -1,0 +1,24 @@
+Name;Path;Data Type;Logical Address;Comment
+4a_RFID Reader 1 Command;4a_RFID;DInt;%AD76;FIO Reader 1
+4a_RFID Reader 1 Write Data;4a_RFID;DInt;%AD80;
+4a_RFID Reader 1 Memory Index;4a_RFID;DInt;%AD84;
+4a_RFID Reader 1 Execute Command;4a_RFID;Bool;%A9.0;
+4a_RFID Reader 1 Status;4a_RFID;DInt;%ED102;
+4a_RFID Reader 1 Read Data;4a_RFID;DInt;%ED106;
+4a_RFID Reader 1 Command ID;4a_RFID;DInt;%ED110;
+4a_RFID_Busy;4a_RFID;Bool;%M21.0;
+4a_RFID_Done;4a_RFID;Bool;%M21.1;Write OK → W2 gate + product copy
+4a_RFID_Error;4a_RFID;Bool;%M21.2;
+4a_RFID_Tag_Present;4a_RFID;Bool;%M21.3;
+4a_RFID_Pallet_Tagged;4a_RFID;Bool;%M57.3;CREATE — FB Pallet_Tagged (not %M21.4 = 4b lamps)
+4a_RFID_Gueltig;4a_RFID;Bool;%M57.4;
+4a_RFID_Fehler;4a_RFID;Bool;%M57.5;
+4a_RFID_Bereit;4a_RFID;Bool;%M57.6;
+4a_RFID_Artikelnummer;4a_RFID;UInt;%MW150;
+4a_RFID_State;4a_RFID;Int;%MW152;
+4a_RFID_Status_Code;4a_RFID;Int;%MW154;
+4a_RFID_Code_Out;4a_RFID;UDInt;%MD236;YYMMDD after write
+4a_RFID_Data_Out;4a_RFID;DInt;%MD240;
+4a_RFID_Serial_Number;4a_RFID;DInt;%MD244;
+4a_RFID_Materialart;4a_RFID;USInt;%MB248;2 = Metall
+4a_RFID_ProductTyp;4a_RFID;UInt;%MW250;

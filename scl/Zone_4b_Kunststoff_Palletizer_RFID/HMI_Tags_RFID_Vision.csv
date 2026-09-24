@@ -1,0 +1,35 @@
+Category;Name;DataType;LogicalAddress;Comment;HMI_Object
+01_Cmd;2b_HMI_RFID_Write;Bool;%M20.0;Momentary — Write product (also Vision Write_Req);Schaltfläche Schreiben
+01_Cmd;2b_HMI_RFID_Read;Bool;%M20.1;Momentary — Read product from tag;Schaltfläche Lesen
+01_Cmd;2b_HMI_RFID_Check;Bool;%M20.2;Momentary — Tag present?;Schaltfläche Prüfen
+01_Cmd;2b_HMI_RFID_Clear;Bool;%M20.3;Momentary — Clear tag;Schaltfläche Löschen
+01_Cmd;2b_HMI_RFID_Reset;Bool;%M30.5;Momentary — Clear Error/Status10 + Vision Reset;Schaltfläche Zurücksetzen
+02_Product;2b_VisionData_Artikelnummer;UInt;%MW28;Vision → HMI + RFID In;IOField
+02_Product;2b_VisionData_RFID_CODE;UDInt;%MD42;Vision → HMI + RFID In;IOField
+02_Product;2b_VisionData_Materialart;USInt;%MB46;1=plastic;IOField
+02_Product;2b_VisionData_ProductType;UInt;%MW38;Lid*10+Base;IOField
+02_Product;2b_VisionData_Color_Code;USInt;%MB50;1 Blue 2 Green 3 Mixed;IOField
+02_Product;2b_VisionData_Both_Ready;Bool;%M40.1;Lid+Base latched;Indicator
+02_Product;2b_VisionData_Combo_Done;Bool;%M40.0;RFID write OK — ready for warehouse;Indicator
+03_TagOut;2b_RFID_Tag_Present;Bool;%M21.3;From RFID Tag_Present;Indicator
+03_TagOut;2b_RFID_Serial_Number;DInt;%MD48;Pallet serial from FIO;IOField
+03_TagOut;2b_RFID_Code_Out;UDInt;%MD56;After READ;IOField
+03_TagOut;2b_RFID_Artikelnummer_Out;UInt;%MW60;After READ;IOField
+03_TagOut;2b_RFID_Materialart_Out;USInt;%MB62;After READ;IOField
+03_TagOut;2b_RFID_ProductTyp_Out;UInt;%MW64;After READ;IOField
+03_TagOut;2b_RFID_Gueltig;Bool;%M22.1;Product valid on tag;Indicator
+04_Status;2b_RFID_Lamp_Ready;Bool;%M21.4;Green;Lamp
+04_Status;2b_RFID_Lamp_Running;Bool;%M21.5;Yellow;Lamp
+04_Status;2b_RFID_Lamp_Done;Bool;%M21.6;Blue;Lamp
+04_Status;2b_RFID_Lamp_Error;Bool;%M21.7;Red;Lamp
+04_Status;2b_RFID_Status_Code;Int;%MW44;0 OK / 1 no tag / 10 timeout;IOField+TextList
+04_Status;2b_RFID_State;Int;%MW42;FB Step;IOField
+04_Status;2b_RFID_Busy;Bool;%M21.0;Job running;Indicator
+04_Status;2b_RFID_Bereit;Bool;%M22.0;Wire to Vision RFID_Bereit;Indicator
+05_FIO;4b_RFID Reader 2 Command;DInt;%QD104;Diag;IOField
+05_FIO;4b_RFID Reader 2 Command ID;DInt;%ID138;Must change on Execute;IOField
+05_FIO;4b_RFID Reader 2 Write Data;DInt;%QD108;Diag during WRITE;IOField
+05_FIO;4b_RFID Reader 2 Execute Command;Bool;%Q11.1;Diag;Indicator
+05_FIO;4b_RFID Reader 2 Status;DInt;%ID130;FIO status 0=OK;IOField
+06_Extra;2b_RFID_Write_Preview;DInt;%MD66;Always = RFID_Code_In (see code even if Error);IOField
+06_Extra;2b_RFID_Pallet_Tagged;Bool;%M22.5;TRUE after successful WRITE — ready for warehouse;Indicator

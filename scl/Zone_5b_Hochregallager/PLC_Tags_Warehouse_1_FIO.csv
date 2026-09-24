@@ -1,0 +1,16 @@
+Category;Name;DataType;LogicalAddress;Comment
+01_Stacker_IN;5b_Stacker Crane 0 Moving-X;Bool;%E13.6;Factory I/O — crane moving X
+01_Stacker_IN;5b_Stacker Crane 0 Moving-Z;Bool;%E13.7;Factory I/O — crane moving Z
+01_Stacker_IN;5b_Stacker Crane 0 Left Limit;Bool;%E14.0;Fork fully left
+01_Stacker_IN;5b_Stacker Crane 0 Right Limit;Bool;%E14.1;Fork fully right
+01_Stacker_IN;5b_Stacker Crane 0 Middle Limit;Bool;%E14.2;Fork centered
+01_Stacker_IN;5b_Stacker Crane 0 X Position (V);Real;%ED162;Actual X (V)
+01_Stacker_IN;5b_Stacker Crane 0 Z Position (V);Real;%ED166;Actual Z (V)
+02_Stacker_OUT;5b_Stacker Crane 0 (Left);Bool;%A14.0;Fork drive left
+02_Stacker_OUT;5b_Stacker Crane 0 (Right);Bool;%A14.1;Fork drive right
+02_Stacker_OUT;5b_Warning Light 5;Bool;%A14.2;ON while HRL_Busy — verify FIO addr 155
+02_Stacker_OUT;5b_Alarm Siren 2;Bool;%A14.4;ON on HRL_Error or Not_Aus — verify FIO map
+02_Stacker_OUT;5b_Stacker Crane 0 X Set Point (V);Real;%AD136;Command X (V)
+02_Stacker_OUT;5b_Stacker Crane 0 Z Set Point (V);Real;%AD140;Command Z (V)
+03_Pallet;5b_Pallet_vor_Regal_E13;Bool;%E13.3;Optional duplicate sensor (FIO map)
+04_Glue;5b_RFID_Lesen;Bool;%M65.0;Automatik RFID_Lesen → Reader 5 FB (move from M0.0)

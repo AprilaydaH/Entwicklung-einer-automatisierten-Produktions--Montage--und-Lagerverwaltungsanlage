@@ -1,0 +1,324 @@
+//Author: Dereje Hailemariam
+//Datum: 07.09.2026
+//Version: 1.6
+//Beschreibung: Two-Axis Pick & Place + Positioning Bars — optimized motion
+//              cmd_X / cmd_Z = motion target (never read VAR_OUTPUT for At_*)
+//              TON_Step delay on every step
+//              After drop: clamp base twice, then raise
+// ============================================================================
+// FB_PickPlace — Factory I/O Two-Axis Pick & Place (Digital & Analog)
+//
+// Two Positioning Bars:
+//   Lid  (Left)  — clamps lid at pick,  releases when lid is grabbed
+//   Base (Right) — clamps base at place, 2× clamp after lid dropped, then raise
+//
+// V1.6: after place, Base_Clamp pulse twice (73/74 then 79/75) before raise
+// V1.5: Step 10 removed; 40+50 merged; Step_Delay 100ms
+// ============================================================================
+
+FUNCTION_BLOCK "FB_PickPlace"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 1.6
+
+VAR_INPUT
+    Automatic_Mode  : Bool;
+    Stop            : Bool;
+    Reset           : Bool;
+
+    X_Pos_V         : Real;
+    Z_Pos_V         : Real;
+    Moving_X        : Bool;
+    Moving_Z        : Bool;
+    Detected        : Bool;
+
+    Lid_Detected    : Bool;
+    Base_Detected   : Bool;
+    Lid_Clamped     : Bool;
+    Base_Clamped    : Bool;
+
+    Step_Delay      : Time := T#100MS;
+    Grab_Delay      : Time := T#500MS;
+    Drop_Delay      : Time := T#500MS;
+    BaseRaise_Time  : Time := T#2S;
+END_VAR
+
+VAR_OUTPUT
+    X_SetPoint_V    : Real;
+    Z_SetPoint_V    : Real;
+    Grab            : Bool;
+    Rotate_CW       : Bool;
+    Rotate_CCW      : Bool;
+    Gripper_CW      : Bool;
+    Gripper_CCW     : Bool;
+
+    Lid_Clamp       : Bool;
+    Lid_Raise       : Bool;
+    Base_Clamp      : Bool;
+    Base_Raise      : Bool;
+
+    Material_Placed : Bool;
+    Busy            : Bool;
+    Done            : Bool;
+    State           : Int;
+END_VAR
+
+VAR
+    R_Start         : R_TRIG;
+    Step            : Int := 0;
+    Step_Old        : Int := -1;
+    TON_Step        : TON;
+    TON_Grab        : TON;
+    TON_Drop        : TON;
+    TP_BaseRaise    : TP;
+    TON_BaseRaise   : TON;
+    Tol_V           : Real := 0.25;
+    BaseRaise_Mem   : Bool := FALSE;
+    BaseRaise_In    : Bool := FALSE;
+    cmd_X           : Real := 0.0;
+    cmd_Z           : Real := 0.0;
+END_VAR
+
+VAR_TEMP
+    At_XZ           : Bool;
+    At_Z            : Bool;
+    Step_Changed    : Bool;
+END_VAR
+
+BEGIN
+    #R_Start(CLK := #Automatic_Mode);
+
+    #Rotate_CW := FALSE;
+    #Rotate_CCW := FALSE;
+    #Gripper_CW := FALSE;
+    #Gripper_CCW := FALSE;
+
+    IF #Reset OR #Stop THEN
+        #Step := 0;
+        #Step_Old := -1;
+        #Busy := FALSE;
+        #Done := FALSE;
+        #Grab := FALSE;
+        #Material_Placed := FALSE;
+        #cmd_X := 0.0;
+        #cmd_Z := 0.0;
+        #X_SetPoint_V := 0.0;
+        #Z_SetPoint_V := 0.0;
+        #Lid_Clamp := FALSE;
+        #Lid_Raise := FALSE;
+        #Base_Clamp := FALSE;
+        #Base_Raise := FALSE;
+        #BaseRaise_Mem := FALSE;
+        #BaseRaise_In := FALSE;
+        #TON_Step(IN := FALSE, PT := #Step_Delay);
+        #TON_Grab(IN := FALSE, PT := #Grab_Delay);
+        #TON_Drop(IN := FALSE, PT := #Drop_Delay);
+        #TP_BaseRaise(IN := FALSE, PT := #BaseRaise_Time);
+        #TON_BaseRaise(IN := FALSE, PT := T#50MS);
+        #State := 0;
+        RETURN;
+    END_IF;
+
+    #Step_Changed := (#Step <> #Step_Old);
+    IF #Step_Changed THEN
+        #Step_Old := #Step;
+        #TON_Step(IN := FALSE, PT := #Step_Delay);
+    END_IF;
+    #TON_Step(IN := TRUE, PT := #Step_Delay);
+
+    CASE #Step OF
+
+        0: // Idle
+            #Busy := FALSE;
+            #Done := FALSE;
+            #Grab := FALSE;
+            #Material_Placed := FALSE;
+            #cmd_X := 0.0;
+            #cmd_Z := 0.0;
+            #Lid_Clamp := FALSE;
+            #Lid_Raise := FALSE;
+            #Base_Clamp := FALSE;
+            #Base_Raise := FALSE;
+            #BaseRaise_Mem := FALSE;
+            #BaseRaise_In := FALSE;
+            IF #R_Start.Q OR #Lid_Detected THEN
+                #Busy := TRUE;
+                #Step := 5;
+            END_IF;
+
+        5: // Lid + Base klemmen
+            #Busy := TRUE;
+            #Grab := FALSE;
+            #cmd_X := 0.0;
+            #cmd_Z := 0.0;
+            IF #Lid_Detected THEN
+                #Lid_Clamp := TRUE;
+                #Lid_Raise := FALSE;
+            END_IF;
+            IF #Base_Detected THEN
+                #Base_Clamp := TRUE;
+                #Base_Raise := FALSE;
+            END_IF;
+            IF #Lid_Clamped AND #Base_Clamped AND #TON_Step.Q THEN
+                #Step := 20;
+            END_IF;
+
+        20: // Z runter Lid
+            #cmd_X := 0.0;
+            #cmd_Z := 9.4;
+            IF (ABS(#Z_Pos_V - #cmd_Z) <= #Tol_V)
+               AND (NOT #Moving_Z)
+               AND #TON_Step.Q THEN
+                #Step := 30;
+            END_IF;
+
+        30: // Greifen
+            #Grab := TRUE;
+            #cmd_X := 0.0;
+            #cmd_Z := 9.4;
+            #TON_Grab(IN := #Detected, PT := #Grab_Delay);
+            IF #TON_Grab.Q AND #TON_Step.Q THEN
+                #Lid_Clamp := FALSE;
+                #Lid_Raise := FALSE;
+                #Step := 40;
+            END_IF;
+
+        40: // Lift Z + travel X to base simultaneously
+            #Grab := TRUE;
+            #cmd_X := 10.0;
+            #cmd_Z := 0.0;
+            #Base_Clamp := FALSE;
+            #At_XZ := (ABS(#X_Pos_V - #cmd_X) <= #Tol_V) AND (NOT #Moving_X);
+            #At_Z := (ABS(#Z_Pos_V - #cmd_Z) <= #Tol_V) AND (NOT #Moving_Z);
+            IF #At_XZ AND #At_Z AND #TON_Step.Q THEN
+                #Step := 60;
+            END_IF;
+
+        60: // Z runter Base
+            #Grab := TRUE;
+            #cmd_X := 10.0;
+            #cmd_Z := 7.5;
+            #Base_Clamp := FALSE;
+            IF (ABS(#Z_Pos_V - #cmd_Z) <= #Tol_V)
+               AND (NOT #Moving_Z)
+               AND #TON_Step.Q THEN
+                #Step := 70;
+            END_IF;
+
+        70: // Clamp öffnen, dann ablegen
+            #Grab := TRUE;
+            #cmd_X := 10.0;
+            #cmd_Z := 7.5;
+            #Base_Clamp := FALSE;
+            IF NOT #Base_Clamped THEN
+                #Step := 72;
+            END_IF;
+
+        72: // Lid auf Base
+            #Grab := FALSE;
+            #cmd_X := 10.0;
+            #cmd_Z := 7.5;
+            #Material_Placed := TRUE;
+            #TON_Drop(IN := NOT #Detected, PT := #Drop_Delay);
+            IF #TON_Drop.Q AND #TON_Step.Q THEN
+                #Step := 73;
+            END_IF;
+
+        73: // 1st clamp after place
+            #Grab := FALSE;
+            #cmd_X := 10.0;
+            #cmd_Z := 7.5;
+            #Base_Raise := FALSE;
+            #Base_Clamp := TRUE;
+            IF #Base_Clamped AND #TON_Step.Q THEN
+                #Step := 74;
+            END_IF;
+
+        74: // 1st unclamp
+            #Grab := FALSE;
+            #cmd_X := 10.0;
+            #cmd_Z := 7.5;
+            #Base_Clamp := FALSE;
+            IF (NOT #Base_Clamped) AND #TON_Step.Q THEN
+                #Step := 79;
+            END_IF;
+
+        79: // 2nd clamp after place
+            #Grab := FALSE;
+            #cmd_X := 10.0;
+            #cmd_Z := 7.5;
+            #Base_Clamp := TRUE;
+            IF #Base_Clamped AND #TON_Step.Q THEN
+                #Step := 75;
+            END_IF;
+
+        75: // 2nd unclamp, then raise
+            #Grab := FALSE;
+            #cmd_X := 10.0;
+            #cmd_Z := 7.5;
+            #Base_Clamp := FALSE;
+            #Base_Raise := FALSE;
+            IF (NOT #Base_Clamped) AND #TON_Step.Q THEN
+                #Step := 76;
+            END_IF;
+
+        76: // Raise 2 s via TP/TON, gantry goes home
+            #Grab := FALSE;
+            #cmd_X := 0.0;
+            #cmd_Z := 0.0;
+            #Base_Clamp := FALSE;
+
+            IF NOT #BaseRaise_Mem THEN
+                #TP_BaseRaise(IN := FALSE, PT := #BaseRaise_Time);
+                #TON_BaseRaise(IN := FALSE, PT := T#50MS);
+                #BaseRaise_Mem := TRUE;
+                #BaseRaise_In := FALSE;
+            ELSE
+                #BaseRaise_In := TRUE;
+            END_IF;
+
+            #TP_BaseRaise(IN := #BaseRaise_In, PT := #BaseRaise_Time);
+            #Base_Raise := #TP_BaseRaise.Q;
+
+            #TON_BaseRaise(IN := #BaseRaise_In AND NOT #TP_BaseRaise.Q, PT := T#50MS);
+            IF #TON_BaseRaise.Q THEN
+                #Base_Raise := FALSE;
+                #BaseRaise_Mem := FALSE;
+                #BaseRaise_In := FALSE;
+                #Step := 78;
+            END_IF;
+
+        78: // Home, then idle
+            #Grab := FALSE;
+            #Lid_Clamp := FALSE;
+            #Lid_Raise := FALSE;
+            #Base_Clamp := FALSE;
+            #Base_Raise := FALSE;
+            #cmd_X := 0.0;
+            #cmd_Z := 0.0;
+            IF (ABS(#X_Pos_V - #cmd_X) <= #Tol_V)
+               AND (ABS(#Z_Pos_V - #cmd_Z) <= #Tol_V)
+               AND (NOT #Moving_X) AND (NOT #Moving_Z)
+               AND #TON_Step.Q THEN
+                #Busy := FALSE;
+                #Done := TRUE;
+                #Material_Placed := FALSE;
+                #Step := 0;
+            END_IF;
+
+        ELSE
+            #Step := 0;
+            #cmd_X := 0.0;
+            #cmd_Z := 0.0;
+
+    END_CASE;
+
+    #At_XZ := (ABS(#X_Pos_V - #cmd_X) <= #Tol_V)
+          AND (ABS(#Z_Pos_V - #cmd_Z) <= #Tol_V)
+          AND (NOT #Moving_X) AND (NOT #Moving_Z);
+    #At_Z := (ABS(#Z_Pos_V - #cmd_Z) <= #Tol_V) AND (NOT #Moving_Z);
+
+    #X_SetPoint_V := #cmd_X;
+    #Z_SetPoint_V := #cmd_Z;
+    #State := #Step;
+
+END_FUNCTION_BLOCK

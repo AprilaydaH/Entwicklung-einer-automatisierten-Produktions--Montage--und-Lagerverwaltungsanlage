@@ -1,0 +1,17 @@
+//============================================================================
+// UDT_Meldungen — create AFTER Status + Fehler types exist
+//
+// TIA:
+//   1) UDT_Meldungen_Status.udt.txt
+//   2) UDT_Meldungen_Fehler.udt.txt
+//   3) this file — members Status / Fehler pick those existing UDTs
+//
+// Global DB: gldb_Meldungen : UDT_Meldungen
+//============================================================================
+
+TYPE
+    "UDT_Meldungen" : STRUCT
+        Status              : "UDT_Meldungen_Status";
+        Fehler              : "UDT_Meldungen_Fehler";
+    END_STRUCT;
+END_TYPE

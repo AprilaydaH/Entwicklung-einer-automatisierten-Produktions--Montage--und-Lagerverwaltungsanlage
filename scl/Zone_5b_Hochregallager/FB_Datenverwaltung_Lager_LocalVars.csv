@@ -1,0 +1,31 @@
+Section;Name;DataType;Default;Comment
+Input;Initialisieren;Bool;False;Pulse — re-init Fach numbers 1..54
+Input;Reset_Meldung;Bool;False;Pulse — clear HMI message
+Input;Position_Speichern;Bool;False;Pulse — save Ist_X/Z (Einricht only)
+Input;Raster_Berechnen;Bool;False;Pulse — apply Basis+Pitch to all slots
+Input;HMI_Fachnummer;UInt;0;Selected Fach 1..54
+Input;Einricht_Mode;Bool;False;Setup mode active
+Input;Ist_X;Real;0.0;Actual crane X
+Input;Ist_Z;Real;0.0;Actual crane Z
+Input;Pitch_X;Real;0.0;Column pitch (0 = keep gldb.Raster)
+Input;Pitch_Z;Real;0.0;Level pitch (0 = keep gldb.Raster)
+Input;Spalten;Int;0;Columns (0 = keep DB, default 6)
+Input;Spalten_Rechts;Int;0;Right rack cols (0 = keep DB, default 3)
+Output;Fertig;Bool;False;Action done
+Output;Fehler;Bool;False;Error active
+Output;Fehlercode;UInt;0;101=bad Fach 102=pos denied 103=raster denied
+Output;HMI_Fach_Gueltig;Bool;False;Fach 1..54
+Output;HMI_Fach_Belegt;Bool;False;Selected slot occupied
+Output;Anzahl_Belegt;UInt;0;
+Output;Anzahl_Frei;UInt;0;
+Static;Init_done;Bool;False;One-time init
+Static;R_TRIG_Initialisieren;R_TRIG;
+Static;R_TRIG_Reset_Meldung;R_TRIG;
+Static;R_TRIG_Pos_Speichern;R_TRIG;
+Static;R_TRIG_Raster;R_TRIG;
+Temp;i;Int;0;Loop index
+Temp;iFach;Int;0;Current Fach index
+Temp;Mult_X;Int;0;Column index 0..Spalten-1
+Temp;Mult_Z;Int;0;Level index
+Temp;Pos_X;Real;0.0;Computed Fach X
+Temp;Pos_Z;Real;0.0;Computed Fach Z

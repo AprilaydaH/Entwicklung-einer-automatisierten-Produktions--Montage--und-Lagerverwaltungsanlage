@@ -1,0 +1,491 @@
+SPRECHSKRIPT — 15 MINUTEN
+18 Folien nach Kursregeln
+Dereje Hailemariam  ·  11.09.2026
+
+PowerPoint: Praesentation_Abschlussprojekt_15min.pptx
+(falls gesperrt: Praesentation_Abschlussprojekt_15min_neu.pptx)
+Neu bauen: python scripts/generate_praesentation.py
+
+Pro Folie: zuerst kurz sagen, WAS zu sehen ist, dann den Inhalt vorlesen.
+
+
+========================================================================
+FOLIE 1 — DECKBLATT / WILLKOMMEN  (~40 s)
+========================================================================
+
+AUF DER FOLIE: dunkelblauer Hintergrund, Projekttitel groß,
+darunter RFID / TIA V20 / Factory I/O, dann Name, Weiterbildung, Datum.
+
+SPRECHEN:
+
+Guten Tag. Mein Name ist Dereje Hailemariam.
+
+Ich präsentiere mein Abschlussprojekt der Weiterbildung
+Automatisierungstechnik in Berlin.
+
+Der Titel steht oben: Entwicklung einer automatisierten
+Produktions-, Montage- und Lagerverwaltungsanlage.
+
+Darunter das Thema: Simulation mit RFID-gestützter
+Produktverfolgung in TIA Portal V20 und Factory I/O.
+
+Heute ist der 11. September 2026. Der Vortrag dauert 15 Minuten.
+
+
+========================================================================
+FOLIE 2 — INHALTSVERZEICHNIS  (~30 s)
+========================================================================
+
+AUF DER FOLIE: zwei Spalten. Links die Punkte 1 bis 8,
+rechts Durchführung, Ausblick, Fazit und Ende. Untertitel:
+15 Minuten, 18 Folien.
+
+SPRECHEN:
+
+Auf dieser Folie steht die Reihenfolge des Vortrags.
+
+Links: zuerst das Projektziel, dann die Beschreibung,
+der Soll-Ist-Vergleich und der Umfang.
+Danach zwei eigene Folien: Kosten und Wirtschaftlichkeit.
+Dann Zeit und die Herausforderungen mit den Lösungen.
+
+Rechts: die Projektdurchführung — Anlage, RFID und Hochregal,
+Software und HMI. Danach Ausblick, Fazit — was ich gelernt habe —
+und Fragen.
+
+
+========================================================================
+FOLIE 3 — PROJEKTZIEL  (~1 min)
+========================================================================
+
+AUF DER FOLIE: sieben Aufzählungspunkte unter dem Titel
+„Was am Ende funktionieren soll“.
+
+SPRECHEN:
+
+Diese Folie beschreibt das Ziel — was am Ende funktionieren soll.
+
+Erstens: eine durchgängige Fertigungs- und Lagerlinie
+in TIA Portal und Factory I/O — nicht einzelne Inseln.
+
+Zweitens: zwei Materiallinien. Linie A ist Metall,
+Linie B ist Kunststoff. Überall Base und Deckel.
+
+Drittens: RFID-Verfolgung. Artikel, Material, Typ und Code
+gehen vom Band bis ins Lagerfach.
+
+Viertens: Montage mit dem 2-axis Pick and Place,
+dann Palettierung, dann automatisches Ein- und Auslagern.
+
+Fünftens: eine SPS, die CPU 1518F, und ein HMI, das TP2200.
+Manual und Automatik.
+
+Sechstens: 54 Lagerfächer, adressierbar, Zustände speicherbar,
+modular erweiterbar.
+
+Siebtens: dokumentiert — Lastenheft, Pflichtenheft, SCL und Tag-Listen.
+
+
+========================================================================
+FOLIE 4 — PROJEKTBESCHREIBUNG  (~1 min)
+========================================================================
+
+AUF DER FOLIE: vier Karten — Anlage, Steuerung,
+Identifikation, Lager.
+
+SPRECHEN:
+
+Diese Folie zeigt das System in vier Kästen.
+
+Oben links, Anlage: Die Factory läuft in Factory I/O.
+Rohteile, CNC, Bänder, Vision, Pick and Place, Palettierer
+und zwei Hochregale mit je 54 Fächern.
+
+Oben rechts, Steuerung: TIA Portal V20, CPU 1518F Failsafe.
+OB1 hat 29 Netzwerke, programmiert in SCL und FUP.8
+
+Unten links, Identifikation: Vision erkennt Farbe und Typ.
+RFID schreibt den Tag auf die Palette.
+Ohne gültigen Tag gibt es kein Automatik-Einlagern — das ist das Gate.
+
+Unten rechts, Lager: Warehouse 1 ist Kunststoff, Zone 5B, Netzwerk 29.
+Warehouse 2 ist Metall, Zone 5A, Netzwerk 28.
+Getrennte Datenbausteine, Merker und Kräne.
+
+
+========================================================================
+FOLIE 5 — SOLL–IST-VERGLEICH  (~1 min)
+========================================================================
+
+AUF DER FOLIE: Tabelle mit drei Spalten — Thema, Soll aus der Freigabe,
+Ist heute. Fünf Zeilen.
+
+SPRECHEN:
+
+Diese Tabelle vergleicht die Freigabe vom Juni mit dem heutigen Stand.
+
+Erste Zeile, Linienfluss. Soll: Roh, Bearbeitung, Montage, Palette, Lager.
+Ist: die Kunststofflinie läuft Ende zu Ende.
+Metall ist bis Warehouse-2-Programm und Netzwerk 28 da,
+die erste Palette ist noch offen.
+
+Zweite Zeile, RFID. Soll: Tag mit Artikel, Material und Typ.
+Ist: Write in Zone 4B und Write in Zone 4A. Warehouse 2 hat keinen Reader 0.
+
+Dritte Zeile, Lager mit 54 Fächern. Soll: Einlagern, Auslagern, Suche, HMI.
+Ist: Warehouse 1 läuft live. Warehouse 2 hat SCL und Factory I/O.
+Das Web-Gitter liest OPC UA live. Die erste Auto-Palette auf W2 fehlt.
+
+Vierte Zeile, ein Touch Panel. Soll: Manual, Automatik, Meldungen, Regal.
+Ist: Tags sind da. Auf dem Laptop geht die Simulation nur über PLCSIM.
+Die Start- und Stop-Events am Panel sind noch offen.
+
+Fünfte Zeile, Dokumentation und Test. Soll: Lastenheft, Pflichtenheft, Test in Factory I/O.
+Ist: Lastenheft Version 1.6, Pflichtenheft 1.3, Repository,
+Streamlit mit OPC UA auf 192.168.0.1.
+
+
+========================================================================
+FOLIE 6 — PROJEKTUMFANG  (~50 s)
+========================================================================
+
+AUF DER FOLIE: zwei Karten. Links grün „Gehört dazu“,
+rechts orange „Gehört nicht dazu“.
+
+SPRECHEN:
+
+Diese Folie zieht die Maschinengrenze.
+
+Links, was dazugehört: die Zonen 1A und 1B bis 5A und 5B,
+SPS, HMI, Factory I/O, das Sicherheitskonzept,
+RFID, Vision, Pick and Place, Palettierer, beide Hochregale,
+die Web-Suche Lagerverwaltung Online plus OPC UA live Occupancy,
+Lastenheft, Pflichtenheft und das SCL-Repository.
+
+Rechts, was nicht dazugehört: Wasserverbrauch,
+ERP-Anbindung, Stapler und Personal,
+keine Live-Synchronisation der Web-Datenbank auf die SPS-Lager-DB,
+und die volle CE-Akte — die kommt später.
+
+
+========================================================================
+FOLIE 7 — KOSTEN  (~1 min)
+========================================================================
+
+AUF DER FOLIE: Tabelle Position / Ansatz / Bewertung.
+Fünf Zeilen. Darunter ein Hinweis: Verrechnungssatz ist eine Annahme.
+
+SPRECHEN:
+
+Diese Folie zeigt die Kosten. Es ist ein Schulungsprojekt.
+Es gibt keine Investition in reale Mechanik.
+
+Erste Zeile: Mechanik und Schaltschrank — null Euro,
+weil alles in Factory I/O simuliert ist. Keine Beschaffung.
+
+Zweite Zeile: SPS und HMI stehen im Labor, CPU 1518F und TP2200.
+Keine Extra-Kosten.
+
+Dritte Zeile: Software — TIA V20 und Factory I/O als Schulungslizenz im Kurs.
+
+Vierte Zeile: die eigentliche Größe ist die Arbeitszeit.
+Etwa zehn Wochen, rund 250 Stunden für Steuerung, Test und Dokumentation.
+
+Fünfte Zeile: zum Einordnen rechne ich intern 45 Euro pro Stunde.
+Das sind etwa 11.250 Euro. Das ist keine Kundenrechnung,
+sondern ein Verrechnungssatz. Kostenstelle ist die Weiterbildung.
+
+Unten auf der Folie: Zusatzkosten über den Kurs hinaus praktisch null.
+Der Engpass war Kalenderzeit, nicht Geld.
+
+
+========================================================================
+FOLIE 8 — WIRTSCHAFTLICHKEIT  (~1 min 10 s)
+========================================================================
+
+AUF DER FOLIE: Tabelle mit drei Spalten —
+Annahme, ohne RFID, mit dieser Lösung.
+Darunter das Fazit: Amortisation unter einem Jahr, plus qualitative Nutzen.
+
+SPRECHEN:
+
+Diese Folie ist eine Beispielrechnung für ein fiktives Unternehmen.
+Keine echten Firmendaten.
+
+Erste Zeile: Verwechslung einer Palette.
+Ohne RFID und Gate: ein Fall pro Tag.
+Mit Tag und Gate: 0,1 Fälle pro Tag.
+
+Zweite Zeile: Nacharbeit bleibt 80 Euro je Fall.
+
+Dritte Zeile: 200 Arbeitstage im Jahr.
+Ohne Lösung: 16.000 Euro Schaden.
+Mit Lösung: 1.600 Euro Rest.
+
+Vierte Zeile: Nutzen pro Jahr — etwa 14.400 Euro vermieden.
+
+Fünfte Zeile: interner Projektaufwand — die 11.250 Euro von der Folie davor.
+
+Unten das Fazit: unter diesen Annahmen amortisiert sich das unter einem Jahr.
+
+Qualitativ zur Freigabe: weniger Mischfehler Metall und Kunststoff,
+Übersicht Roh und Fertig, kürzere Durchlaufzeit, Nachverfolgbarkeit,
+und ein digitales Abbild — bevor man die Halle umbaut.
+Die Simulation spart Fehlversuche an der realen Anlage.
+
+
+========================================================================
+FOLIE 9 — ZEIT  (~50 s)
+========================================================================
+
+AUF DER FOLIE: Tabelle Phase / Zeitraum / Ergebnis. Fünf Zeilen
+von der Freigabe bis zum heutigen Vortrag.
+
+SPRECHEN:
+
+Diese Folie ist die Zeitachse von der Freigabe bis heute.
+
+Juni 2026, der 29. Juni: Thema und Ziele bestätigt.
+
+Juli: Konzept und Layout — Zonen, Tags, Trennung Warehouse 1 und 2.
+
+Juli bis August: der Kern. Pick and Place, RFID,
+Warehouse 1 Automatik Ende zu Ende.
+
+August bis September: Warehouse 2 in SCL,
+Lastenheft, Pflichtenheft und die Web-Suche.
+
+Heute, der 19. September: dieser Stand — Factory I/O und OPC UA laufen, das HMI am Laptop nur über PLCSIM.
+
+Die bewusste Reihenfolge war: zuerst Kunststoff fertig, dann Metall.
+
+
+========================================================================
+FOLIE 10 — HERAUSFORDERUNGEN / LÖSUNGEN  (~1 min)
+========================================================================
+
+AUF DER FOLIE: Tabelle mit zwei Spalten — Herausforderung und Lösung.
+Fünf echte Probleme aus dem Projekt.
+
+SPRECHEN:
+
+Diese Folie zeigt konkrete Probleme und die Lösung daneben.
+
+Erste Zeile: Warehouse 1 und 2 wurden leicht vermischt,
+weil die Funktionsbausteine gleich hießen.
+Lösung: eigene Datenbausteine, Merker Prozent M60 und M70,
+Netzwerke 29 und 28, Kran 0 und Kran 1.
+
+Zweite Zeile: die HMI-Datenbank hat RFID-Daten gelöscht,
+weil bei jedem Scan kopiert wurde.
+Lösung: die Datenverwaltung kopiert das aktuelle Fach nur,
+wenn sich die Fachnummer ändert.
+
+Dritte Zeile: PUT/GET liest keine optimierten Datenbausteine.
+Lösung: die Belegt-Bits liegen auf Merker-Bytes,
+HRL_Occ für Warehouse 1 und HRL_2_Occ für Warehouse 2, ab MB407.
+
+Vierte Zeile: der Laptop war im WLAN, die CPU in einem anderen Netz.
+Die HMI-Ethernet-Verbindung schreibt auf dem Laptop nicht.
+Lösung: PLCSIM Advanced auf 192.168.0.1, OPC UA Port 4840 live.
+HMI-Simulation: Verbindung PLCSIM, nicht Ethernet.
+
+Fünfte Zeile: Failsafe-CPU lässt sich nicht auf eine Standard-Sim-Instanz laden.
+Lösung: neue Advanced-Instanz. Die CPU bleibt eine 1518F, kein Tausch auf 1518T.
+
+
+========================================================================
+FOLIE 11 — DURCHFÜHRUNG, VORGEHEN  (~50 s)
+========================================================================
+
+AUF DER FOLIE: sieben Punkte. Sechs Schritte aus der Freigabe,
+dann die Arbeitsweise.
+
+SPRECHEN:
+
+Diese Folie beschreibt, wie ich vorgegangen bin.
+Sechs Schritte stehen in der Freigabe.
+
+Eins: Layout, Signale, Betriebsarten Manual und Automatik.
+Zwei: SPS-Bausteine für Förderer, Bearbeitung, RFID,
+Pick and Place, Palettierer und Hochregal.
+Drei: Lagerverwaltung — Datenbausteine, Suchen, Einlagern, Auslagern, Löschen.
+Vier: HMI — Fach, Status, Meldungen, Regalbelegung.
+Fünf: Prüfung in Factory I/O, Bewegungen und Sensoren.
+Sechs: Tests, Fehlerreaktion, Lastenheft und Pflichtenheft.
+
+Unten die Arbeitsweise: zuerst die Kunststofflinie komplett,
+dann Metall als Spiegel mit dem Zusatz W2.
+
+
+========================================================================
+FOLIE 12 — DURCHFÜHRUNG, ANLAGE  (~1 min)
+========================================================================
+
+AUF DER FOLIE: Tabelle Zone / Linie A Metall / Linie B Kunststoff.
+Fünf Zonen, spiegelbildlich.
+
+SPRECHEN:
+
+Diese Tabelle ist die Anlage: zwei Linien, fünf Zonen.
+
+Zone 1: Rohteile, Roboter und CNC. Links Metall, rechts Kunststoff.
+
+Zone 2: Förderband und Vision. Vision füllt die Daten für RFID.
+
+Zone 3: 2-axis Pick and Place — Montage Base plus Deckel, beide Linien.
+
+Zone 4: Palettierer und RFID. Metall hat zusätzlich den 3-axis Pick and Place.
+Kunststoff schreibt den Tag, wenn die Palette fertig ist.
+
+Zone 5: das Hochregal.
+Bitte merken: Kunststoff ist Warehouse 1, Zone 5B, Netzwerk 29.
+Metall ist Warehouse 2, Zone 5A, Netzwerk 28.
+Die Nummern sind leicht zu verwechseln — deshalb stehen sie extra auf der Folie.
+
+
+========================================================================
+FOLIE 13 — RFID UND HOCHREGAL  (~1 min 15 s)
+========================================================================
+
+AUF DER FOLIE: sieben Punkte. Identität bis ins Fach:
+Vision, Write, Gate, Warehouse 1, Warehouse 2, HMI, Instanz-DBs.
+
+SPRECHEN:
+
+Das ist die wichtigste Technik-Folie. Der RFID-Tag ist die Identität bis ins Fach.
+
+Vision liefert Farbe, Artikel und Typ. Daraus wird der RFID-Code auf der Palette.
+
+Kunststoff: Write, wenn der Palettierer fertig ist, Reader 2.
+Metall: Reader 1 in Zone 4A.
+
+Das Gate: Es liegt eine Palette vor dem Regal UND RFID ist erledigt.
+Sonst startet kein Automatikzyklus.
+
+Warehouse 1 liest am Regal mit Reader 5, State 10, dann freies Fach, Kran 0.
+
+Warehouse 2 hat keinen Reader 0 am Regal. Deshalb entfällt State 10.
+Das Produkt kommt schon von Zone 4A.
+
+HMI: Raster 6 mal 9, Fach 1 bis 6 unten. Gelber Rand ist das Ziel-Fach.
+
+Unten die Instanz-Datenbausteine:
+fb_Datenverwaltung_Lager_DB für Warehouse 1
+und FB_Datenverwaltung_Lager_W2_DB für Warehouse 2.
+Die darf man nicht tauschen.
+
+
+========================================================================
+FOLIE 14 — SOFTWARE UND HMI  (~40 s)
+========================================================================
+
+AUF DER FOLIE: zwei Karten. Links SPS und Repository, rechts Bedienen.
+
+SPRECHEN:
+
+Links: ein Git-Repository. SCL je Zone, Dokumentation je Kapitel.
+OB1 hat 29 Netzwerke plus das Plant-Start-Rezept.
+OPC UA Si_Lagerverwaltung_Online ist live auf der CPU.
+
+Rechts: das Touch Panel TP2200 bleibt führend.
+Auf dem Laptop läuft die HMI-Simulation nur mit Verbindung PLCSIM.
+Die Streamlit-Webseite sucht in SQLite und zeigt das Gitter live über OPC UA.
+Sie ersetzt nicht die Maschinenbedienung.
+
+
+========================================================================
+FOLIE 15 — AUSBLICK  (~50 s)
+========================================================================
+
+AUF DER FOLIE: sechs Punkte. Fünf nächste Schritte,
+dann explizit was nicht geplant ist.
+
+SPRECHEN:
+
+Diese Folie ist der Ausblick — konkret, kein Wunschkonzert.
+
+Als Nächstes: Warehouse 2, erste Palette in Hand und Automatik.
+Kein Reader 0 am Regal — das Produkt kommt von Zone 4A.
+
+Dann CNC- und Band-Feinsteuerung in OB1 festziehen.
+
+Dann WinCC: Start und Stop auf Prozent M58 verdrahten
+und die 54-Fach-Animation für beide Lager.
+
+Dann den Plant-Funktionsbaustein in TIA als FUP zeichnen.
+Das Rezept liegt vor.
+
+Sicherheit nach EN ISO 12100 und die CE-Dokumentation.
+
+Nicht geplant: ERP, Wasserwirtschaft, reale Mechanik, CPU 1518T.
+
+OPC UA live ist erledigt — das steht nicht mehr im Ausblick.
+
+
+========================================================================
+FOLIE 16 — FAZIT, WAS ICH GELERNT HABE  (~1 min)
+========================================================================
+
+AUF DER FOLIE: sechs Lernsätze. Keine Zonenliste —
+was aus Fehlern und Entscheidungen folgt.
+
+SPRECHEN:
+
+Das Fazit ist, was ich gelernt habe — nicht noch einmal die Anlage.
+
+Erstens: eine Factory braucht klare Grenzen.
+Wer ist Warehouse 1, wer ist 2 — sonst zerstört Copy-Paste die Daten.
+
+Zweitens: RFID nützt nur, wenn das Gate den Prozess wirklich sperrt.
+
+Drittens: HMI-Datenbank und Prozess-Datenbank trennen.
+Jedes Scan kopieren kann Buchungen löschen.
+
+Viertens: PLCSIM Advanced und OPC UA — nicht Classic PLCSIM,
+nicht Laptop-WLAN als PG-Schnittstelle.
+
+Fünftens: Lastenheft ist das Was, Pflichtenheft das Wie.
+Früh schreiben, sonst driftet der Code.
+
+Sechstens: zuerst eine Linie fertig machen — bei mir Kunststoff —
+dann spiegeln. Das ist schneller als zwei halbe Linien.
+
+
+========================================================================
+FOLIE 17 — KERNAUSSAGE  (~20 s)
+========================================================================
+
+AUF DER FOLIE: ein Satz in der Mitte, zentriert.
+
+SPRECHEN:
+
+Die Kernaussage steht auf der Folie.
+
+Zwei Linien, RFID bis ins Fach,
+Warehouse 1 Kunststoff und Warehouse 2 Metall getrennt,
+ein HMI — nachgewiesen in TIA Portal und Factory I/O.
+
+
+========================================================================
+FOLIE 18 — ENDE  (~40 s)
+========================================================================
+
+AUF DER FOLIE: dunkelblau. „Vielen Dank“, „Fragen?“, Name und Datum.
+
+SPRECHEN:
+
+Vielen Dank für Ihre Aufmerksamkeit.
+
+Ich beantworte gerne Ihre Fragen.
+Optional zeige ich Factory I/O Warehouse 1 oder Streamlit mit OPC UA.
+
+
+========================================================================
+ZEIT KNAPP
+========================================================================
+
+Kürzen: Folie 14 und Folie 17 (nur den Satz stehen lassen).
+Nicht streichen: Folie 5, 7, 8, 10, 13 und 16.
+Wenn sehr knapp: bei Folie 4 nur die vier Karten-Titel nennen,
+Details in Folie 12 und 13 nachholen.

@@ -1,0 +1,96 @@
+//============================================================================
+// LEGACY — do not paste into TIA Main OB1 for go-live
+// Use: WAREHOUSE_1_SETUP.md §3 (FB network order in TIA)
+//============================================================================
+// Author: Dereje Hailemariam
+// Datum: 20.08.2026
+// OB1 — one call: FB_Hochregallager
+// Instance DB: FB_Hochregallager_DB
+//
+// Import order in TIA:
+//   UDT_Fach → child FBs → Hochregal_Automatik_Betrieb → FB_Hochregallager
+//============================================================================
+
+ORGANIZATION_BLOCK "OB1_Main"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 1.0
+
+BEGIN
+    "FB_Hochregallager_DB"(
+        // Modes
+        Mode_Einricht               := "Mode_Einricht",
+        Mode_Auto                   := "Mode_Auto",
+        Mode_Hand                   := "Mode_Hand",
+        Not_Aus                     := "Not_Aus",
+
+        // HMI
+        HMI_Initialisieren          := "HMI_Initialisieren",
+        HMI_Reset_Meldung           := "HMI_Reset_Meldung",
+        HMI_Pos_Speichern           := "HMI_Pos_Speichern",
+        HMI_Raster_Berechnen        := "HMI_Raster_Berechnen",
+        HMI_Fachnummer              := "HMI_Fachnummer",
+        HMI_Loeschen                := "HMI_Loeschen",
+        HMI_Suchen                  := "HMI_Suchen",
+        HMI_FreiesFach              := "HMI_FreiesFach",
+        HMI_Start_Einlagern         := "HMI_Start_Einlagern",
+        HMI_Start_Auslagern         := "HMI_Start_Auslagern",
+        HMI_Reset                   := "HMI_Reset",
+        HMI_Stop                    := "HMI_Stop",
+
+        Pitch_X                     := "HMI_Pitch_X",
+        Pitch_Z                     := "HMI_Pitch_Z",
+        Spalten                     := "HMI_Spalten",       // 0 = keep remanent (6)
+        Spalten_Rechts              := "HMI_Spalten_Rechts", // 0 = keep remanent (3)
+
+        // Process
+        Paket_Vor_Regal             := "Paket_Vor_Regal",
+        Ist_X                       := "Ist_X",
+        Ist_Z                       := "Ist_Z",
+        Palette_Aufgenommen         := "Palette_Aufgenommen",
+        Palette_Abgelegt            := "Palette_Abgelegt",
+        Position_Erreicht           := "Position_Erreicht",
+        Gabel_Rechts_Ausgefahren    := "Gabel_Rechts_Ausgefahren",
+        Gabel_Links_Ausgefahren     := "Gabel_Links_Ausgefahren",
+        Gabel_Eingefahren           := "Gabel_Eingefahren",
+
+        // RFID ← FB_RFID_ReadWrite (plastic Vision path or metal HMI path)
+        RFID_Bereit                 := "RFID_Bereit",
+        RFID_Gueltig                := "RFID_Gueltig",
+        RFID_Fehler                 := "RFID_Fehler",
+        RFID_Artikelnummer          := "RFID_Artikelnummer_Out",
+        RFID_Materialart            := "RFID_Materialart_Out",
+        RFID_ProduktTyp             := "RFID_ProductTyp_Out",
+        RFID_Code                   := "RFID_Code_Out",
+
+        Home_X                      := "Home_X",
+        Home_Z                      := "Home_Z",
+        Ausgabe_X                   := "Ausgabe_X",
+        Ausgabe_Z                   := "Ausgabe_Z",
+        Offset_Z                    := 0.01,
+        Foerderband_Seite           := USINT#1,
+
+        Busy                        => "HRL_Busy",
+        Done                        => "HRL_Done",
+        Error                       => "HRL_Error",
+        State                       => "HMI_State",
+        Ziel_Fachnummer             => "HMI_Ziel_Fach",
+
+        Mode_Auto_Active            => "HRL_Mode_Auto",
+        Mode_Hand_Active            => "HRL_Mode_Hand",
+        Mode_Einricht_Active        => "HRL_Mode_Einricht",
+
+        Soll_X                      => "Soll_X",
+        Soll_Z                      => "Soll_Z",
+        Fahre_Zu_Position           => "Fahre_Zu_Position",
+        Palette_Aufnehmen           => "Palette_Aufnehmen_Cmd",
+        Palette_Ablegen             => "Palette_Ablegen_Cmd",
+        Gabel_Rechts_Aus            => "Gabel_Rechts_Cmd",
+        Gabel_Links_Aus             => "Gabel_Links_Cmd",
+        Gabel_Einfahren             => "Gabel_Mitte_Cmd",
+        RFID_Lesen                  => "RFID_Lesen",
+
+        Anzahl_Belegt               => "HRL_Anzahl_Belegt",
+        Anzahl_Frei                 => "HRL_Anzahl_Frei"
+    );
+
+END_ORGANIZATION_BLOCK

@@ -1,0 +1,15 @@
+Name;Path;Data Type;Logical Address;Comment
+5a_Metal_Pallet_vor_Regal;Warehouse_2_FIO;Bool;%E15.0;Vacant EB15 — pallet sensor metal WH
+5a_Metal_Stacker Crane 1 Moving-X;Warehouse_2_FIO;Bool;%E15.1;FIO Crane1 — bind in driver
+5a_Metal_Stacker Crane 1 Moving-Z;Warehouse_2_FIO;Bool;%E15.2;
+5a_Metal_Stacker Crane 1 Left Limit;Warehouse_2_FIO;Bool;%E15.3;
+5a_Metal_Stacker Crane 1 Right Limit;Warehouse_2_FIO;Bool;%E15.4;
+5a_Metal_Stacker Crane 1 Middle Limit;Warehouse_2_FIO;Bool;%E15.5;
+5a_Metal_Stacker Crane 1 (Left);Warehouse_2_FIO;Bool;%A15.0;Vacant AB15
+5a_Metal_Stacker Crane 1 (Right);Warehouse_2_FIO;Bool;%A15.1;
+5a_Metal_Warning Light;Warehouse_2_FIO;Bool;%A15.2;
+5a_Metal_Alarm Siren;Warehouse_2_FIO;Bool;%A15.3;
+5a_Metal_Stacker Crane 1 X Position (V);Warehouse_2_FIO;Real;%ED178;After Vision 2/3 at ED170/174
+5a_Metal_Stacker Crane 1 Z Position (V);Warehouse_2_FIO;Real;%ED182;
+5a_Metal_Stacker Crane 1 X Set Point (V);Warehouse_2_FIO;Real;%AD144;Vacant after Crane0 AD140 (%QD144)
+5a_Metal_Stacker Crane 1 Z Set Point (V);Warehouse_2_FIO;Real;%AD148;

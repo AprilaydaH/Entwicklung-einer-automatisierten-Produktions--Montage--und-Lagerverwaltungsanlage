@@ -1,0 +1,20 @@
+//============================================================================
+// UDT_Lager_Raster — create this PLC data type FIRST (alone)
+// Then use it as the type of member "Raster" inside UDT_LagerverwaltungData
+//
+// TIA: PLC data types → Add → Structure → name: UDT_Lager_Raster
+//      Paste only the members below (no TYPE / END_TYPE wrapper needed)
+//============================================================================
+
+TYPE
+    "UDT_Lager_Raster" : STRUCT
+        Basis_X             : Real;       // Fach 1 X
+        Basis_Z             : Real;       // Fach 1 Z
+        Pitch_X             : Real;       // ΔX one column (pallet bay)
+        Pitch_Z             : Real;       // ΔZ one level
+        Spalten             : Int;        // columns along X (default 6)
+        Spalten_Rechts      : Int;        // columns on right rack → RegalSeite=1
+        Max_Fach            : Int;        // 54
+        Raster_Gueltig      : Bool;       // set after successful BERECHN
+    END_STRUCT;
+END_TYPE

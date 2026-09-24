@@ -1463,7 +1463,7 @@
     <ComponentIO Index="3" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_Emitter_OM_Default_NAME">
       <GroupIO Description="Default">
-        <BinaryOutput Name="Emitter 3 (Emit)" Address="123" Key="c48f536a-875f-4b23-86ad-fa9b74b1768e" OpenCircuit="False" ShortCircuit="False" UseForcedValue="True" ForcedValue="True" />
+        <BinaryOutput Name="Emitter 3 (Emit)" Address="123" Key="c48f536a-875f-4b23-86ad-fa9b74b1768e" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
     <Emitter MinTimeToEmit="1" MaxTimeToEmit="2" UpTo="0" RandomPartPosition="False" RandomPartOrientation="False">
@@ -5993,6 +5993,7 @@
       <BitInput30 PointIOKey="80395daf-0806-4b5c-ad45-37a0a1169491" />
       <BitInput31 PointIOKey="15e1c530-b9ab-4909-84ad-f96f6e21a480" />
       <BitInput32 PointIOKey="bc787a65-f013-4405-89c6-e0dec7f11949" />
+      <BitInput33 PointIOKey="2dfea25e-8cfd-4d2f-ae30-c21ae95296c0" />
       <BitInput49 PointIOKey="5d04e87a-e53a-448b-81e7-d81ad019fcbb" />
       <BitInput50 PointIOKey="4f38f1a6-c5a4-485b-a4c7-bb66bce52c70" />
       <BitInput51 PointIOKey="f504e4bf-3041-4b4e-828b-a5ac71c5e8f0" />
@@ -6003,6 +6004,7 @@
       <BitInput56 PointIOKey="aaf44941-8771-4180-9dc9-4a3ed3936f08" />
       <BitInput57 PointIOKey="36d8f1b8-39c7-41e8-841c-f556e7246c7c" />
       <BitInput58 PointIOKey="a29610a8-a0ff-439a-827e-9119fa9cb797" />
+      <BitOutput15 PointIOKey="c48f536a-875f-4b23-86ad-fa9b74b1768e" />
       <BitOutput8 PointIOKey="a72b2dad-f36e-4651-a959-3148cc715036" />
       <BitOutput9 PointIOKey="68d942da-192c-4775-9304-1dbeb80a0f09" />
       <BitOutput17 PointIOKey="019b9efa-be6c-442f-b6f7-a9134b1f689a" />

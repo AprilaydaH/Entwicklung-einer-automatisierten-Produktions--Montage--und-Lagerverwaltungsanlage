@@ -1,0 +1,30 @@
+//============================================================================
+// OB1 Network 27
+// TIA: Zone_5b_Conveyor_Belts_to_Metal_Components_Warehouse
+//
+// 4A palletizer → these 5b_* belts → metal Warehouse_2 (NW 28, Crane 1)
+//
+// Paste this body into NW 27. Warehouse FBs stay in NW 28.
+// Tags already exist in table "Forderband" (PLCTags2).
+// Pallet-at-crane: 5a_Metal_Pallet_vor_Regal %E15.0 (import FIO CSV if missing)
+//============================================================================
+
+// Hold last section when pallet is at metal loading (crane pick)
+// or metal Not-Aus.
+IF "Not_Aus_W2" OR "5a_Metal_Pallet_vor_Regal" THEN
+    "5b_Roller Conveyor (4m) 0" := FALSE;       // %A13.0
+    "5b_Curved Roller Conveyor 2 CCW" := FALSE; // %A13.1
+    "5b_Roller Conveyor (2m) 1" := FALSE;       // %A13.2
+    "5b_Curved Roller Conveyor 4" := FALSE;     // %A13.3
+    "5b_Roller Conveyor (6m) 0" := FALSE;       // %A13.4
+    "5b_Curved Roller Conveyor 3 CCW" := FALSE; // %A13.5
+ELSE
+    "5b_Roller Conveyor (4m) 0" := TRUE;
+    "5b_Curved Roller Conveyor 2 CCW" := TRUE;
+    "5b_Roller Conveyor (2m) 1" := TRUE;
+    "5b_Curved Roller Conveyor 4" := TRUE;
+    "5b_Roller Conveyor (6m) 0" := TRUE;
+    "5b_Curved Roller Conveyor 3 CCW" := TRUE;
+END_IF;
+
+// Do NOT drive "5b_Loading Conveyor 1" %A14.3 here — that is W1 plastic loading.

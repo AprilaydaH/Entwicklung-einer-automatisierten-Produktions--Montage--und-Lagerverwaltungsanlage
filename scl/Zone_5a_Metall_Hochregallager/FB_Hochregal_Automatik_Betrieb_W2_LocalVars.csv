@@ -1,0 +1,71 @@
+Section;Name;DataType;Default;Comment
+Input;Auto_Mode;Bool;False;Mode_Auto_W2 %M70.1
+Input;Hand_Mode;Bool;False;Mode_Hand_W2 %M70.2
+Input;Einricht_Mode;Bool;False;Mode_Einricht_W2 %M70.0
+Input;Not_Aus;Bool;False;Not_Aus_W2 %M70.3
+Input;HMI_Start_Einlagern;Bool;False;HMI_Start_Einlagern_W2 %M71.3 pulse
+Input;HMI_Start_Auslagern;Bool;False;unused V5.6
+Input;Reset;Bool;False;HMI_Reset_W2 %M71.5
+Input;Stop;Bool;False;HMI_Stop_W2 %M71.6
+Input;Paket_Vor_Regal;Bool;False;Paket_Fuer_Hochregal_W2 %M72.1
+Input;RFID_Busy;Bool;False;leave FALSE — no Reader 0
+Input;RFID_Bereit;Bool;True;
+Input;RFID_Gueltig;Bool;False;
+Input;RFID_Fehler;Bool;False;must stay FALSE (not 5a_RFID_Fehler)
+Input;RFID_Artikelnummer;UInt;0;4a_RFID_Artikelnummer_Out %MW150
+Input;RFID_Materialart;USInt;2;constant 2 Metall
+Input;RFID_ProduktTyp;UInt;0;
+Input;RFID_Code;UDInt;0;4a_RFID_Code_Out %MD236
+Input;Palette_Aufgenommen;Bool;False;Palette_Aufgenommen_W2
+Input;Palette_Abgelegt;Bool;False;Palette_Abgelegt_W2
+Input;Position_Erreicht;Bool;False;Position_Erricht_W2 %M72.4 (TIA name typo)
+Input;Gabel_Rechts_Ausgefahren;Bool;False;
+Input;Gabel_Links_Ausgefahren;Bool;False;
+Input;Gabel_Eingefahren;Bool;False;
+Input;Ist_X;Real;0.0;Ist_X_W2
+Input;Ist_Z;Real;0.0;Ist_Z_W2
+Input;Home_X;Real;0.0;Home_X_W2 teach
+Input;Home_Z;Real;0.0;
+Input;Ausgabe_X;Real;0.0;
+Input;Ausgabe_Z;Real;0.0;
+Input;Band_X;Real;0.0;Band_X_W2 teach
+Input;Band_Z;Real;0.0;
+Input;Band_Z_Lift;Real;0.5;
+Input;Offset_Z;Real;0.2;
+Input;Foerderband_Seite;USInt;1;1 = pick Right
+InOut;Soll_X;Real;0.0;Soll_X_W2 %MD204
+InOut;Soll_Z;Real;0.0;Soll_Z_W2 %MD208
+Output;Busy;Bool;False;HRL2_Busy %M74.0
+Output;Done;Bool;False;HRL2_Done %M74.1
+Output;Error;Bool;False;HRL2_Error %M74.2
+Output;Fahre_Zu_Position;Bool;False;Fahre_Zu_Position_W2 %M73.0
+Output;Palette_Aufnehmen;Bool;False;%M73.1
+Output;Palette_Ablegen;Bool;False;%M73.2
+Output;Gabel_Rechts_Aus;Bool;False;%M73.3
+Output;Gabel_Links_Aus;Bool;False;%M73.4
+Output;Gabel_Einfahren;Bool;False;%M73.5 Mitte
+Output;RFID_Lesen;Bool;False;UNWIRE — do not drive 5a_RFID_Lesen
+Output;State_Out;Int;0;HMI_State_W2 %MW228
+Output;Ziel_Fachnummer_Out;Int;0;HMI_Ziel_Fach_W2 %MW230
+Output;Mode_Einlagern;Bool;False;
+Output;Mode_Auslagern;Bool;False;
+Static;State;Int;0;sequencer
+Static;Ziel_Fachnummer;Int;0;
+Static;RFID_Read_Armed;Bool;False;
+Static;Akt_RFID_CODE;UDInt;0;latched product
+Static;Akt_Artikelnummer;UInt;0;
+Static;Akt_Materialart;USInt;0;
+Static;Akt_ProductTyp;UInt;0;
+Static;Paket_Uebernommen;Bool;False;Auto one-shot
+Static;i;Int;0;FOR Fach 1..54
+Static;R_TRIG_Einlagern;R_TRIG;
+Static;R_TRIG_Reset;R_TRIG;
+Static;R_TRIG_Stop;R_TRIG;
+Static;TON_Fork;TON;T#1500ms;state 55 fork fallback
+Static;instEinlagern;FB_Einlagern_W2;;multi-instance — W2 only
+Static;instLagerstatus;;;;DELETE this row on W2 (W1 only: FB_Lagerstatus)
+Temp;Ziel_X;Real;0.0;
+Temp;Ziel_Z;Real;0.0;
+Temp;Fach_X;Real;0.0;
+Temp;Fach_Z;Real;0.0;
+Temp;Pos_Offset;Real;0.2;

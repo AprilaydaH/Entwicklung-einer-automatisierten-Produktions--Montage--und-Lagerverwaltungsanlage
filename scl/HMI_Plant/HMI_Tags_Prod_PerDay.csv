@@ -1,0 +1,20 @@
+Category;Screen;HMI_Object;PLC_Tag;DataType;Address;Access;WinCC
+00_Uebersicht;Übersicht;IO Geplante Produktion;HMI_Prod_Planned_PerDay;DInt;%MD320;RW;Format 9999 — nicht 14 Nullen
+00_Uebersicht;Übersicht;IO Ist-Produktion;HMI_Prod_Actual_PerDay;DInt;%MD324;R;Format 9999
+00_Uebersicht;Übersicht;IO Tagesstempel;HMI_Prod_Day_Stamp;DInt;%MD328;R;Optional JJMMTT
+00_Uebersicht;Übersicht;Btn Tageszähler zurücksetzen;HMI_Prod_Reset_Day;Bool;%M78.0;Momentary;Not plant Stop
+00_Header;Übersicht;Btn Produktion Start;HMI_Plant_Start;Bool;%M58.0;Momentary;Press SetBit / Release ResetBit — not %M58.5
+00_Header;Übersicht;Btn Produktion Stop;HMI_Plant_Stop;Bool;%M58.1;Momentary;Press SetBit / Release ResetBit — not typo tag on %M58.4
+00_Header;Übersicht;Btn Not-Aus;HMI_Plant_Not_Aus;Bool;%M58.2;Momentary;Red — latches until Reset
+00_Header;Übersicht;Btn Reset;HMI_Plant_Reset;Bool;%M58.3;Momentary;After Not-Aus, then Start
+00_Header;Übersicht;Lamp Bereit;Plant_Ready;Bool;%M58.7;R;
+00_Header;Übersicht;Lamp Produktion läuft;Plant_Running;Bool;%M58.4;R;Green
+00_Header;Übersicht;Lamp Not-Aus;Plant_Not_Aus;Bool;%M58.5;R;Red
+00_Header;Übersicht;Lamp Enable;Plant_Enable;Bool;%M58.6;R;was Production_Freigegeben %M100.0
+01_FIO;Factory I/O;Btn Start;Production_Start;Bool;%E9.1;R;Physical — OR with HMI_Plant_Start in FB
+01_FIO;Factory I/O;Btn Stop;Production_Stop;Bool;%E9.2;R;
+01_FIO;Factory I/O;Btn Not-Aus;Main_Not_Aus;Bool;%E9.3;R;
+01_FIO;Factory I/O;Btn Reset;Main_Reset;Bool;%E9.4;R;Not the HMI Reset merker
+01_FIO;Factory I/O;Light Green;Main_Green_Stack_Light;Bool;%A15.5;W;:= Plant_Running
+01_FIO;Factory I/O;Light Red;Main_Red_Light;Bool;%A15.6;W;:= Plant_Not_Aus
+01_FIO;Factory I/O;Light Start;Main_Start_Button_Light;Bool;%A15.7;W;:= Plant_Ready

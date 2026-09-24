@@ -1,0 +1,15 @@
+//============================================================================
+// LEGACY — RFID wiring notes only (not executable OB code)
+// Use: WAREHOUSE_1_SETUP.md §3 + PLASTIC_WAREHOUSE_GOLIVE.md
+//============================================================================
+// WRITE after 4b palletizer Done (Vision → pallet tag):
+//   Allow_Write                :=  "4b_Done(1)"   // %M10.0 — palletizer Done
+//   FB_VisionReader.Write_Req  →  HMI_RFID_Write → RFID_Read_Write_DB_1 (Reader 2)
+//
+// GATE (Hochregal Auto — tag already written at 4b):
+//   Paket_Fuer_Hochregal       :=  Paket_Vor_Regal
+//                              AND (Vision_Combo_Done OR RFID_Pallet_Tagged)
+//
+// READ at warehouse (Reader 5):
+//   Hochregal RFID_Lesen       →  RFID_Read_Write_DB_2 (NW8, after Automatik)
+//============================================================================

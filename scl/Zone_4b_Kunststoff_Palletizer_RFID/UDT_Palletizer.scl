@@ -1,0 +1,50 @@
+//============================================================================
+// Author: Dereje Hailemariam
+// Datum: 11.08.2026
+// Version: 3.0
+// Beschreibung: UDT — Gantry-based Palletizer (no Push/Turn/Clamp/conveyor)
+//============================================================================
+
+TYPE "UDT_Palletizer"
+VERSION : 3.0
+    STRUCT
+        HMI_Start                   : Bool := FALSE;
+        HMI_Stop                    : Bool := FALSE;
+        HMI_Reset                   : Bool := FALSE;
+        HMI_Auto                    : Bool := TRUE;
+        HMI_SingleCycle             : Bool := FALSE;
+
+        X_Pos_V                     : Real := 0.0;
+        Y_Pos_V                     : Real := 0.0;
+        Z_Pos_V                     : Real := 0.0;
+        Moving_Z                    : Bool := FALSE;
+        Moving_XY                   : Bool := FALSE;
+        Box_Detected                : Bool := FALSE;
+        C_Limit                     : Bool := FALSE;
+
+        X_SetPoint_V                : Real := 0.0;
+        Y_SetPoint_V                : Real := 0.0;
+        Z_SetPoint_V                : Real := 0.0;
+        C_Plus                      : Bool := FALSE;
+        Grab                        : Bool := FALSE;
+        Warning_Light               : Bool := FALSE;
+
+        Pallet_Ready                : Bool := FALSE;
+        Loading_Pallet_Active       : Bool := FALSE;
+        Busy                        : Bool := FALSE;
+        Done                        : Bool := FALSE;
+        State                       : Int := 0;
+        Assembly_Count              : Int := 0;
+
+        HMI_Lamp_Ready              : Bool := FALSE;
+        HMI_Lamp_Running            : Bool := FALSE;
+        HMI_Lamp_Done               : Bool := FALSE;
+        HMI_Lamp_Stopped            : Bool := FALSE;
+        HMI_Lamp_Auto               : Bool := FALSE;
+        HMI_Lamp_Manual             : Bool := FALSE;
+        HMI_Cycle_Count             : Int := 0;
+        HMI_Step_Text_ID            : Int := 0;
+
+        Assemblies_Per_Pallet       : Int := 2;
+    END_STRUCT
+END_TYPE

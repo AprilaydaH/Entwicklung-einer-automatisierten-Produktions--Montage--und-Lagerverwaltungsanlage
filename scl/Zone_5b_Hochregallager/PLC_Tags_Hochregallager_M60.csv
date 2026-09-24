@@ -1,0 +1,53 @@
+Category;Name;DataType;LogicalAddress;Comment
+01_Mode;Mode_Einricht;Bool;%M60.0;OK — already set
+01_Mode;Mode_Auto;Bool;%M60.1;OK — already set
+01_Mode;Mode_Hand;Bool;%M60.2;CHANGE from M40.2
+01_Mode;Not_Aus;Bool;%M60.3;CHANGE from M40.3
+02_HMI;HMI_Initialisieren;Bool;%M60.4;CHANGE from M40.4
+02_HMI;HMI_Reset_Meldung;Bool;%M60.5;CHANGE from M40.5
+02_HMI;HMI_Pos_Speichern;Bool;%M60.6;CHANGE from M40.6
+02_HMI;HMI_Raster_Berechnen;Bool;%M60.7;CHANGE from M40.7
+02_HMI;HMI_Loeschen;Bool;%M61.0;CHANGE from M41.0
+02_HMI;HMI_Suchen;Bool;%M61.1;CHANGE from M41.1
+02_HMI;HMI_FreiesFach;Bool;%M61.2;CHANGE from M41.2
+02_HMI;HMI_Start_Einlagern;Bool;%M61.3;CHANGE from M41.3
+02_HMI;HMI_Start_Auslagern;Bool;%M61.4;CHANGE from M41.4
+02_HMI;HMI_Reset;Bool;%M61.5;CHANGE from M41.5
+02_HMI;HMI_Stop;Bool;%M61.6;CHANGE from M41.6
+02_HMI;HMI_Fachnummer;UInt;%MW80;OK keep
+03_Raster;HMI_Pitch_X;Real;%MD84;OK keep
+03_Raster;HMI_Pitch_Z;Real;%MD88;OK keep
+03_Raster;HMI_Spalten;Int;%MW92;OK keep
+03_Raster;HMI_Spalten_Rechts;Int;%MW94;OK keep
+04_Process;Paket_Vor_Regal;Bool;%M62.0;CHANGE from M42.0 — MD42 is Vision RFID_CODE
+04_Process;Paket_Fuer_Hochregal;Bool;%M62.1;CHANGE from M42.1
+04_Process;Palette_Aufgenommen;Bool;%M62.2;CHANGE from M42.2
+04_Process;Palette_Abgelegt;Bool;%M62.3;CHANGE from M42.3
+04_Process;Position_Erreicht;Bool;%M62.4;CHANGE from M42.4
+04_Process;Gabel_Rechts_Ausgefahren;Bool;%M62.5;CHANGE from M42.5
+04_Process;Gabel_Links_Ausgefahren;Bool;%M62.6;CHANGE from M42.6
+04_Process;Gabel_Eingefahren;Bool;%M62.7;CHANGE from M42.7
+05_Position;Ist_X;Real;%MD96;OK keep
+05_Position;Ist_Z;Real;%MD100;OK keep
+05_Position;Soll_X;Real;%MD104;OK keep
+05_Position;Soll_Z;Real;%MD108;OK keep
+05_Position;Home_X;Real;%MD112;OK keep
+05_Position;Home_Z;Real;%MD116;OK keep
+05_Position;Ausgabe_X;Real;%MD120;OK keep
+05_Position;Ausgabe_Z;Real;%MD124;OK keep
+06_Out;Fahre_Zu_Position;Bool;%M63.0;CHANGE from M43.0
+06_Out;Palette_Aufnehmen_Cmd;Bool;%M63.1;CHANGE from M43.1
+06_Out;Palette_Ablegen_Cmd;Bool;%M63.2;CHANGE from M43.2
+06_Out;Gabel_Rechts_Cmd;Bool;%M63.3;CHANGE from M43.3
+06_Out;Gabel_Links_Cmd;Bool;%M63.4;CHANGE from M43.4
+06_Out;Gabel_Mitte_Cmd;Bool;%M63.5;CHANGE from M43.5
+07_Status;HRL_Busy;Bool;%M64.0;CHANGE from M44.0
+07_Status;HRL_Done;Bool;%M64.1;CHANGE from M44.1
+07_Status;HRL_Error;Bool;%M64.2;CHANGE from M44.2
+07_Status;HRL_Mode_Auto;Bool;%M64.3;CHANGE from M44.3
+07_Status;HRL_Mode_Hand;Bool;%M64.4;CHANGE from M44.4
+07_Status;HRL_Mode_Einricht;Bool;%M64.5;CHANGE from M44.5
+07_Status;HMI_State;Int;%MW128;OK keep
+07_Status;HMI_Ziel_Fach;Int;%MW130;OK keep
+07_Status;HRL_Anzahl_Belegt;UInt;%MW132;OK keep
+07_Status;HRL_Anzahl_Frei;UInt;%MW134;OK keep

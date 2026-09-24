@@ -1,0 +1,70 @@
+//============================================================================
+// OB1 — RFID_Read_Write_DB_4  (Warehouse_2 / Reader 0)
+// TIA instance: %DB104? live name "RFID_Read_Write_DB_4"  FB16
+//
+// Status_Code 10 = FIO Command ID never moved (Reader 0 not bound / no tag).
+// Do NOT pulse RFID_Lesen until Reader 0 exists in Factory I/O.
+// Product for Automatik comes from 4a DB_3 (Reader 1) overlay below.
+//
+// Paste THIS network in place of the current DB_4 call.
+// Must run BEFORE Hochregal_Automatik_Betrieb_W2.
+//============================================================================
+
+"RFID_Read_Write_DB_4"(
+    Execute                     := FALSE,
+    HMI_Read                    := FALSE,
+    HMI_Write                   := FALSE,
+    HMI_Check                   := FALSE,
+    HMI_Clear                   := FALSE,
+    HMI_Reset                   := "HMI_Reset_W2",
+    RFID_Lesen                  := FALSE,   // was 5a_RFID_Lesen — that caused timeout 10
+
+    Op_Mode                     := 10,
+
+    Command_ID                  := "5a_RFID Reader 0 Command ID",
+    Status                      := "5a_RFID Reader 0 Status",
+    Read_Data                   := "5a_RFID Reader 0 Read Data",
+
+    Memory_Index                := 0,
+    Write_Data                  := 0,
+
+    RFID_Code_In                := UDINT#0,
+    Artikelnummer_In            := UINT#0,
+    Materialart_In              := USINT#2,
+    ProductTyp_In               := UINT#0,
+
+    Timeout                     := T#15S,
+    Tag_Wait_Time               := T#3M,
+    Execute_Hold                := T#100MS,
+
+    Execute_Command             => "5a_RFID Reader 0 Execute Command",
+    Command                     => "5a_RFID Reader 0 Command",
+    Memory_Index_Out            => "5a_RFID Reader 0 Memory Index",
+    Write_Data_Out              => "5a_RFID Reader 0 Write Data",
+
+    Busy                        => "5a_RFID_Busy",
+    Done                        => "5a_RFID_Done",
+    Error                       => "5a_RFID_Error",
+    State                       => "5a_RFID_State",
+
+    RFID_Bereit                 => "5a_RFID_Bereit",
+    RFID_Gueltig                => "5a_RFID_Gueltig",
+    RFID_Fehler                 => "5a_RFID_Fehler",
+
+    RFID_Code_Out               => "5a_RFID_Code_Out",
+    Artikelnummer_Out           => "5a_RFID_Artikelnummer_Out",
+    Materialart_Out             => "5a_RFID_Materialart_Out",
+    ProductTyp_Out              => "5a_RFID_ProductTyp_Out"
+);
+
+// Reader 0 not in service — use 4a palletizer write (DB_3 / Reader 1)
+IF "4a_RFID_Code_Out" <> UDINT#0 THEN
+    "5a_RFID_Code_Out" := "4a_RFID_Code_Out";
+    "5a_RFID_Artikelnummer_Out" := "4a_RFID_Artikelnummer_Out";
+    "5a_RFID_Materialart_Out" := USINT#2;
+    "5a_RFID_Error" := FALSE;
+    "5a_RFID_Fehler" := FALSE;
+    "5a_RFID_Gueltig" := TRUE;
+    "5a_RFID_Bereit" := TRUE;
+    "5a_RFID_Busy" := FALSE;
+END_IF;

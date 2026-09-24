@@ -1,0 +1,44 @@
+//============================================================================
+// Author: Dereje Hailemariam
+// Datum: 25.08.2026
+// Version: 1.0
+// Beschreibung: NW27 gate — pallet at rack AND tagged → Auto may start
+//
+// Inputs:
+//   Sensor_Pallet_Vor_Regal  — Factory I/O 5b_Pallet_vor_Regal (%E14.3)
+//   Vision_Combo_Done        — 2b_VisionData_Combo_Done (%M40.0)
+//   RFID_Pallet_Tagged       — 4b RFID write OK (optional; OR with Vision)
+//
+// Outputs:
+//   Paket_Vor_Regal          — raw sensor (HMI / Hand)
+//   Paket_Fuer_Hochregal     — wire to Automatik.Paket_Vor_Regal in Auto
+//============================================================================
+
+FUNCTION_BLOCK "FB_Warehouse_Gate"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 1.0
+
+VAR_INPUT
+    Enable                      : Bool := TRUE;
+    Sensor_Pallet_Vor_Regal     : Bool := FALSE;
+    Vision_Combo_Done           : Bool := FALSE;
+    RFID_Pallet_Tagged          : Bool := FALSE;
+END_VAR
+
+VAR_OUTPUT
+    Paket_Vor_Regal             : Bool;
+    Paket_Fuer_Hochregal        : Bool;
+END_VAR
+
+BEGIN
+    IF NOT #Enable THEN
+        #Paket_Vor_Regal := FALSE;
+        #Paket_Fuer_Hochregal := FALSE;
+        RETURN;
+    END_IF;
+
+    #Paket_Vor_Regal := #Sensor_Pallet_Vor_Regal;
+
+    #Paket_Fuer_Hochregal := #Paket_Vor_Regal
+        AND (#Vision_Combo_Done OR #RFID_Pallet_Tagged);
+END_FUNCTION_BLOCK

@@ -1,0 +1,248 @@
+// ============================================================================
+// Bausteinname : FB_Datenverwaltung_Lager
+// Version      : V1.5
+// Beschreibung : Fachnummern, HMI-Sync, Lagerstatus, Einricht + Raster
+//                + Lagerstatus occupancy (Belegt / Farbe / Ziel)
+// Raster math is INLINE (no instOffset / nested FB — TIA: FC_Berechn_Offset
+// cannot be used as multi-instance). Same formula as FB_Berechn_Offset.
+// TIA IN: Raster_Berechnen, Pitch_X/Z, Spalten, Spalten_Rechts
+// STAT: R_TRIG_* only — no FB instance
+// TEMP: i, iFach, Mult_X, Mult_Z, Pos_X, Pos_Z, Copy_HMI : Bool
+//        Last_HMI_Fach : UInt (STAT)
+//        Occ : Array[0..6] of Byte; b, bit : Int
+// ============================================================================
+
+#R_TRIG_Initialisieren(CLK := #Initialisieren);
+#R_TRIG_Reset_Meldung(CLK := #Reset_Meldung);
+#R_TRIG_Pos_Speichern(CLK := #Position_Speichern);
+#R_TRIG_Raster(CLK := #Raster_Berechnen);
+
+#Fertig := FALSE;
+#Fehler := FALSE;
+#Fehlercode := UINT#0;
+#HMI_Fach_Gueltig := FALSE;
+#HMI_Fach_Belegt := FALSE;
+
+IF #R_TRIG_Reset_Meldung.Q THEN
+    "gldb_AktuellerFach_HMI".Meldung.Funktion_Meldung_Ok := FALSE;
+    "gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#0;
+    "gldb_AktuellerFach_HMI".Meldung.Info_Text := '';
+    "gldb_Meldungen".Status.Meldung := '';
+    "gldb_Meldungen".Fehler.Fehler_Aktiv := FALSE;
+END_IF;
+
+IF NOT #Init_done THEN
+    FOR #i := 1 TO 54 DO
+        "gldb_LagerverwaltungData".Fach[#i].Fachnummer := INT_TO_USINT(#i);
+    END_FOR;
+    // Default grid 6×9 = 54 (change Spalten if your numbering differs)
+    IF "gldb_LagerverwaltungData".Raster.Spalten = 0 THEN
+        "gldb_LagerverwaltungData".Raster.Spalten := 6;
+        "gldb_LagerverwaltungData".Raster.Spalten_Rechts := 3;
+        "gldb_LagerverwaltungData".Raster.Max_Fach := 54;
+    END_IF;
+    #Init_done := TRUE;
+    #Fertig := TRUE;
+    "gldb_Meldungen".Status.Meldung := 'Lagerverwaltung initialisiert';
+END_IF;
+
+// Keep HMI pitch / Spalten in DB (teach values remanent with Lager DB)
+IF #Pitch_X <> 0.0 THEN
+    "gldb_LagerverwaltungData".Raster.Pitch_X := #Pitch_X;
+END_IF;
+IF #Pitch_Z <> 0.0 THEN
+    "gldb_LagerverwaltungData".Raster.Pitch_Z := #Pitch_Z;
+END_IF;
+IF #Spalten >= 1 THEN
+    "gldb_LagerverwaltungData".Raster.Spalten := #Spalten;
+END_IF;
+IF #Spalten_Rechts >= 1 THEN
+    "gldb_LagerverwaltungData".Raster.Spalten_Rechts := #Spalten_Rechts;
+END_IF;
+IF "gldb_LagerverwaltungData".Raster.Max_Fach < 1 THEN
+    "gldb_LagerverwaltungData".Raster.Max_Fach := 54;
+END_IF;
+
+IF #R_TRIG_Initialisieren.Q THEN
+    FOR #i := 1 TO 54 DO
+        "gldb_LagerverwaltungData".Fach[#i].Fachnummer := INT_TO_USINT(#i);
+    END_FOR;
+    #Fertig := TRUE;
+    "gldb_Meldungen".Status.Meldung := 'Fachnummern neu initialisiert';
+END_IF;
+
+#iFach := UINT_TO_INT(#HMI_Fachnummer);
+
+IF (#iFach >= 1) AND (#iFach <= 54) THEN
+    #HMI_Fach_Gueltig := TRUE;
+    #HMI_Fach_Belegt := "gldb_LagerverwaltungData".Fach[#iFach].Belegt;
+ELSE
+    IF #HMI_Fachnummer <> UINT#0 THEN
+        #Fehler := TRUE;
+        #Fehlercode := UINT#101;
+        "gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#3;
+    END_IF;
+END_IF;
+
+// Do NOT copy every scan — that wipes RFID/Artikel that Automatik / Hand just wrote
+// (empty Fach[n] → Einlagern Info_Code 7, Lager stays empty).
+#Copy_HMI := (#HMI_Fachnummer <> #Last_HMI_Fach);
+#Last_HMI_Fach := #HMI_Fachnummer;
+
+IF #Copy_HMI AND #HMI_Fach_Gueltig THEN
+    "gldb_AktuellerFach_HMI".Auswahl.Ausgewaeltes_Fach := #HMI_Fachnummer;
+
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Fachnummer :=
+        "gldb_LagerverwaltungData".Fach[#iFach].Fachnummer;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Belegt :=
+        "gldb_LagerverwaltungData".Fach[#iFach].Belegt;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Gesperrt :=
+        "gldb_LagerverwaltungData".Fach[#iFach].Gesperrt;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Artikelnummer :=
+        "gldb_LagerverwaltungData".Fach[#iFach].Artikelnummer;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Materialart :=
+        "gldb_LagerverwaltungData".Fach[#iFach].Materialart;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Color_Code :=
+        "gldb_LagerverwaltungData".Fach[#iFach].Color_Code;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.ProductTyp :=
+        "gldb_LagerverwaltungData".Fach[#iFach].ProductTyp;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Kennzeichnung :=
+        "gldb_LagerverwaltungData".Fach[#iFach].Kennzeichnung;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell."Datum eingelagert" :=
+        "gldb_LagerverwaltungData".Fach[#iFach]."Datum eingelagert";
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Datum_Ziffer :=
+        "gldb_LagerverwaltungData".Fach[#iFach].Datum_Ziffer;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.RFID_CODE :=
+        "gldb_LagerverwaltungData".Fach[#iFach].RFID_CODE;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Position_X :=
+        "gldb_LagerverwaltungData".Fach[#iFach].Position_X;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Position_Z :=
+        "gldb_LagerverwaltungData".Fach[#iFach].Position_Z;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.RegalSeite :=
+        "gldb_LagerverwaltungData".Fach[#iFach].RegalSeite;
+    "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Inf_Text :=
+        "gldb_LagerverwaltungData".Fach[#iFach].Inf_Text;
+END_IF;
+
+IF #R_TRIG_Pos_Speichern.Q THEN
+    IF #Einricht_Mode AND #HMI_Fach_Gueltig THEN
+        "gldb_LagerverwaltungData".Fach[#iFach].Position_X := #Ist_X;
+        "gldb_LagerverwaltungData".Fach[#iFach].Position_Z := #Ist_Z;
+        "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Position_X := #Ist_X;
+        "gldb_AktuellerFach_HMI".Auswahl.Fachaktuell.Position_Z := #Ist_Z;
+
+        // Fach 1 = raster origin (Fanuc basis)
+        IF #iFach = 1 THEN
+            "gldb_LagerverwaltungData".Raster.Basis_X := #Ist_X;
+            "gldb_LagerverwaltungData".Raster.Basis_Z := #Ist_Z;
+        END_IF;
+
+        // Optional: teach Pitch from neighbour slots
+        //   Fach 2 → Pitch_X  |  Fach (1+Spalten) → Pitch_Z
+        IF #iFach = 2 THEN
+            "gldb_LagerverwaltungData".Raster.Pitch_X :=
+                #Ist_X - "gldb_LagerverwaltungData".Raster.Basis_X;
+        END_IF;
+        IF #iFach = (1 + "gldb_LagerverwaltungData".Raster.Spalten) THEN
+            "gldb_LagerverwaltungData".Raster.Pitch_Z :=
+                #Ist_Z - "gldb_LagerverwaltungData".Raster.Basis_Z;
+        END_IF;
+
+        "gldb_AktuellerFach_HMI".Meldung.Funktion_Meldung_Ok := TRUE;
+        "gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#16;
+    ELSE
+        #Fehler := TRUE;
+        #Fehlercode := UINT#102;
+    END_IF;
+END_IF;
+
+//--------------------------------------------------------------------------
+// Raster → all 54 (inline BERECHN_OFFSET — no nested FB)
+//   Mult_X = (Fach-1) MOD Spalten
+//   Mult_Z = (Fach-1) DIV Spalten
+//   Pos   = Basis + Pitch * Mult
+//--------------------------------------------------------------------------
+IF #R_TRIG_Raster.Q THEN
+    IF #Einricht_Mode
+       AND ("gldb_LagerverwaltungData".Raster.Spalten >= 1)
+       AND ("gldb_LagerverwaltungData".Raster.Max_Fach >= 1) THEN
+
+        FOR #i := 1 TO 54 DO
+            IF #i > "gldb_LagerverwaltungData".Raster.Max_Fach THEN
+                EXIT;
+            END_IF;
+
+            #Mult_X := (#i - 1) MOD "gldb_LagerverwaltungData".Raster.Spalten;
+            #Mult_Z := (#i - 1) / "gldb_LagerverwaltungData".Raster.Spalten;
+            #Pos_X := "gldb_LagerverwaltungData".Raster.Basis_X
+                + "gldb_LagerverwaltungData".Raster.Pitch_X * INT_TO_REAL(#Mult_X);
+            #Pos_Z := "gldb_LagerverwaltungData".Raster.Basis_Z
+                + "gldb_LagerverwaltungData".Raster.Pitch_Z * INT_TO_REAL(#Mult_Z);
+
+            "gldb_LagerverwaltungData".Fach[#i].Position_X := #Pos_X;
+            "gldb_LagerverwaltungData".Fach[#i].Position_Z := #Pos_Z;
+
+            IF #Mult_X < "gldb_LagerverwaltungData".Raster.Spalten_Rechts THEN
+                "gldb_LagerverwaltungData".Fach[#i].RegalSeite := USINT#1;
+            ELSE
+                "gldb_LagerverwaltungData".Fach[#i].RegalSeite := USINT#2;
+            END_IF;
+        END_FOR;
+
+        "gldb_LagerverwaltungData".Raster.Raster_Gueltig := TRUE;
+        #Fertig := TRUE;
+        "gldb_AktuellerFach_HMI".Meldung.Funktion_Meldung_Ok := TRUE;
+        "gldb_AktuellerFach_HMI".Meldung.Info_Code := UINT#17; // raster applied
+        "gldb_Meldungen".Status.Meldung := 'Raster: alle Fachpositionen berechnet';
+    ELSE
+        #Fehler := TRUE;
+        #Fehlercode := UINT#103;
+        "gldb_LagerverwaltungData".Raster.Raster_Gueltig := FALSE;
+    END_IF;
+END_IF;
+
+#Anzahl_Belegt := UINT#0;
+
+FOR #b := 0 TO 6 DO
+    #Occ[#b] := BYTE#16#00;
+END_FOR;
+
+FOR #i := 1 TO 54 DO
+    "gldb_AktuellerFach_HMI".Lagerstatus.Belegt[#i] :=
+        "gldb_LagerverwaltungData".Fach[#i].Belegt;
+    "gldb_AktuellerFach_HMI".Lagerstatus.Ziel[#i] := (#i = "HMI_Ziel_Fach");
+
+    IF "gldb_LagerverwaltungData".Fach[#i].Belegt THEN
+        #Anzahl_Belegt := #Anzahl_Belegt + UINT#1;
+        #b := (#i - 1) / 8;
+        #bit := (#i - 1) MOD 8;
+        #Occ[#b] := #Occ[#b] OR SHL(IN := BYTE#16#01, N := INT_TO_USINT(#bit));
+        IF ("gldb_LagerverwaltungData".Fach[#i].Color_Code >= USINT#1)
+           AND ("gldb_LagerverwaltungData".Fach[#i].Color_Code <= USINT#3) THEN
+            "gldb_AktuellerFach_HMI".Lagerstatus.Farbe[#i] :=
+                "gldb_LagerverwaltungData".Fach[#i].Color_Code;
+        ELSE
+            "gldb_AktuellerFach_HMI".Lagerstatus.Farbe[#i] := USINT#4;
+        END_IF;
+        IF "gldb_LagerverwaltungData".Fach[#i].Gesperrt THEN
+            "gldb_AktuellerFach_HMI".Lagerstatus.Farbe[#i] := USINT#5;
+        END_IF;
+    ELSE
+        "gldb_AktuellerFach_HMI".Lagerstatus.Farbe[#i] := USINT#0;
+    END_IF;
+END_FOR;
+
+"HRL_Occ_0" := #Occ[0];
+"HRL_Occ_1" := #Occ[1];
+"HRL_Occ_2" := #Occ[2];
+"HRL_Occ_3" := #Occ[3];
+"HRL_Occ_4" := #Occ[4];
+"HRL_Occ_5" := #Occ[5];
+"HRL_Occ_6" := #Occ[6];
+
+#Anzahl_Frei := UINT#54 - #Anzahl_Belegt;
+
+"gldb_AktuellerFach_HMI".Lagerstatus.Anzahl_Belegt := #Anzahl_Belegt;
+"gldb_AktuellerFach_HMI".Lagerstatus.Anzahl_Frei := #Anzahl_Frei;
+"gldb_LagerverwaltungData".Lager_Voll := (#Anzahl_Frei = UINT#0);
+"gldb_LagerverwaltungData".Lager_Leer := (#Anzahl_Belegt = UINT#0);

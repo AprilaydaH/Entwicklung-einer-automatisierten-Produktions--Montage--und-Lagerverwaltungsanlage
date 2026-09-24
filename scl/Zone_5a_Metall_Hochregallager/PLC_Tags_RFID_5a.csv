@@ -1,0 +1,21 @@
+Name;Path;Data Type;Logical Address;Comment
+5a_RFID Reader 0 Command;5a_RFID;DInt;%AD88;FIO Reader 0
+5a_RFID Reader 0 Write Data;5a_RFID;DInt;%AD92;
+5a_RFID Reader 0 Memory Index;5a_RFID;DInt;%AD96;
+5a_RFID Reader 0 Execute Command;5a_RFID;Bool;%A15.4;
+5a_RFID Reader 0 Status;5a_RFID;DInt;%ED114;
+5a_RFID Reader 0 Read Data;5a_RFID;DInt;%ED118;
+5a_RFID Reader 0 Command ID;5a_RFID;DInt;%ED122;
+5a_RFID_Lesen;5a_RFID;Bool;%M77.0;Automatik RFID_Lesen OUT
+5a_RFID_Busy;5a_RFID;Bool;%M77.1;
+5a_RFID_Done;5a_RFID;Bool;%M77.2;
+5a_RFID_Error;5a_RFID;Bool;%M77.3;
+5a_RFID_Bereit;5a_RFID;Bool;%M77.4;→ Automatik RFID_Bereit
+5a_RFID_Gueltig;5a_RFID;Bool;%M77.5;
+5a_RFID_Fehler;5a_RFID;Bool;%M77.6;
+5a_RFID_Code_Out;5a_RFID;UDInt;%MD300;Away from Vision MB284/MW286/MB288
+5a_RFID_Artikelnummer_Out;5a_RFID;UInt;%MW304;
+5a_RFID_Materialart_Out;5a_RFID;USInt;%MB306;
+5a_RFID_ProductTyp_Out;5a_RFID;UInt;%MW308;
+5a_RFID_State;5a_RFID;Int;%MW310;
+5a_RFID_Status_Code;5a_RFID;Int;%MW312;10 = FIO timeout (Reader 0 unbound)

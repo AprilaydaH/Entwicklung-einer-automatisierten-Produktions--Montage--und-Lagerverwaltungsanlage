@@ -1,0 +1,33 @@
+Interface;Folder;TIA_Tag;DataType;Access;OPC_BrowseName;Comment
+Si_Lagerverwaltung_Online;Warehouse_1;HMI_Ziel_Fach;Int;R;HMI_Ziel_Fach;Ziel-Fach %MW130
+Si_Lagerverwaltung_Online;Warehouse_1;HRL_Anzahl_Belegt;UInt;R;HRL_Anzahl_Belegt;%MW132
+Si_Lagerverwaltung_Online;Warehouse_1;HRL_Anzahl_Frei;UInt;R;HRL_Anzahl_Frei;%MW134
+Si_Lagerverwaltung_Online;Warehouse_1;HMI_State;Int;R;HMI_State;%MW128 Automatik
+Si_Lagerverwaltung_Online;Warehouse_1;HRL_Busy;Bool;R;HRL_Busy;%M64.0
+Si_Lagerverwaltung_Online;Warehouse_1;HRL_Done;Bool;R;HRL_Done;%M64.1
+Si_Lagerverwaltung_Online;Warehouse_1;HRL_Error;Bool;R;HRL_Error;%M64.2
+Si_Lagerverwaltung_Online;Warehouse_1;HRL_Occ_0;Byte;R;HRL_Occ_0;Fach 1–8 bits
+Si_Lagerverwaltung_Online;Warehouse_1;HRL_Occ_1;Byte;R;HRL_Occ_1;Fach 9–16
+Si_Lagerverwaltung_Online;Warehouse_1;HRL_Occ_2;Byte;R;HRL_Occ_2;Fach 17–24
+Si_Lagerverwaltung_Online;Warehouse_1;HRL_Occ_3;Byte;R;HRL_Occ_3;Fach 25–32
+Si_Lagerverwaltung_Online;Warehouse_1;HRL_Occ_4;Byte;R;HRL_Occ_4;Fach 33–40
+Si_Lagerverwaltung_Online;Warehouse_1;HRL_Occ_5;Byte;R;HRL_Occ_5;Fach 41–48
+Si_Lagerverwaltung_Online;Warehouse_1;HRL_Occ_6;Byte;R;HRL_Occ_6;Fach 49–54 bits 0–5
+Si_Lagerverwaltung_Online;Warehouse_1;gldb_AktuellerFach_HMI.Lagerstatus.Belegt;Array[1..54] of Bool;R;Belegt;optional — whole array, not 54 single nodes
+Si_Lagerverwaltung_Online;Warehouse_1;gldb_AktuellerFach_HMI.Lagerstatus.Farbe;Array[1..54] of USInt;R;Farbe;optional HMI colours
+Si_Lagerverwaltung_Online;Warehouse_2;HMI_Ziel_Fach_W2;Int;R;HMI_Ziel_Fach_W2;Ziel-Fach %MW230
+Si_Lagerverwaltung_Online;Warehouse_2;HRL_2_Anzahl_Belegt;UInt;R;HRL_2_Anzahl_Belegt;%MW232
+Si_Lagerverwaltung_Online;Warehouse_2;HRL_2_Anzahl_Frei;UInt;R;HRL_2_Anzahl_Frei;%MW234
+Si_Lagerverwaltung_Online;Warehouse_2;HMI_State_W2;Int;R;HMI_State_W2;%MW228
+Si_Lagerverwaltung_Online;Warehouse_2;HRL_2_Busy;Bool;R;HRL_2_Busy;%M74.0
+Si_Lagerverwaltung_Online;Warehouse_2;HRL_2_Done;Bool;R;HRL_2_Done;%M74.1
+Si_Lagerverwaltung_Online;Warehouse_2;HRL_2_Error;Bool;R;HRL_2_Error;%M74.2
+Si_Lagerverwaltung_Online;Warehouse_2;HRL_2_Occ_0;Byte;R;HRL_2_Occ_0;Fach 1–8 bits %MB407
+Si_Lagerverwaltung_Online;Warehouse_2;HRL_2_Occ_1;Byte;R;HRL_2_Occ_1;Fach 9–16
+Si_Lagerverwaltung_Online;Warehouse_2;HRL_2_Occ_2;Byte;R;HRL_2_Occ_2;Fach 17–24
+Si_Lagerverwaltung_Online;Warehouse_2;HRL_2_Occ_3;Byte;R;HRL_2_Occ_3;Fach 25–32
+Si_Lagerverwaltung_Online;Warehouse_2;HRL_2_Occ_4;Byte;R;HRL_2_Occ_4;Fach 33–40
+Si_Lagerverwaltung_Online;Warehouse_2;HRL_2_Occ_5;Byte;R;HRL_2_Occ_5;Fach 41–48
+Si_Lagerverwaltung_Online;Warehouse_2;HRL_2_Occ_6;Byte;R;HRL_2_Occ_6;Fach 49–54 bits 0–5
+Si_Lagerverwaltung_Online;Warehouse_2;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt;Array[1..54] of Bool;R;Belegt;optional — W2 array
+Si_Lagerverwaltung_Online;Warehouse_2;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe;Array[1..54] of USInt;R;Farbe;optional

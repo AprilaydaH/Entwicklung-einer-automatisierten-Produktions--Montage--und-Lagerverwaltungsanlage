@@ -1,0 +1,142 @@
+//============================================================================
+// FB_Warehouse_Stacker_IO — OB1 NW7
+//
+// FIO_Ist_*  ← 5b_Stacker Crane 0 X/Z Position (V)  %ED162 / %ED166  (NOT Ist_X/Ist_Z!)
+// Ist_* OUT  →  Ist_X / Ist_Z  %MD96 / %MD100
+// Enable = TRUE in instance DB. Enable does NOT gate motion.
+//============================================================================
+
+FUNCTION_BLOCK "FB_Warehouse_Stacker_IO"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 1.0
+
+VAR_INPUT
+    Enable                      : Bool := TRUE;
+
+    FIO_Ist_X                   : Real;
+    FIO_Ist_Z                   : Real;
+    FIO_Moving_X                : Bool;
+    FIO_Moving_Z                : Bool;
+    FIO_Gabel_Links             : Bool;
+    FIO_Gabel_Rechts            : Bool;
+    FIO_Gabel_Mitte             : Bool;
+    FIO_Pallet_Vor_Regal        : Bool;
+
+    Gabel_Links_Cmd             : Bool;
+    Gabel_Rechts_Cmd            : Bool;
+    Palette_Aufnehmen_Cmd        : Bool;
+    Palette_Ablegen_Cmd         : Bool;
+
+    Pick_FIO_Fallback_En        : Bool := TRUE;
+    Pick_FIO_Fallback_PT        : Time := T#1500ms;
+    Place_FIO_Fallback_En       : Bool := TRUE;
+    Place_FIO_Fallback_PT       : Time := T#1500ms;
+    Pos_Tol                     : Real := 0.05;   // m — Ist must be within this of Soll
+END_VAR
+
+VAR_IN_OUT
+    Soll_X                      : Real;
+    Soll_Z                      : Real;
+END_VAR
+
+VAR_OUTPUT
+    Ist_X                       : Real;
+    Ist_Z                       : Real;
+    Position_Erreicht           : Bool;
+    Gabel_Links_Ausgefahren     : Bool;
+    Gabel_Rechts_Ausgefahren    : Bool;
+    Gabel_Eingefahren           : Bool;
+    FIO_Soll_X                  : Real;
+    FIO_Soll_Z                  : Real;
+    FIO_Gabel_Links_Out         : Bool;
+    FIO_Gabel_Rechts_Out        : Bool;
+    Palette_Aufgenommen         : Bool;
+    Palette_Abgelegt            : Bool;
+END_VAR
+
+VAR
+    TON_Pick                    : TON;
+    TON_Place                   : TON;
+    Fork_Out                    : Bool;
+    Pick_Latched                : Bool;
+    Place_Latched               : Bool;
+END_VAR
+
+BEGIN
+    // --- motion (always) ---
+    #Ist_X := #FIO_Ist_X;
+    #Ist_Z := #FIO_Ist_Z;
+    #Gabel_Links_Ausgefahren  := #FIO_Gabel_Links;
+    #Gabel_Rechts_Ausgefahren := #FIO_Gabel_Rechts;
+    #Gabel_Eingefahren        := #FIO_Gabel_Mitte;
+    // stopped AND at commanded setpoint (not just "not moving" at old position)
+    #Position_Erreicht        := NOT #FIO_Moving_X
+        AND NOT #FIO_Moving_Z
+        AND (ABS(#FIO_Ist_X - #Soll_X) <= #Pos_Tol)
+        AND (ABS(#FIO_Ist_Z - #Soll_Z) <= #Pos_Tol);
+
+    #FIO_Soll_X := #Soll_X;
+    #FIO_Soll_Z := #Soll_Z;
+    #FIO_Gabel_Links_Out  := #Gabel_Links_Cmd;
+    #FIO_Gabel_Rechts_Out := #Gabel_Rechts_Cmd;
+
+    #Fork_Out := #Gabel_Links_Cmd
+        OR #Gabel_Rechts_Cmd
+        OR #FIO_Gabel_Links
+        OR #FIO_Gabel_Rechts;
+
+    // --- palette feedback ---
+    IF NOT #Enable THEN
+        #Palette_Aufgenommen := FALSE;
+        #Palette_Abgelegt := FALSE;
+        #Pick_Latched := FALSE;
+        #Place_Latched := FALSE;
+        RETURN;
+    END_IF;
+
+    // pick: latch once (cleared when place starts)
+    IF #Palette_Aufnehmen_Cmd AND #Fork_Out AND NOT #FIO_Pallet_Vor_Regal THEN
+        #Pick_Latched := TRUE;
+    END_IF;
+
+    #TON_Pick(
+        IN := #Pick_FIO_Fallback_En
+            AND #Palette_Aufnehmen_Cmd
+            AND #Fork_Out
+            AND #FIO_Pallet_Vor_Regal,
+        PT := #Pick_FIO_Fallback_PT
+    );
+    IF #Pick_FIO_Fallback_En AND #TON_Pick.Q AND #Fork_Out AND NOT #FIO_Pallet_Vor_Regal THEN
+        #Pick_Latched := TRUE;
+    END_IF;
+
+    IF #Palette_Ablegen_Cmd THEN
+        #Pick_Latched := FALSE;
+    END_IF;
+
+    #Palette_Aufgenommen := #Pick_Latched;
+
+    // place: latch at setpoint OR after fallback timer (timer runs while lowering)
+    #TON_Place(
+        IN := #Place_FIO_Fallback_En
+            AND #Palette_Ablegen_Cmd
+            AND (#Fork_Out OR #Gabel_Links_Cmd OR #Gabel_Rechts_Cmd),
+        PT := #Place_FIO_Fallback_PT
+    );
+    IF #Palette_Ablegen_Cmd
+        AND (#Fork_Out OR #Gabel_Links_Cmd OR #Gabel_Rechts_Cmd) THEN
+        IF (ABS(#FIO_Ist_X - #Soll_X) <= #Pos_Tol)
+            AND (ABS(#FIO_Ist_Z - #Soll_Z) <= #Pos_Tol) THEN
+            #Place_Latched := TRUE;
+        ELSIF #Place_FIO_Fallback_En AND #TON_Place.Q THEN
+            #Place_Latched := TRUE;
+        END_IF;
+    END_IF;
+
+    IF #Palette_Aufnehmen_Cmd THEN
+        #Place_Latched := FALSE;
+    END_IF;
+
+    #Palette_Abgelegt := #Place_Latched;
+
+END_FUNCTION_BLOCK

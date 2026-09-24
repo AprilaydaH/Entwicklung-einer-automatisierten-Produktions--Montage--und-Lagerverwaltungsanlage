@@ -1,0 +1,1180 @@
+[
+    {
+        "id": "tab_flow",
+        "type": "tab",
+        "label": "Hochregal",
+        "disabled": false,
+        "info": "W1 plastic 5B + W2 metal 5A. Occupancy merkers + Ziel-Fach tables."
+    },
+    {
+        "id": "cmt_ui",
+        "type": "comment",
+        "z": "tab_flow",
+        "name": "Dashboard: http://127.0.0.1:1880/ui   |   Enable node 'PLC cyclic' only when 192.168.0.1 pings",
+        "info": "This PC is on WLAN 192.168.178.x. The CPU is 192.168.0.1. Timeout is expected until PLCSIM Advanced or a plant Ethernet cable.\nOpen /ui (not the editor) for the 6x9 tables. Demo Ziel 7 works offline.",
+        "x": 280,
+        "y": 20,
+        "wires": []
+    },
+    {
+        "id": "ui_tab_w1",
+        "type": "ui_tab",
+        "name": "Lager 1",
+        "icon": "fa-cubes",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "ui_tab_w2",
+        "type": "ui_tab",
+        "name": "Lager 2",
+        "icon": "fa-cubes",
+        "order": 2,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "ui_grp_rack_w1",
+        "type": "ui_group",
+        "name": "Regal Ziel-Fach",
+        "tab": "ui_tab_w1",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "ui_grp_status_w1",
+        "type": "ui_group",
+        "name": "Status",
+        "tab": "ui_tab_w1",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "ui_grp_rack_w2",
+        "type": "ui_group",
+        "name": "Regal Ziel-Fach",
+        "tab": "ui_tab_w2",
+        "order": 0,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "ui_grp_status",
+        "type": "ui_group",
+        "name": "Status",
+        "tab": "ui_tab_w2",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "ui_grp_product",
+        "type": "ui_group",
+        "name": "Produkt / RFID",
+        "tab": "ui_tab_w2",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "ui_grp_motion",
+        "type": "ui_group",
+        "name": "Motion",
+        "tab": "ui_tab_w2",
+        "order": 3,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "ui_grp_prod",
+        "type": "ui_group",
+        "name": "Produktion heute",
+        "tab": "ui_tab_w2",
+        "order": 4,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "s7_plc1",
+        "type": "s7 endpoint",
+        "address": "192.168.0.1",
+        "port": "102",
+        "rack": "0",
+        "slot": "1",
+        "localtsaphi": "01",
+        "localtsaplo": "00",
+        "remotetsaphi": "01",
+        "remotetsaplo": "00",
+        "connmode": "rack-slot",
+        "adaptername": "",
+        "busaddr": "2",
+        "cycletime": "500",
+        "timeout": "2000",
+        "verbose": "false",
+        "name": "PLC_1",
+        "vartable": [
+            {
+                "name": "Mode_Auto",
+                "addr": "M60.1"
+            },
+            {
+                "name": "Mode_Hand",
+                "addr": "M60.2"
+            },
+            {
+                "name": "Not_Aus",
+                "addr": "M60.3"
+            },
+            {
+                "name": "Paket_Fuer_Hochregal",
+                "addr": "M62.1"
+            },
+            {
+                "name": "HRL_Busy",
+                "addr": "M64.0"
+            },
+            {
+                "name": "HRL_Done",
+                "addr": "M64.1"
+            },
+            {
+                "name": "HRL_Error",
+                "addr": "M64.2"
+            },
+            {
+                "name": "HMI_State",
+                "addr": "MI128"
+            },
+            {
+                "name": "HMI_Ziel_Fach",
+                "addr": "MI130"
+            },
+            {
+                "name": "HRL_Anzahl_Belegt",
+                "addr": "MW132"
+            },
+            {
+                "name": "HRL_Anzahl_Frei",
+                "addr": "MW134"
+            },
+            {
+                "name": "HRL_Occ_0",
+                "addr": "MB400"
+            },
+            {
+                "name": "HRL_Occ_1",
+                "addr": "MB401"
+            },
+            {
+                "name": "HRL_Occ_2",
+                "addr": "MB402"
+            },
+            {
+                "name": "HRL_Occ_3",
+                "addr": "MB403"
+            },
+            {
+                "name": "HRL_Occ_4",
+                "addr": "MB404"
+            },
+            {
+                "name": "HRL_Occ_5",
+                "addr": "MB405"
+            },
+            {
+                "name": "HRL_Occ_6",
+                "addr": "MB406"
+            },
+            {
+                "name": "Mode_Auto_W2",
+                "addr": "M70.1"
+            },
+            {
+                "name": "Mode_Hand_W2",
+                "addr": "M70.2"
+            },
+            {
+                "name": "Not_Aus_W2",
+                "addr": "M70.3"
+            },
+            {
+                "name": "Paket_Fuer_Hochregal_W2",
+                "addr": "M72.1"
+            },
+            {
+                "name": "HRL2_Busy",
+                "addr": "M74.0"
+            },
+            {
+                "name": "HRL2_Done",
+                "addr": "M74.1"
+            },
+            {
+                "name": "HRL2_Error",
+                "addr": "M74.2"
+            },
+            {
+                "name": "HMI_State_W2",
+                "addr": "MI228"
+            },
+            {
+                "name": "HMI_Ziel_Fach_W2",
+                "addr": "MI230"
+            },
+            {
+                "name": "HRL2_Anzahl_Belegt",
+                "addr": "MW232"
+            },
+            {
+                "name": "HRL2_Anzahl_Frei",
+                "addr": "MW234"
+            },
+            {
+                "name": "HRL2_Occ_0",
+                "addr": "MB410"
+            },
+            {
+                "name": "HRL2_Occ_1",
+                "addr": "MB411"
+            },
+            {
+                "name": "HRL2_Occ_2",
+                "addr": "MB412"
+            },
+            {
+                "name": "HRL2_Occ_3",
+                "addr": "MB413"
+            },
+            {
+                "name": "HRL2_Occ_4",
+                "addr": "MB414"
+            },
+            {
+                "name": "HRL2_Occ_5",
+                "addr": "MB415"
+            },
+            {
+                "name": "HRL2_Occ_6",
+                "addr": "MB416"
+            },
+            {
+                "name": "Ist_X_W2",
+                "addr": "MR196"
+            },
+            {
+                "name": "Ist_Z_W2",
+                "addr": "MR200"
+            },
+            {
+                "name": "Soll_X_W2",
+                "addr": "MR204"
+            },
+            {
+                "name": "Soll_Z_W2",
+                "addr": "MR208"
+            },
+            {
+                "name": "4a_RFID_Done",
+                "addr": "M21.1"
+            },
+            {
+                "name": "4a_RFID_Tag_Present",
+                "addr": "M21.3"
+            },
+            {
+                "name": "4a_RFID_Artikelnummer",
+                "addr": "MW150"
+            },
+            {
+                "name": "4a_RFID_Code_Out",
+                "addr": "MD236"
+            },
+            {
+                "name": "Vision_RFID_CODE",
+                "addr": "MD276"
+            },
+            {
+                "name": "HMI_Prod_Planned",
+                "addr": "MDI320"
+            },
+            {
+                "name": "HMI_Prod_Actual",
+                "addr": "MDI324"
+            },
+            {
+                "name": "HMI_Prod_Actual_Metal",
+                "addr": "MDI332"
+            },
+            {
+                "name": "HMI_Prod_Actual_Plastic",
+                "addr": "MDI336"
+            }
+        ]
+    },
+    {
+        "id": "inj_start",
+        "type": "inject",
+        "z": "tab_flow",
+        "name": "show racks",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.3,
+        "topic": "",
+        "payload": "{}",
+        "payloadType": "json",
+        "x": 140,
+        "y": 40,
+        "wires": [
+            [
+                "fn_format"
+            ]
+        ]
+    },
+    {
+        "id": "btn_demo_w1",
+        "type": "ui_button",
+        "z": "tab_flow",
+        "group": "ui_grp_rack_w1",
+        "name": "demo W1",
+        "order": 2,
+        "width": 6,
+        "height": 1,
+        "passthru": false,
+        "label": "Demo Ziel 7",
+        "tooltip": "Offline test — yellow outline on Fach 7",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "{\"HMI_Ziel_Fach\":7,\"HRL_Occ_0\":1,\"HRL_Anzahl_Belegt\":1,\"HRL_Anzahl_Frei\":53}",
+        "payloadType": "json",
+        "topic": "demo",
+        "x": 140,
+        "y": 200,
+        "wires": [
+            [
+                "fn_format"
+            ]
+        ]
+    },
+    {
+        "id": "btn_demo_w2",
+        "type": "ui_button",
+        "z": "tab_flow",
+        "group": "ui_grp_rack_w2",
+        "name": "demo W2",
+        "order": 2,
+        "width": 6,
+        "height": 1,
+        "passthru": false,
+        "label": "Demo Ziel 7",
+        "tooltip": "Offline test — yellow outline on Fach 7",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "{\"HMI_Ziel_Fach_W2\":7,\"HRL2_Occ_0\":1,\"HRL2_Anzahl_Belegt\":1,\"HRL2_Anzahl_Frei\":53}",
+        "payloadType": "json",
+        "topic": "demo",
+        "x": 140,
+        "y": 240,
+        "wires": [
+            [
+                "fn_format"
+            ]
+        ]
+    },
+    {
+        "id": "s7_in_all",
+        "type": "s7 in",
+        "z": "tab_flow",
+        "endpoint": "s7_plc1",
+        "mode": "all",
+        "variable": "",
+        "diff": false,
+        "name": "PLC cyclic",
+        "x": 140,
+        "y": 120,
+        "wires": [
+            [
+                "fn_format"
+            ]
+        ],
+        "d": true
+    },
+    {
+        "id": "fn_format",
+        "type": "function",
+        "z": "tab_flow",
+        "name": "format",
+        "func": "const STATE = {\n  0: '0 Ready', 10: '10 RFID wait', 20: '20 Free slot', 30: '30 To band',\n  40: '40 Fork band', 41: '41 Lift + pick', 42: '42 Retract', 50: '50 To slot',\n  55: '55 Fork rack', 56: '56 Place', 58: '58 Retract', 60: '60 DB',\n  70: '70 Home', 80: '80 Done', 900: '900 Fault'\n};\nfunction occBytes(p, k) {\n  const b = [];\n  for (let i = 0; i < 7; i++) b.push(Number(p[k + i]) || 0);\n  return b;\n}\nfunction occArr(p, k) {\n  const bytes = occBytes(p, k);\n  const a = new Array(55).fill(false);\n  for (let n = 1; n <= 54; n++) {\n    const bi = Math.floor((n - 1) / 8);\n    const bit = (n - 1) % 8;\n    a[n] = !!((bytes[bi] || 0) & (1 << bit));\n  }\n  return a;\n}\nfunction r3(v) {\n  const n = Number(v);\n  return Number.isFinite(n) ? n.toFixed(3) : '—';\n}\nconst p = (msg.payload && typeof msg.payload === 'object') ? msg.payload : {};\np.StateText = STATE[p.HMI_State_W2] || String(p.HMI_State_W2 == null ? '—' : p.HMI_State_W2);\np.StateTextW1 = STATE[p.HMI_State] || String(p.HMI_State == null ? '—' : p.HMI_State);\np.IstXZ = r3(p.Ist_X_W2) + ' / ' + r3(p.Ist_Z_W2);\np.SollXZ = r3(p.Soll_X_W2) + ' / ' + r3(p.Soll_Z_W2);\np.occW1 = occArr(p, 'HRL_Occ_');\np.occW2 = occArr(p, 'HRL2_Occ_');\np.zielW1 = Number(p.HMI_Ziel_Fach) || 0;\np.zielW2 = Number(p.HMI_Ziel_Fach_W2) || 0;\nmsg.payload = p;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 330,
+        "y": 80,
+        "wires": [
+            [
+                "ui_rack_w1",
+                "ui_status_w1",
+                "chg_state_w1",
+                "chg_belegt_w1",
+                "chg_frei_w1",
+                "ui_rack_w2",
+                "ui_status",
+                "chg_state",
+                "chg_ziel",
+                "chg_belegt",
+                "chg_frei",
+                "chg_rfid",
+                "chg_art",
+                "chg_vis",
+                "chg_ist",
+                "chg_soll",
+                "chg_act",
+                "chg_metal"
+            ]
+        ]
+    },
+    {
+        "id": "ui_rack_w1",
+        "type": "ui_template",
+        "z": "tab_flow",
+        "group": "ui_grp_rack_w1",
+        "name": "rack W1",
+        "order": 1,
+        "width": "6",
+        "height": "9",
+        "format": "<style>\n.hrack{border-collapse:collapse;font-family:Segoe UI,sans-serif}\n.hrack td{width:38px;height:26px;text-align:center;font-size:11px;border:1px solid #9aa;background:#E6E6E6;color:#222}\n.hrack.w1 td.belegt{background:#4A90D9;color:#fff}\n.hrack.w2 td.belegt{background:#5B7C99;color:#fff}\n.hrack td.ziel{outline:3px solid #F1C40F;outline-offset:-3px;font-weight:700}\n.hrack-cap{margin-top:6px;font:13px Segoe UI,sans-serif}\n.hrack-leg{font-size:11px;color:#555;margin-top:4px}\n.hrack-note{font-size:11px;color:#888;margin-bottom:6px}\n</style>\n<div class=\"hrack-note\">Numbers always show. Yellow outline = Ziel-Fach. Click Demo if PLC is offline.</div><table class=\"hrack w1\"><tr><td ng-class=\"{belegt: msg.payload.occW1[49], ziel: msg.payload.zielW1==49}\">49</td><td ng-class=\"{belegt: msg.payload.occW1[50], ziel: msg.payload.zielW1==50}\">50</td><td ng-class=\"{belegt: msg.payload.occW1[51], ziel: msg.payload.zielW1==51}\">51</td><td ng-class=\"{belegt: msg.payload.occW1[52], ziel: msg.payload.zielW1==52}\">52</td><td ng-class=\"{belegt: msg.payload.occW1[53], ziel: msg.payload.zielW1==53}\">53</td><td ng-class=\"{belegt: msg.payload.occW1[54], ziel: msg.payload.zielW1==54}\">54</td></tr><tr><td ng-class=\"{belegt: msg.payload.occW1[43], ziel: msg.payload.zielW1==43}\">43</td><td ng-class=\"{belegt: msg.payload.occW1[44], ziel: msg.payload.zielW1==44}\">44</td><td ng-class=\"{belegt: msg.payload.occW1[45], ziel: msg.payload.zielW1==45}\">45</td><td ng-class=\"{belegt: msg.payload.occW1[46], ziel: msg.payload.zielW1==46}\">46</td><td ng-class=\"{belegt: msg.payload.occW1[47], ziel: msg.payload.zielW1==47}\">47</td><td ng-class=\"{belegt: msg.payload.occW1[48], ziel: msg.payload.zielW1==48}\">48</td></tr><tr><td ng-class=\"{belegt: msg.payload.occW1[37], ziel: msg.payload.zielW1==37}\">37</td><td ng-class=\"{belegt: msg.payload.occW1[38], ziel: msg.payload.zielW1==38}\">38</td><td ng-class=\"{belegt: msg.payload.occW1[39], ziel: msg.payload.zielW1==39}\">39</td><td ng-class=\"{belegt: msg.payload.occW1[40], ziel: msg.payload.zielW1==40}\">40</td><td ng-class=\"{belegt: msg.payload.occW1[41], ziel: msg.payload.zielW1==41}\">41</td><td ng-class=\"{belegt: msg.payload.occW1[42], ziel: msg.payload.zielW1==42}\">42</td></tr><tr><td ng-class=\"{belegt: msg.payload.occW1[31], ziel: msg.payload.zielW1==31}\">31</td><td ng-class=\"{belegt: msg.payload.occW1[32], ziel: msg.payload.zielW1==32}\">32</td><td ng-class=\"{belegt: msg.payload.occW1[33], ziel: msg.payload.zielW1==33}\">33</td><td ng-class=\"{belegt: msg.payload.occW1[34], ziel: msg.payload.zielW1==34}\">34</td><td ng-class=\"{belegt: msg.payload.occW1[35], ziel: msg.payload.zielW1==35}\">35</td><td ng-class=\"{belegt: msg.payload.occW1[36], ziel: msg.payload.zielW1==36}\">36</td></tr><tr><td ng-class=\"{belegt: msg.payload.occW1[25], ziel: msg.payload.zielW1==25}\">25</td><td ng-class=\"{belegt: msg.payload.occW1[26], ziel: msg.payload.zielW1==26}\">26</td><td ng-class=\"{belegt: msg.payload.occW1[27], ziel: msg.payload.zielW1==27}\">27</td><td ng-class=\"{belegt: msg.payload.occW1[28], ziel: msg.payload.zielW1==28}\">28</td><td ng-class=\"{belegt: msg.payload.occW1[29], ziel: msg.payload.zielW1==29}\">29</td><td ng-class=\"{belegt: msg.payload.occW1[30], ziel: msg.payload.zielW1==30}\">30</td></tr><tr><td ng-class=\"{belegt: msg.payload.occW1[19], ziel: msg.payload.zielW1==19}\">19</td><td ng-class=\"{belegt: msg.payload.occW1[20], ziel: msg.payload.zielW1==20}\">20</td><td ng-class=\"{belegt: msg.payload.occW1[21], ziel: msg.payload.zielW1==21}\">21</td><td ng-class=\"{belegt: msg.payload.occW1[22], ziel: msg.payload.zielW1==22}\">22</td><td ng-class=\"{belegt: msg.payload.occW1[23], ziel: msg.payload.zielW1==23}\">23</td><td ng-class=\"{belegt: msg.payload.occW1[24], ziel: msg.payload.zielW1==24}\">24</td></tr><tr><td ng-class=\"{belegt: msg.payload.occW1[13], ziel: msg.payload.zielW1==13}\">13</td><td ng-class=\"{belegt: msg.payload.occW1[14], ziel: msg.payload.zielW1==14}\">14</td><td ng-class=\"{belegt: msg.payload.occW1[15], ziel: msg.payload.zielW1==15}\">15</td><td ng-class=\"{belegt: msg.payload.occW1[16], ziel: msg.payload.zielW1==16}\">16</td><td ng-class=\"{belegt: msg.payload.occW1[17], ziel: msg.payload.zielW1==17}\">17</td><td ng-class=\"{belegt: msg.payload.occW1[18], ziel: msg.payload.zielW1==18}\">18</td></tr><tr><td ng-class=\"{belegt: msg.payload.occW1[7], ziel: msg.payload.zielW1==7}\">7</td><td ng-class=\"{belegt: msg.payload.occW1[8], ziel: msg.payload.zielW1==8}\">8</td><td ng-class=\"{belegt: msg.payload.occW1[9], ziel: msg.payload.zielW1==9}\">9</td><td ng-class=\"{belegt: msg.payload.occW1[10], ziel: msg.payload.zielW1==10}\">10</td><td ng-class=\"{belegt: msg.payload.occW1[11], ziel: msg.payload.zielW1==11}\">11</td><td ng-class=\"{belegt: msg.payload.occW1[12], ziel: msg.payload.zielW1==12}\">12</td></tr><tr><td ng-class=\"{belegt: msg.payload.occW1[1], ziel: msg.payload.zielW1==1}\">1</td><td ng-class=\"{belegt: msg.payload.occW1[2], ziel: msg.payload.zielW1==2}\">2</td><td ng-class=\"{belegt: msg.payload.occW1[3], ziel: msg.payload.zielW1==3}\">3</td><td ng-class=\"{belegt: msg.payload.occW1[4], ziel: msg.payload.zielW1==4}\">4</td><td ng-class=\"{belegt: msg.payload.occW1[5], ziel: msg.payload.zielW1==5}\">5</td><td ng-class=\"{belegt: msg.payload.occW1[6], ziel: msg.payload.zielW1==6}\">6</td></tr></table><div class=\"hrack-cap\">Ziel-Fach <b>{{msg.payload.zielW1 || 0}}</b> · Belegt {{msg.payload.HRL_Anzahl_Belegt || 0}} · Frei {{msg.payload.HRL_Anzahl_Frei != null ? msg.payload.HRL_Anzahl_Frei : 54}}</div><div class=\"hrack-leg\">Kunststoff 5B · Level 8 oben · Fach 1–6 unten</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "x": 560,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ui_status_w1",
+        "type": "ui_template",
+        "z": "tab_flow",
+        "group": "ui_grp_status_w1",
+        "name": "lamps W1",
+        "order": 1,
+        "width": "6",
+        "height": "3",
+        "format": "<div style=\"font-family:Segoe UI,sans-serif;line-height:1.5\">\n  <div style=\"font-size:22px;font-weight:600\">{{msg.payload.StateTextW1}}</div>\n  <div>Auto {{msg.payload.Mode_Auto}} · Hand {{msg.payload.Mode_Hand}}</div>\n  <div>Busy <b>{{msg.payload.HRL_Busy}}</b> · Done {{msg.payload.HRL_Done}} · Error <span style=\"color:#c62828\">{{msg.payload.HRL_Error}}</span></div>\n  <div>Pallet at gate {{msg.payload.Paket_Fuer_Hochregal}} · Not-Aus {{msg.payload.Not_Aus}}</div>\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "x": 560,
+        "y": 80,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "chg_state_w1",
+        "type": "change",
+        "z": "tab_flow",
+        "name": "state W1",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.StateTextW1",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 550,
+        "y": 120,
+        "wires": [
+            [
+                "txt_state_w1"
+            ]
+        ]
+    },
+    {
+        "id": "txt_state_w1",
+        "type": "ui_text",
+        "z": "tab_flow",
+        "group": "ui_grp_status_w1",
+        "order": 2,
+        "width": 6,
+        "height": 1,
+        "name": "",
+        "label": "Schritt",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 740,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "chg_belegt_w1",
+        "type": "change",
+        "z": "tab_flow",
+        "name": "belegt W1",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.HRL_Anzahl_Belegt",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 550,
+        "y": 160,
+        "wires": [
+            [
+                "g_belegt_w1"
+            ]
+        ]
+    },
+    {
+        "id": "g_belegt_w1",
+        "type": "ui_gauge",
+        "z": "tab_flow",
+        "name": "",
+        "group": "ui_grp_status_w1",
+        "order": 3,
+        "width": 3,
+        "height": 3,
+        "gtype": "gage",
+        "title": "Belegt",
+        "label": "/54",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "54",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 740,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "chg_frei_w1",
+        "type": "change",
+        "z": "tab_flow",
+        "name": "frei W1",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.HRL_Anzahl_Frei",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 550,
+        "y": 200,
+        "wires": [
+            [
+                "g_frei_w1"
+            ]
+        ]
+    },
+    {
+        "id": "g_frei_w1",
+        "type": "ui_gauge",
+        "z": "tab_flow",
+        "name": "",
+        "group": "ui_grp_status_w1",
+        "order": 4,
+        "width": 3,
+        "height": 3,
+        "gtype": "gage",
+        "title": "Frei",
+        "label": "/54",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "54",
+        "colors": [
+            "#ca3838",
+            "#e6e600",
+            "#00b500"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 740,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "ui_rack_w2",
+        "type": "ui_template",
+        "z": "tab_flow",
+        "group": "ui_grp_rack_w2",
+        "name": "rack W2",
+        "order": 1,
+        "width": "6",
+        "height": "9",
+        "format": "<style>\n.hrack{border-collapse:collapse;font-family:Segoe UI,sans-serif}\n.hrack td{width:38px;height:26px;text-align:center;font-size:11px;border:1px solid #9aa;background:#E6E6E6;color:#222}\n.hrack.w1 td.belegt{background:#4A90D9;color:#fff}\n.hrack.w2 td.belegt{background:#5B7C99;color:#fff}\n.hrack td.ziel{outline:3px solid #F1C40F;outline-offset:-3px;font-weight:700}\n.hrack-cap{margin-top:6px;font:13px Segoe UI,sans-serif}\n.hrack-leg{font-size:11px;color:#555;margin-top:4px}\n.hrack-note{font-size:11px;color:#888;margin-bottom:6px}\n</style>\n<div class=\"hrack-note\">Numbers always show. Yellow outline = Ziel-Fach. Click Demo if PLC is offline.</div><table class=\"hrack w2\"><tr><td ng-class=\"{belegt: msg.payload.occW2[49], ziel: msg.payload.zielW2==49}\">49</td><td ng-class=\"{belegt: msg.payload.occW2[50], ziel: msg.payload.zielW2==50}\">50</td><td ng-class=\"{belegt: msg.payload.occW2[51], ziel: msg.payload.zielW2==51}\">51</td><td ng-class=\"{belegt: msg.payload.occW2[52], ziel: msg.payload.zielW2==52}\">52</td><td ng-class=\"{belegt: msg.payload.occW2[53], ziel: msg.payload.zielW2==53}\">53</td><td ng-class=\"{belegt: msg.payload.occW2[54], ziel: msg.payload.zielW2==54}\">54</td></tr><tr><td ng-class=\"{belegt: msg.payload.occW2[43], ziel: msg.payload.zielW2==43}\">43</td><td ng-class=\"{belegt: msg.payload.occW2[44], ziel: msg.payload.zielW2==44}\">44</td><td ng-class=\"{belegt: msg.payload.occW2[45], ziel: msg.payload.zielW2==45}\">45</td><td ng-class=\"{belegt: msg.payload.occW2[46], ziel: msg.payload.zielW2==46}\">46</td><td ng-class=\"{belegt: msg.payload.occW2[47], ziel: msg.payload.zielW2==47}\">47</td><td ng-class=\"{belegt: msg.payload.occW2[48], ziel: msg.payload.zielW2==48}\">48</td></tr><tr><td ng-class=\"{belegt: msg.payload.occW2[37], ziel: msg.payload.zielW2==37}\">37</td><td ng-class=\"{belegt: msg.payload.occW2[38], ziel: msg.payload.zielW2==38}\">38</td><td ng-class=\"{belegt: msg.payload.occW2[39], ziel: msg.payload.zielW2==39}\">39</td><td ng-class=\"{belegt: msg.payload.occW2[40], ziel: msg.payload.zielW2==40}\">40</td><td ng-class=\"{belegt: msg.payload.occW2[41], ziel: msg.payload.zielW2==41}\">41</td><td ng-class=\"{belegt: msg.payload.occW2[42], ziel: msg.payload.zielW2==42}\">42</td></tr><tr><td ng-class=\"{belegt: msg.payload.occW2[31], ziel: msg.payload.zielW2==31}\">31</td><td ng-class=\"{belegt: msg.payload.occW2[32], ziel: msg.payload.zielW2==32}\">32</td><td ng-class=\"{belegt: msg.payload.occW2[33], ziel: msg.payload.zielW2==33}\">33</td><td ng-class=\"{belegt: msg.payload.occW2[34], ziel: msg.payload.zielW2==34}\">34</td><td ng-class=\"{belegt: msg.payload.occW2[35], ziel: msg.payload.zielW2==35}\">35</td><td ng-class=\"{belegt: msg.payload.occW2[36], ziel: msg.payload.zielW2==36}\">36</td></tr><tr><td ng-class=\"{belegt: msg.payload.occW2[25], ziel: msg.payload.zielW2==25}\">25</td><td ng-class=\"{belegt: msg.payload.occW2[26], ziel: msg.payload.zielW2==26}\">26</td><td ng-class=\"{belegt: msg.payload.occW2[27], ziel: msg.payload.zielW2==27}\">27</td><td ng-class=\"{belegt: msg.payload.occW2[28], ziel: msg.payload.zielW2==28}\">28</td><td ng-class=\"{belegt: msg.payload.occW2[29], ziel: msg.payload.zielW2==29}\">29</td><td ng-class=\"{belegt: msg.payload.occW2[30], ziel: msg.payload.zielW2==30}\">30</td></tr><tr><td ng-class=\"{belegt: msg.payload.occW2[19], ziel: msg.payload.zielW2==19}\">19</td><td ng-class=\"{belegt: msg.payload.occW2[20], ziel: msg.payload.zielW2==20}\">20</td><td ng-class=\"{belegt: msg.payload.occW2[21], ziel: msg.payload.zielW2==21}\">21</td><td ng-class=\"{belegt: msg.payload.occW2[22], ziel: msg.payload.zielW2==22}\">22</td><td ng-class=\"{belegt: msg.payload.occW2[23], ziel: msg.payload.zielW2==23}\">23</td><td ng-class=\"{belegt: msg.payload.occW2[24], ziel: msg.payload.zielW2==24}\">24</td></tr><tr><td ng-class=\"{belegt: msg.payload.occW2[13], ziel: msg.payload.zielW2==13}\">13</td><td ng-class=\"{belegt: msg.payload.occW2[14], ziel: msg.payload.zielW2==14}\">14</td><td ng-class=\"{belegt: msg.payload.occW2[15], ziel: msg.payload.zielW2==15}\">15</td><td ng-class=\"{belegt: msg.payload.occW2[16], ziel: msg.payload.zielW2==16}\">16</td><td ng-class=\"{belegt: msg.payload.occW2[17], ziel: msg.payload.zielW2==17}\">17</td><td ng-class=\"{belegt: msg.payload.occW2[18], ziel: msg.payload.zielW2==18}\">18</td></tr><tr><td ng-class=\"{belegt: msg.payload.occW2[7], ziel: msg.payload.zielW2==7}\">7</td><td ng-class=\"{belegt: msg.payload.occW2[8], ziel: msg.payload.zielW2==8}\">8</td><td ng-class=\"{belegt: msg.payload.occW2[9], ziel: msg.payload.zielW2==9}\">9</td><td ng-class=\"{belegt: msg.payload.occW2[10], ziel: msg.payload.zielW2==10}\">10</td><td ng-class=\"{belegt: msg.payload.occW2[11], ziel: msg.payload.zielW2==11}\">11</td><td ng-class=\"{belegt: msg.payload.occW2[12], ziel: msg.payload.zielW2==12}\">12</td></tr><tr><td ng-class=\"{belegt: msg.payload.occW2[1], ziel: msg.payload.zielW2==1}\">1</td><td ng-class=\"{belegt: msg.payload.occW2[2], ziel: msg.payload.zielW2==2}\">2</td><td ng-class=\"{belegt: msg.payload.occW2[3], ziel: msg.payload.zielW2==3}\">3</td><td ng-class=\"{belegt: msg.payload.occW2[4], ziel: msg.payload.zielW2==4}\">4</td><td ng-class=\"{belegt: msg.payload.occW2[5], ziel: msg.payload.zielW2==5}\">5</td><td ng-class=\"{belegt: msg.payload.occW2[6], ziel: msg.payload.zielW2==6}\">6</td></tr></table><div class=\"hrack-cap\">Ziel-Fach <b>{{msg.payload.zielW2 || 0}}</b> · Belegt {{msg.payload.HRL2_Anzahl_Belegt || 0}} · Frei {{msg.payload.HRL2_Anzahl_Frei != null ? msg.payload.HRL2_Anzahl_Frei : 54}}</div><div class=\"hrack-leg\">Metall 5A · Level 8 oben · Fach 1–6 unten</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "x": 560,
+        "y": 20,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ui_status",
+        "type": "ui_template",
+        "z": "tab_flow",
+        "group": "ui_grp_status",
+        "name": "lamps",
+        "order": 1,
+        "width": "6",
+        "height": "3",
+        "format": "<div style=\"font-family:Segoe UI,sans-serif;line-height:1.5\">\n  <div style=\"font-size:22px;font-weight:600\">{{msg.payload.StateText}}</div>\n  <div>Auto {{msg.payload.Mode_Auto_W2}} · Hand {{msg.payload.Mode_Hand_W2}}</div>\n  <div>Busy <b>{{msg.payload.HRL2_Busy}}</b> · Done {{msg.payload.HRL2_Done}} · Error <span style=\"color:#c62828\">{{msg.payload.HRL2_Error}}</span></div>\n  <div>Pallet at gate {{msg.payload.Paket_Fuer_Hochregal_W2}} · Not-Aus {{msg.payload.Not_Aus_W2}}</div>\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "x": 560,
+        "y": 260,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "chg_state",
+        "type": "change",
+        "z": "tab_flow",
+        "name": "state",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.StateText",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 550,
+        "y": 80,
+        "wires": [
+            [
+                "txt_state"
+            ]
+        ]
+    },
+    {
+        "id": "txt_state",
+        "type": "ui_text",
+        "z": "tab_flow",
+        "group": "ui_grp_status",
+        "order": 2,
+        "width": 6,
+        "height": 1,
+        "name": "",
+        "label": "Schritt",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 740,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "chg_ziel",
+        "type": "change",
+        "z": "tab_flow",
+        "name": "ziel",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.HMI_Ziel_Fach_W2",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 550,
+        "y": 120,
+        "wires": [
+            [
+                "txt_ziel"
+            ]
+        ]
+    },
+    {
+        "id": "txt_ziel",
+        "type": "ui_text",
+        "z": "tab_flow",
+        "group": "ui_grp_status",
+        "order": 3,
+        "width": 3,
+        "height": 1,
+        "name": "",
+        "label": "Ziel-Fach",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 740,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "chg_belegt",
+        "type": "change",
+        "z": "tab_flow",
+        "name": "belegt",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.HRL2_Anzahl_Belegt",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 550,
+        "y": 160,
+        "wires": [
+            [
+                "g_belegt"
+            ]
+        ]
+    },
+    {
+        "id": "g_belegt",
+        "type": "ui_gauge",
+        "z": "tab_flow",
+        "name": "",
+        "group": "ui_grp_status",
+        "order": 4,
+        "width": 3,
+        "height": 3,
+        "gtype": "gage",
+        "title": "Belegt",
+        "label": "/54",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "54",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 740,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "chg_frei",
+        "type": "change",
+        "z": "tab_flow",
+        "name": "frei",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.HRL2_Anzahl_Frei",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 550,
+        "y": 200,
+        "wires": [
+            [
+                "g_frei"
+            ]
+        ]
+    },
+    {
+        "id": "g_frei",
+        "type": "ui_gauge",
+        "z": "tab_flow",
+        "name": "",
+        "group": "ui_grp_status",
+        "order": 5,
+        "width": 3,
+        "height": 3,
+        "gtype": "gage",
+        "title": "Frei",
+        "label": "/54",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "54",
+        "colors": [
+            "#ca3838",
+            "#e6e600",
+            "#00b500"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 740,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "chg_rfid",
+        "type": "change",
+        "z": "tab_flow",
+        "name": "rfid",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.4a_RFID_Code_Out",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 550,
+        "y": 260,
+        "wires": [
+            [
+                "txt_rfid"
+            ]
+        ]
+    },
+    {
+        "id": "txt_rfid",
+        "type": "ui_text",
+        "z": "tab_flow",
+        "group": "ui_grp_product",
+        "order": 1,
+        "width": 6,
+        "height": 1,
+        "name": "",
+        "label": "4a RFID_CODE",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 740,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "chg_art",
+        "type": "change",
+        "z": "tab_flow",
+        "name": "art",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.4a_RFID_Artikelnummer",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 550,
+        "y": 300,
+        "wires": [
+            [
+                "txt_art"
+            ]
+        ]
+    },
+    {
+        "id": "txt_art",
+        "type": "ui_text",
+        "z": "tab_flow",
+        "group": "ui_grp_product",
+        "order": 2,
+        "width": 3,
+        "height": 1,
+        "name": "",
+        "label": "Artikel",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 740,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "chg_vis",
+        "type": "change",
+        "z": "tab_flow",
+        "name": "vision",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.Vision_RFID_CODE",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 550,
+        "y": 340,
+        "wires": [
+            [
+                "txt_vis"
+            ]
+        ]
+    },
+    {
+        "id": "txt_vis",
+        "type": "ui_text",
+        "z": "tab_flow",
+        "group": "ui_grp_product",
+        "order": 3,
+        "width": 3,
+        "height": 1,
+        "name": "",
+        "label": "Vision-Code",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 740,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "chg_ist",
+        "type": "change",
+        "z": "tab_flow",
+        "name": "ist",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.IstXZ",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 550,
+        "y": 400,
+        "wires": [
+            [
+                "txt_ist"
+            ]
+        ]
+    },
+    {
+        "id": "txt_ist",
+        "type": "ui_text",
+        "z": "tab_flow",
+        "group": "ui_grp_motion",
+        "order": 1,
+        "width": 6,
+        "height": 1,
+        "name": "",
+        "label": "Ist X / Z",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 740,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "chg_soll",
+        "type": "change",
+        "z": "tab_flow",
+        "name": "soll",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.SollXZ",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 550,
+        "y": 440,
+        "wires": [
+            [
+                "txt_soll"
+            ]
+        ]
+    },
+    {
+        "id": "txt_soll",
+        "type": "ui_text",
+        "z": "tab_flow",
+        "group": "ui_grp_motion",
+        "order": 2,
+        "width": 6,
+        "height": 1,
+        "name": "",
+        "label": "Soll X / Z",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 740,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "chg_act",
+        "type": "change",
+        "z": "tab_flow",
+        "name": "actual",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.HMI_Prod_Actual",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 550,
+        "y": 500,
+        "wires": [
+            [
+                "txt_act"
+            ]
+        ]
+    },
+    {
+        "id": "txt_act",
+        "type": "ui_text",
+        "z": "tab_flow",
+        "group": "ui_grp_prod",
+        "order": 1,
+        "width": 3,
+        "height": 1,
+        "name": "",
+        "label": "Ist (gesamt)",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 740,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "chg_metal",
+        "type": "change",
+        "z": "tab_flow",
+        "name": "metal",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.HMI_Prod_Actual_Metal",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 550,
+        "y": 540,
+        "wires": [
+            [
+                "txt_metal"
+            ]
+        ]
+    },
+    {
+        "id": "txt_metal",
+        "type": "ui_text",
+        "z": "tab_flow",
+        "group": "ui_grp_prod",
+        "order": 2,
+        "width": 3,
+        "height": 1,
+        "name": "",
+        "label": "Ist Metall",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 740,
+        "y": 540,
+        "wires": []
+    }
+]

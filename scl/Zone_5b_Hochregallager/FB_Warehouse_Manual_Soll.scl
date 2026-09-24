@@ -1,0 +1,104 @@
+//============================================================================
+// Author: Dereje Hailemariam
+// Datum: 28.08.2026
+// Version: 1.2 — band teach: Copy_Ist_to_Band → Band_X/Z (Hand/Auto loading pose)
+//
+// Place AFTER Hochregal_Automatik, BEFORE FB_Warehouse_Stacker_IO.
+//
+// HMI Setup (Einricht only):
+//   HMI_Soll_X / HMI_Soll_Z     — type target (Real)
+//   HMI_Copy_Ist_to_Soll        — momentary: Ist → Soll
+//   HMI_Copy_Ist_to_Band        — momentary: Ist → Band_X/Z (V1.2)
+//   HMI_Soll_X_Plus/Minus       — momentary: ± HMI_Jog_Step on X
+//   HMI_Soll_Z_Plus/Minus       — momentary: ± HMI_Jog_Step on Z
+//   HMI_Jog_Step                — step size (default 0.01)
+// Wire Band_X/Z OUT → Automatik IN Band_X / Band_Z (%MD164 / %MD168)
+//============================================================================
+
+FUNCTION_BLOCK "FB_Warehouse_Manual_Soll"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 1.2
+
+VAR_INPUT
+    Enable                      : Bool := TRUE;
+    Einricht_Mode               : Bool := FALSE;
+    Automatik_Busy              : Bool := FALSE;
+    Not_Aus                     : Bool := FALSE;
+
+    Ist_X                       : Real := 0.0;
+    Ist_Z                       : Real := 0.0;
+
+    Copy_Ist_to_Soll            : Bool := FALSE;
+    Copy_Ist_to_Band            : Bool := FALSE;
+    Soll_X_Plus                 : Bool := FALSE;
+    Soll_X_Minus                : Bool := FALSE;
+    Soll_Z_Plus                 : Bool := FALSE;
+    Soll_Z_Minus                : Bool := FALSE;
+    Jog_Step                    : Real := 0.01;
+END_VAR
+
+VAR_IN_OUT
+    Soll_X                      : Real;
+    Soll_Z                      : Real;
+    HMI_Soll_X                  : Real;
+    HMI_Soll_Z                  : Real;
+    Band_X                      : Real;
+    Band_Z                      : Real;
+END_VAR
+
+VAR
+    R_Copy                      : R_TRIG;
+    R_Copy_Band                 : R_TRIG;
+    R_X_Plus                    : R_TRIG;
+    R_X_Minus                   : R_TRIG;
+    R_Z_Plus                    : R_TRIG;
+    R_Z_Minus                   : R_TRIG;
+    step                        : Real;
+END_VAR
+
+BEGIN
+    IF NOT #Enable THEN
+        RETURN;
+    END_IF;
+
+    #step := #Jog_Step;
+    IF #step <= 0.0 THEN
+        #step := 0.01;
+    END_IF;
+
+    #R_Copy(CLK := #Copy_Ist_to_Soll);
+    #R_Copy_Band(CLK := #Copy_Ist_to_Band);
+    #R_X_Plus(CLK := #Soll_X_Plus);
+    #R_X_Minus(CLK := #Soll_X_Minus);
+    #R_Z_Plus(CLK := #Soll_Z_Plus);
+    #R_Z_Minus(CLK := #Soll_Z_Minus);
+
+    IF #Einricht_Mode AND NOT #Automatik_Busy AND NOT #Not_Aus THEN
+
+        IF #R_Copy.Q THEN
+            #HMI_Soll_X := #Ist_X;
+            #HMI_Soll_Z := #Ist_Z;
+        END_IF;
+
+        IF #R_Copy_Band.Q THEN
+            #Band_X := #Ist_X;
+            #Band_Z := #Ist_Z;
+        END_IF;
+
+        IF #R_X_Plus.Q THEN
+            #HMI_Soll_X := #HMI_Soll_X + #step;
+        END_IF;
+        IF #R_X_Minus.Q THEN
+            #HMI_Soll_X := #HMI_Soll_X - #step;
+        END_IF;
+        IF #R_Z_Plus.Q THEN
+            #HMI_Soll_Z := #HMI_Soll_Z + #step;
+        END_IF;
+        IF #R_Z_Minus.Q THEN
+            #HMI_Soll_Z := #HMI_Soll_Z - #step;
+        END_IF;
+
+        #Soll_X := #HMI_Soll_X;
+        #Soll_Z := #HMI_Soll_Z;
+    END_IF;
+END_FUNCTION_BLOCK

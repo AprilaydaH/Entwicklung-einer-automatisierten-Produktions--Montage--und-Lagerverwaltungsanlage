@@ -1,0 +1,29 @@
+Category;Name;DataType;LogicalAddress;Comment
+01_HMI;HMI_Stop;Bool;%M8.1;ONLY interrupt — keep FALSE for full auto
+01_HMI;HMI_Reset;Bool;%M8.2;Reset counters / abort
+05_Status;Busy;Bool;%M10.5;Always TRUE in full auto
+05_Status;Done;Bool;%M10.6;TRUE when 2 assemblies on pallet — wire to conveyor (move pallet out)
+05_Status;Pallet_Process_Done;Bool;%M10.7;TRUE when 1 pallet (2 parts) is completed
+05_Status;State;Int;%MW12;Step (5=emit, 12=wait part, …)
+05_Status;Assembly_Count;Int;%MW14;0 or 1 (one assembly per pallet)
+06_HMI_Lamps;HMI_Lamp_Ready;Bool;%M11.0;Unused in full auto
+06_HMI_Lamps;HMI_Lamp_Running;Bool;%M11.1;Running
+06_HMI_Lamps;HMI_Lamp_Done;Bool;%M11.2;Unused in full auto
+06_HMI_Lamps;HMI_Lamp_Stopped;Bool;%M11.3;Stopped
+06_HMI_Lamps;HMI_Cycle_Count;Int;%MW16;Completed pallets
+03_Sensors;Pallet_Present;Bool;%I33.0;Diffuse Sensor 26 — map in Factory I/O driver (was %I8.2, not wired)
+03_Sensors;Assembled_Part_Present;Bool;%I51.0;4a_Assembly_part_Present — map in Factory I/O driver
+03_Gantry;Gantry_X_Pos_V;Real;%ID42;X Position (V)
+03_Gantry;Gantry_Y_Pos_V;Real;%ID46;Y Position (V)
+03_Gantry;Gantry_Z_Pos_V;Real;%ID50;Z Position (V)
+03_Gantry;Gantry_Moving_Z;Bool;%I10.0;Moving-Z
+03_Gantry;Gantry_Moving_XY;Bool;%I10.1;Moving-XY
+03_Gantry;Gantry_Box_Detected;Bool;%I10.2;Box Detected (gripper)
+03_Gantry;Gantry_C_Limit;Bool;%I10.3;C Limit
+04_Gantry;Gantry_X_SetPoint_V;Real;%QD40;X Set Point (V)
+04_Gantry;Gantry_Y_SetPoint_V;Real;%QD44;Y Set Point (V)
+04_Gantry;Gantry_Z_SetPoint_V;Real;%QD48;Z Set Point (V)
+04_Gantry;Gantry_C_Plus;Bool;%Q10.0;C(+)
+04_Gantry;Gantry_Grab;Bool;%Q10.1;Grab
+04_Actuators;Emit_Pallet;Bool;%Q15.0;Emitter unused in this FB (always FALSE)
+04_Actuators;4a_Warning_Light_1;Bool;%Q8.0;Warning light ON while auto is running

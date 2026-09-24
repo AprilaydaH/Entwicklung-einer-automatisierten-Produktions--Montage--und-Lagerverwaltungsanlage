@@ -1,0 +1,84 @@
+Name;Path;Data Type;Logical Address;Comment
+OB100_Startup_Init;Plant;Bool;%M59.0;OB100 pulse — W1+W2 Automatik Reset first scan
+Mode_Einricht_W2;Warehouse_2;Bool;%M70.0;Zone 5A Metal — vacant MB67-79 (PLCTags2)
+Mode_Auto_W2;Warehouse_2;Bool;%M70.1;
+Mode_Hand_W2;Warehouse_2;Bool;%M70.2;
+Not_Aus_W2;Warehouse_2;Bool;%M70.3;
+HMI_Initialisieren_W2;Warehouse_2;Bool;%M70.4;Pulse
+HMI_Reset_Meldung_W2;Warehouse_2;Bool;%M70.5;Pulse
+HMI_Pos_Speichern_W2;Warehouse_2;Bool;%M70.6;Pulse Einricht
+HMI_Raster_Berechnen_W2;Warehouse_2;Bool;%M70.7;Pulse Einricht
+HMI_Loeschen_W2;Warehouse_2;Bool;%M71.0;Pulse Hand/Einricht
+HMI_Suchen_W2;Warehouse_2;Bool;%M71.1;Pulse
+HMI_FreiesFach_W2;Warehouse_2;Bool;%M71.2;Pulse
+HMI_Start_Einlagern_W2;Warehouse_2;Bool;%M71.3;Pulse
+HMI_Start_Auslagern_W2;Warehouse_2;Bool;%M71.4;Pulse — no sequencer yet
+HMI_Reset_W2;Warehouse_2;Bool;%M71.5;Pulse
+HMI_Stop_W2;Warehouse_2;Bool;%M71.6;Pulse
+HMI_Copy_Ist_to_Soll_W2;Warehouse_2;Bool;%M71.7;Pulse Einricht
+Paket_Vor_Regal_W2;Warehouse_2;Bool;%M72.0;From Gate / sensor
+Paket_Fuer_Hochregal_W2;Warehouse_2;Bool;%M72.1;Phase1 = sensor
+Palette_Aufgenommen_W2;Warehouse_2;Bool;%M72.2;From Stacker_IO_W2
+Palette_Abgelegt_W2;Warehouse_2;Bool;%M72.3;From Stacker_IO_W2
+Position_Erreicht_W2;Warehouse_2;Bool;%M72.4;From Stacker_IO_W2
+Gabel_Rechts_Ausgefahren_W2;Warehouse_2;Bool;%M72.5;
+Gabel_Links_Ausgefahren_W2;Warehouse_2;Bool;%M72.6;
+Gabel_Eingefahren_W2;Warehouse_2;Bool;%M72.7;
+Fahre_Zu_Position_W2;Warehouse_2;Bool;%M73.0;Internal
+Palette_Aufnehmen_Cmd_W2;Warehouse_2;Bool;%M73.1;
+Palette_Ablegen_Cmd_W2;Warehouse_2;Bool;%M73.2;
+Gabel_Rechts_Cmd_W2;Warehouse_2;Bool;%M73.3;
+Gabel_Links_Cmd_W2;Warehouse_2;Bool;%M73.4;
+Gabel_Mitte_Cmd_W2;Warehouse_2;Bool;%M73.5;
+HRL_2_Busy;Warehouse_2;Bool;%M74.0;
+HRL_2_Done;Warehouse_2;Bool;%M74.1;
+HRL_2_Error;Warehouse_2;Bool;%M74.2;
+HMI_Soll_X_Plus_W2;Warehouse_2;Bool;%M75.7;Pulse
+HMI_Soll_X_Minus_W2;Warehouse_2;Bool;%M76.0;Pulse
+HMI_Soll_Z_Plus_W2;Warehouse_2;Bool;%M76.1;Pulse
+HMI_Soll_Z_Minus_W2;Warehouse_2;Bool;%M76.2;Pulse
+HMI_Copy_Ist_to_Band_W2;Warehouse_2;Bool;%M76.3;Pulse
+HMI_Fachnummer_W2;Warehouse_2;UInt;%MW180;Vacant after W1 MD175
+HMI_Pitch_X_W2;Warehouse_2;Real;%MD184;
+HMI_Pitch_Z_W2;Warehouse_2;Real;%MD188;
+HMI_Spalten_W2;Warehouse_2;Int;%MW192;Default 6
+HMI_Spalten_Rechts_W2;Warehouse_2;Int;%MW194;Default 3
+Ist_X_W2;Warehouse_2;Real;%MD196;From Stacker Crane 1
+Ist_Z_W2;Warehouse_2;Real;%MD200;
+Soll_X_W2;Warehouse_2;Real;%MD204;
+Soll_Z_W2;Warehouse_2;Real;%MD208;
+Home_X_W2;Warehouse_2;Real;%MD212;
+Home_Z_W2;Warehouse_2;Real;%MD216;
+Ausgabe_X_W2;Warehouse_2;Real;%MD220;
+Ausgabe_Z_W2;Warehouse_2;Real;%MD224;
+HMI_State_W2;Warehouse_2;Int;%MW228;
+HMI_Ziel_Fach_W2;Warehouse_2;Int;%MW230;
+HRL_2_Anzahl_Belegt;Warehouse_2;UInt;%MW232;
+HRL_2_Anzahl_Frei;Warehouse_2;UInt;%MW234;
+HRL_2_Occ_0;Warehouse_2;USInt;%MB407;PUT/GET occupancy Fach 1–8 (TIA c.xlsx)
+HRL_2_Occ_1;Warehouse_2;USInt;%MB408;Fach 9–16
+HRL_2_Occ_2;Warehouse_2;USInt;%MB409;Fach 17–24
+HRL_2_Occ_3;Warehouse_2;USInt;%MB410;Fach 25–32
+HRL_2_Occ_4;Warehouse_2;USInt;%MB411;Fach 33–40
+HRL_2_Occ_5;Warehouse_2;USInt;%MB412;Fach 41–48
+HRL_2_Occ_6;Warehouse_2;USInt;%MB413;Fach 49–54 (bits 0–5)
+HMI_Soll_X_W2;Warehouse_2;Real;%MD252;Einricht manual target
+HMI_Soll_Z_W2;Warehouse_2;Real;%MD256;
+HMI_Jog_Step_W2;Warehouse_2;Real;%MD260;Default 0.01
+Band_X_W2;Warehouse_2;Real;%MD264;
+Band_Z_W2;Warehouse_2;Real;%MD268;
+Band_Z_Lift_W2;Warehouse_2;Real;%MD272;e.g. 0.5
+5a_Metal_Pallet_vor_Regal;Warehouse_2_FIO;Bool;%E15.0;Vacant EB15 — pallet at metal WH
+5a_Metal_Stacker Crane 1 Moving-X;Warehouse_2_FIO;Bool;%E15.1;Vacant — FIO Crane1 Moving-X
+5a_Metal_Stacker Crane 1 Moving-Z;Warehouse_2_FIO;Bool;%E15.2;
+5a_Metal_Stacker Crane 1 Left Limit;Warehouse_2_FIO;Bool;%E15.3;
+5a_Metal_Stacker Crane 1 Right Limit;Warehouse_2_FIO;Bool;%E15.4;
+5a_Metal_Stacker Crane 1 Middle Limit;Warehouse_2_FIO;Bool;%E15.5;
+5a_Metal_Stacker Crane 1 (Left);Warehouse_2_FIO;Bool;%A15.0;Vacant AB15 — fork left
+5a_Metal_Stacker Crane 1 (Right);Warehouse_2_FIO;Bool;%A15.1;fork right
+5a_Warning Light 4;Warehouse_2_FIO;Bool;%A15.2;ON while HRL_2_Busy — bind FIO
+5a_Alarm Siren 0;Warehouse_2_FIO;Bool;%A15.3;ON on HRL_2_Error / Not_Aus_W2
+5a_Metal_Stacker Crane 1 X Position (V);Warehouse_2_FIO;Real;%ED178;After Vision 2/3 ED170/174
+5a_Metal_Stacker Crane 1 Z Position (V);Warehouse_2_FIO;Real;%ED182;
+5a_Metal_Stacker Crane 1 X Set Point (V);Warehouse_2_FIO;Real;%AD144;Vacant after Crane0 AD140
+5a_Metal_Stacker Crane 1 Z Set Point (V);Warehouse_2_FIO;Real;%AD148;

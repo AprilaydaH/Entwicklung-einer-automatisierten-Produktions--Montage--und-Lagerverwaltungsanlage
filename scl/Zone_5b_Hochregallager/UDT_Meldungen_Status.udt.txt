@@ -1,0 +1,11 @@
+//============================================================================
+// UDT_Meldungen_Status — create this PLC data type FIRST (alone)
+// Then use it as member "Status" inside UDT_Meldungen
+//============================================================================
+
+TYPE
+    "UDT_Meldungen_Status" : STRUCT
+        Meldecode           : UInt;
+        Meldung             : String[100];
+    END_STRUCT;
+END_TYPE

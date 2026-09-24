@@ -1,0 +1,17 @@
+Section;Name;DataType;Default;Comment
+VAR;R_Reset;R_TRIG;;Reset edge
+VAR;Auto_Run;Bool;FALSE;Full auto running
+VAR;Step;Int;0;Sequence step
+VAR;Step_Old;Int;-1;Previous step
+VAR;TON_Step;TON;;Step delay
+VAR;TON_Grab;TON;;Grab delay
+VAR;TON_Drop;TON;;Drop delay
+VAR;Cycle_Count;Int;0;Completed pallets
+VAR;Place_X_V;Real;0.0;Active place X
+VAR;Place_Y_V;Real;0.0;Active place Y
+VAR;Place_Z_V;Real;0.0;Active place Z
+VAR_TEMP;Step_Changed;Bool;;Step edge
+VAR_TEMP;At_XY;Bool;;At XY setpoint
+VAR_TEMP;At_Z;Bool;;At Z setpoint
+VAR_TEMP;At_XYZ;Bool;;At XYZ
+VAR_TEMP;At_Home;Bool;;At home position

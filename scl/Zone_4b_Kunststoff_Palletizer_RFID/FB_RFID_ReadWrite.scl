@@ -1,0 +1,481 @@
+//============================================================================
+// Author: Dereje Hailemariam
+// Datum: 27.08.2026
+// Version: 1.6
+// Beschreibung: Factory I/O RFID Reader — read / write handshake
+//
+// v1.6: wait for tag (Status 1) on Job 10/11 — no Error while assembly travels.
+//       Tag_Wait_Time = max wait for pallet/tag (default 3 min).
+//       Timeout = only for Command ID (FIO answer), default 15 s.
+// v1.5: hold Execute ~100 ms so PLCSIM/Factory I/O sees the edge.
+// v1.4: automatic — new Write/Read/Lesen clears latched Error.
+// v1.3: after successful product WRITE, copy In → Out.
+//
+// Factory I/O tags (one reader):
+//   OUT  Command, Execute Command, Memory Index, Write Data
+//   IN   Command ID, Status, Read Data
+//
+// Handshake (FIO): set Command (+ Index/WriteData) → rising edge Execute
+//   → hold Execute ~100 ms (PLCSIM/FIO poll) → Command ID increments
+//   → read Status / Read Data
+//
+// Commands: 0=tag present  1=read serial  2=read data
+//           3=write data   4=clear tag
+// Status:   0=OK  1=no tag  2=too many tags  3=bad index  4=bad command
+//           10=timeout (this FB — Command ID never changed)
+//           12=tag wait expired (assembly never arrived)
+//
+// Op_Mode / HMI:
+//    0 Check tag present
+//    1 Read serial number
+//    2 Read one DWORD (Memory_Index)
+//    3 Write one DWORD (Memory_Index + Write_Data)
+//    4 Clear tag
+//   10 Read product  (serial + index 0..3)
+//   11 Write product (index 0..3)
+//
+// Tag memory (product):
+//    0 RFID_CODE   1 Artikelnummer   2 Materialart   3 ProductTyp
+//============================================================================
+
+FUNCTION_BLOCK "FB_RFID_ReadWrite"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 1.6
+
+VAR_INPUT
+    Execute                     : Bool := FALSE;
+    HMI_Read                    : Bool := FALSE;
+    HMI_Write                   : Bool := FALSE;
+    HMI_Check                   : Bool := FALSE;
+    HMI_Clear                   : Bool := FALSE;
+    HMI_Reset                   : Bool := FALSE;
+    RFID_Lesen                  : Bool := FALSE;
+
+    Op_Mode                     : Int := 10;
+
+    Command_ID                  : DInt;
+    Status                      : DInt;
+    Read_Data                   : DInt;
+
+    Memory_Index                : DInt := 0;
+    Write_Data                  : DInt := 0;
+
+    RFID_Code_In                : UDInt := UDINT#0;
+    Artikelnummer_In            : UInt := UINT#0;
+    Materialart_In              : USInt := USINT#0;
+    ProductTyp_In               : UInt := UINT#0;
+
+    Timeout                     : Time := T#15S;   // Command ID only (FIO)
+    Execute_Hold                : Time := T#100MS;
+    Tag_Wait_Time               : Time := T#3M;    // wait for assembly/tag
+    Tag_Retry_Time              : Time := T#1S;    // re-check present interval
+END_VAR
+
+VAR_OUTPUT
+    Execute_Command             : Bool;
+    Command                     : DInt;
+    Memory_Index_Out            : DInt;
+    Write_Data_Out              : DInt;
+
+    Busy                        : Bool := FALSE;
+    Done                        : Bool := FALSE;
+    Error                       : Bool := FALSE;
+    State                       : Int := 0;
+    Status_Code                 : Int := 0;
+
+    Tag_Present                 : Bool := FALSE;
+    Serial_Number               : DInt := 0;
+    Data_Out                    : DInt := 0;
+
+    RFID_Code_Out               : UDInt := UDINT#0;
+    Artikelnummer_Out           : UInt := UINT#0;
+    Materialart_Out             : USInt := USINT#0;
+    ProductTyp_Out              : UInt := UINT#0;
+
+    HMI_Lamp_Ready              : Bool;
+    HMI_Lamp_Running            : Bool;
+    HMI_Lamp_Done               : Bool;
+    HMI_Lamp_Error              : Bool;
+
+    RFID_Bereit                 : Bool;
+    RFID_Gueltig                : Bool;
+    RFID_Fehler                 : Bool;
+
+    Write_Preview               : DInt;
+    Pallet_Tagged               : Bool;
+    Waiting_For_Tag             : Bool;   // TRUE while assembly still traveling
+END_VAR
+
+VAR
+    R_Execute                   : R_TRIG;
+    R_Read                      : R_TRIG;
+    R_Write                     : R_TRIG;
+    R_Check                     : R_TRIG;
+    R_Clear                     : R_TRIG;
+    R_Reset                     : R_TRIG;
+    R_Lesen                     : R_TRIG;
+    TON_Timeout                 : TON;
+    TON_ExecHold                : TON;
+    TON_TagRetry                : TON;
+    TON_TagMax                  : TON;
+    Step                        : Int := 0;
+    Next_Step                   : Int := 0;
+    Job                         : Int := 0;
+    Cmd_ID_Start                : DInt := 0;
+    First_Tag_Check             : Bool := FALSE; // TRUE = still waiting for present
+END_VAR
+
+VAR_TEMP
+    Start_Job                   : Bool;
+    Timeout_Run                 : Bool;
+END_VAR
+
+BEGIN
+    // HMI always sees what would be written (even when Error / idle)
+    #Write_Preview := UDINT_TO_DINT(#RFID_Code_In);
+
+    #R_Execute(CLK := #Execute);
+    #R_Read(CLK := #HMI_Read);
+    #R_Write(CLK := #HMI_Write);
+    #R_Check(CLK := #HMI_Check);
+    #R_Clear(CLK := #HMI_Clear);
+    #R_Reset(CLK := #HMI_Reset);
+    #R_Lesen(CLK := #RFID_Lesen);
+
+    IF #R_Reset.Q THEN
+        #Step := 0;
+        #Busy := FALSE;
+        #Done := FALSE;
+        #Error := FALSE;
+        #Status_Code := 0;
+        #Execute_Command := FALSE;
+        #Pallet_Tagged := FALSE;
+        #Waiting_For_Tag := FALSE;
+        #First_Tag_Check := FALSE;
+        #TON_ExecHold(IN := FALSE, PT := #Execute_Hold);
+        #TON_TagRetry(IN := FALSE, PT := #Tag_Retry_Time);
+        #TON_TagMax(IN := FALSE, PT := #Tag_Wait_Time);
+    END_IF;
+
+    // New request clears latched Error (Status 10) — no separate Reset FB needed.
+    // Manual HMI_Reset still clears Done / Pallet_Tagged without starting a job.
+    #Start_Job := FALSE;
+    #Timeout_Run := FALSE;
+    IF NOT #Busy THEN
+        IF #R_Check.Q THEN
+            #Job := 0;
+            #Start_Job := TRUE;
+        ELSIF #R_Read.Q OR #R_Lesen.Q THEN
+            #Job := 10;
+            #Start_Job := TRUE;
+        ELSIF #R_Write.Q THEN
+            #Job := 11;
+            #Start_Job := TRUE;
+        ELSIF #R_Clear.Q THEN
+            #Job := 4;
+            #Start_Job := TRUE;
+        ELSIF #R_Execute.Q THEN
+            #Job := #Op_Mode;
+            #Start_Job := TRUE;
+        END_IF;
+    END_IF;
+
+    IF #Start_Job THEN
+        #Busy := TRUE;
+        #Done := FALSE;
+        #Error := FALSE;
+        #Status_Code := 0;
+        #Tag_Present := FALSE;
+        #Execute_Command := FALSE;
+        #Waiting_For_Tag := FALSE;
+        #First_Tag_Check := TRUE;
+        #TON_ExecHold(IN := FALSE, PT := #Execute_Hold);
+        #TON_TagRetry(IN := FALSE, PT := #Tag_Retry_Time);
+        #TON_TagMax(IN := FALSE, PT := #Tag_Wait_Time);
+        IF #Job = 11 THEN
+            #Pallet_Tagged := FALSE;
+            #Write_Data_Out := UDINT_TO_DINT(#RFID_Code_In);
+        END_IF;
+        #Step := 10;
+    END_IF;
+
+    CASE #Step OF
+
+        0: // Idle
+            #Busy := FALSE;
+            #Execute_Command := FALSE;
+
+        //----- start: first Factory I/O command for this job -----
+        10:
+            CASE #Job OF
+                0, 10:
+                    #Command := 0;              // is tag available?
+                    #Memory_Index_Out := 0;
+                    #Write_Data_Out := 0;
+                11:
+                    #Command := 0;              // is tag available?
+                    #Memory_Index_Out := 0;
+                    #Write_Data_Out := UDINT_TO_DINT(#RFID_Code_In); // preview
+                1:
+                    #Command := 1;              // read serial
+                    #Memory_Index_Out := 0;
+                    #Write_Data_Out := 0;
+                2:
+                    #Command := 2;              // read one DWORD
+                    #Memory_Index_Out := #Memory_Index;
+                    #Write_Data_Out := 0;
+                3:
+                    #Command := 3;              // write one DWORD
+                    #Memory_Index_Out := #Memory_Index;
+                    #Write_Data_Out := #Write_Data;
+                4:
+                    #Command := 4;              // clear tag
+                    #Memory_Index_Out := 0;
+                    #Write_Data_Out := 0;
+            ELSE
+                #Status_Code := 11;
+                #Error := TRUE;
+                #Busy := FALSE;
+                #Step := 0;
+            END_CASE;
+            IF NOT #Error THEN
+                #Next_Step := 200;
+                #Step := 100;
+            END_IF;
+
+        //----- settle: Command/Index/Data stable, Execute FALSE -----
+        100:
+            #Execute_Command := FALSE;
+            #Cmd_ID_Start := #Command_ID;
+            #Step := 110;
+
+        110:
+            #Execute_Command := FALSE;
+            #Step := 120;
+
+        //----- rising edge Execute — hold level for FIO/PLCSIM poll -----
+        120:
+            #Execute_Command := TRUE;
+            #TON_ExecHold(IN := TRUE, PT := #Execute_Hold);
+            IF #TON_ExecHold.Q THEN
+                #TON_ExecHold(IN := FALSE, PT := #Execute_Hold);
+                #Step := 125;
+            END_IF;
+
+        //----- wait for Command ID (Execute already FALSE) -----
+        125:
+            #Execute_Command := FALSE;
+            IF #Command_ID <> #Cmd_ID_Start THEN
+                #Step := 130;
+            ELSE
+                #Timeout_Run := TRUE;
+            END_IF;
+
+        //----- evaluate Factory I/O Status -----
+        130:
+            #Execute_Command := FALSE;
+            #Status_Code := DINT_TO_INT(#Status);
+            // Product R/W: no tag yet → wait (assembly still traveling), do NOT Error
+            IF (#Status = 1) AND #First_Tag_Check AND ((#Job = 10) OR (#Job = 11)) THEN
+                #Tag_Present := FALSE;
+                #Waiting_For_Tag := TRUE;
+                #Status_Code := 1;
+                #TON_TagRetry(IN := FALSE, PT := #Tag_Retry_Time);
+                #Step := 140;
+            ELSIF #Status <> 0 THEN
+                #Error := TRUE;
+                #Busy := FALSE;
+                #Tag_Present := FALSE;
+                #Waiting_For_Tag := FALSE;
+                #First_Tag_Check := FALSE;
+                #Step := 0;
+            ELSE
+                #Tag_Present := TRUE;
+                #Waiting_For_Tag := FALSE;
+                #First_Tag_Check := FALSE;
+                #Step := #Next_Step;
+            END_IF;
+
+        //----- wait for assembly/tag, then re-run present check -----
+        140:
+            #Execute_Command := FALSE;
+            #Waiting_For_Tag := TRUE;
+            #Busy := TRUE;
+            #TON_TagMax(IN := TRUE, PT := #Tag_Wait_Time);
+            #TON_TagRetry(IN := TRUE, PT := #Tag_Retry_Time);
+            IF #TON_TagMax.Q THEN
+                #Status_Code := 12; // tag wait expired
+                #Error := TRUE;
+                #Busy := FALSE;
+                #Waiting_For_Tag := FALSE;
+                #First_Tag_Check := FALSE;
+                #TON_TagMax(IN := FALSE, PT := #Tag_Wait_Time);
+                #TON_TagRetry(IN := FALSE, PT := #Tag_Retry_Time);
+                #Step := 0;
+            ELSIF #TON_TagRetry.Q THEN
+                #TON_TagRetry(IN := FALSE, PT := #Tag_Retry_Time);
+                #Step := 10; // Command 0 present-check again
+            END_IF;
+
+        //----- job continuation after a successful command -----
+        200:
+            CASE #Job OF
+                0:  // check present
+                    #Busy := FALSE;
+                    #Done := TRUE;
+                    #Step := 0;
+
+                1:  // serial already in Read_Data
+                    #Serial_Number := #Read_Data;
+                    #Data_Out := #Read_Data;
+                    #Busy := FALSE;
+                    #Done := TRUE;
+                    #Step := 0;
+
+                2:  // one DWORD
+                    #Data_Out := #Read_Data;
+                    #Busy := FALSE;
+                    #Done := TRUE;
+                    #Step := 0;
+
+                3, 4:
+                    #Busy := FALSE;
+                    #Done := TRUE;
+                    #Step := 0;
+
+                10: // read product: serial next
+                    #Command := 1;
+                    #Memory_Index_Out := 0;
+                    #Write_Data_Out := 0;
+                    #Next_Step := 210;
+                    #Step := 100;
+
+                11: // write product: index 0 RFID_CODE
+                    #Command := 3;
+                    #Memory_Index_Out := 0;
+                    #Write_Data_Out := UDINT_TO_DINT(#RFID_Code_In);
+                    #Next_Step := 310;
+                    #Step := 100;
+            ELSE
+                #Busy := FALSE;
+                #Done := TRUE;
+                #Step := 0;
+            END_CASE;
+
+        210: // product read: store serial, read index 0
+            #Serial_Number := #Read_Data;
+            #Command := 2;
+            #Memory_Index_Out := 0;
+            #Write_Data_Out := 0;
+            #Next_Step := 220;
+            #Step := 100;
+
+        220: // RFID_CODE
+            #RFID_Code_Out := DINT_TO_UDINT(#Read_Data);
+            #Data_Out := #Read_Data;
+            #Command := 2;
+            #Memory_Index_Out := 1;
+            #Next_Step := 230;
+            #Step := 100;
+
+        230: // Artikelnummer
+            #Artikelnummer_Out := DINT_TO_UINT(#Read_Data);
+            #Command := 2;
+            #Memory_Index_Out := 2;
+            #Next_Step := 240;
+            #Step := 100;
+
+        240: // Materialart
+            #Materialart_Out := DINT_TO_USINT(#Read_Data);
+            #Command := 2;
+            #Memory_Index_Out := 3;
+            #Next_Step := 250;
+            #Step := 100;
+
+        250: // ProductTyp — warehouse record complete
+            #ProductTyp_Out := DINT_TO_UINT(#Read_Data);
+            IF (#RFID_Code_Out = UDINT#0) AND (#Serial_Number > 0) THEN
+                #RFID_Code_Out := DINT_TO_UDINT(#Serial_Number);
+            END_IF;
+            IF #RFID_Code_Out = UDINT#0 THEN
+                #Status_Code := 7;
+                #Error := TRUE;
+                #Busy := FALSE;
+                #Done := FALSE;
+            ELSE
+                #Busy := FALSE;
+                #Done := TRUE;
+            END_IF;
+            #Step := 0;
+
+        310: // write Artikelnummer
+            #Command := 3;
+            #Memory_Index_Out := 1;
+            #Write_Data_Out := UINT_TO_DINT(#Artikelnummer_In);
+            #Next_Step := 320;
+            #Step := 100;
+
+        320: // write Materialart
+            #Command := 3;
+            #Memory_Index_Out := 2;
+            #Write_Data_Out := USINT_TO_DINT(#Materialart_In);
+            #Next_Step := 330;
+            #Step := 100;
+
+        330: // write ProductTyp
+            #Command := 3;
+            #Memory_Index_Out := 3;
+            #Write_Data_Out := UINT_TO_DINT(#ProductTyp_In);
+            #Next_Step := 340;
+            #Step := 100;
+
+        340:
+            #RFID_Code_Out := #RFID_Code_In;
+            #Artikelnummer_Out := #Artikelnummer_In;
+            #Materialart_Out := #Materialart_In;
+            #ProductTyp_Out := #ProductTyp_In;
+            #Busy := FALSE;
+            #Done := TRUE;
+            #Pallet_Tagged := TRUE;
+            #Step := 0;
+
+        ELSE
+            #Step := 0;
+            #Busy := FALSE;
+            #Execute_Command := FALSE;
+
+    END_CASE;
+
+    #TON_Timeout(IN := #Timeout_Run, PT := #Timeout);
+    IF #Timeout_Run AND #TON_Timeout.Q THEN
+        #Execute_Command := FALSE;
+        #Status_Code := 10;
+        #Error := TRUE;
+        #Busy := FALSE;
+        #Pallet_Tagged := FALSE;
+        #Waiting_For_Tag := FALSE;
+        #First_Tag_Check := FALSE;
+        #Step := 0;
+    END_IF;
+
+    #State := #Step;
+    #HMI_Lamp_Ready := NOT #Busy AND NOT #Error;
+    #HMI_Lamp_Running := #Busy AND NOT #Waiting_For_Tag;
+    #HMI_Lamp_Done := #Done;
+    #HMI_Lamp_Error := #Error;
+
+    // Job 11 can finish while Vision Code_In is still 0. When the date
+    // arrives later, copy it to Out so Warehouse_2 is not stuck on 0.
+    IF #Pallet_Tagged AND (#RFID_Code_In <> UDINT#0) THEN
+        #RFID_Code_Out := #RFID_Code_In;
+        #Artikelnummer_Out := #Artikelnummer_In;
+        #Materialart_Out := #Materialart_In;
+        #ProductTyp_Out := #ProductTyp_In;
+        #Done := TRUE;
+    END_IF;
+
+    #RFID_Bereit := NOT #Busy AND NOT #Error;
+    #RFID_Gueltig := #Done AND NOT #Error AND (#RFID_Code_Out <> UDINT#0);
+    #RFID_Fehler := #Error;
+
+END_FUNCTION_BLOCK

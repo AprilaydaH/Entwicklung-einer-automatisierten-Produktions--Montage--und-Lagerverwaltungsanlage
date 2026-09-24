@@ -1,0 +1,358 @@
+﻿//============================================================================
+// Hochregal_Automatik_Betrieb_W2 — V5.6 linear Einlagern (W1 structure)
+//
+// Same flow as Warehouse_1. Only names + State 0/10 differ:
+//   gldb_*                    → gldb_*_W2
+//   Soll_X / Gabel_*_Cmd      → Soll_X_W2 / Gabel_*_Cmd_W2
+//   Skip RFID (no Reader 0):  Fachaktuell.RFID_CODE <> 0
+//                             OR 4a_RFID_Code_Out <> 0
+//
+// STAT: instEinlagern = FB_Einlagern_W2  (do NOT add instLagerstatus)
+// TEMP: Ziel_X, Ziel_Z, Fach_X, Fach_Z, Pos_Offset
+// Wire: Offset_Z := 0.2; Foerderband_Seite := 1
+//============================================================================
+
+#R_TRIG_Einlagern(CLK := #HMI_Start_Einlagern);
+#R_TRIG_Reset(CLK := #Reset);
+#R_TRIG_Stop(CLK := #Stop);
+
+#Palette_Aufnehmen := FALSE;
+#Palette_Ablegen := FALSE;
+#Gabel_Rechts_Aus := FALSE;
+#Gabel_Links_Aus := FALSE;
+#Gabel_Einfahren := FALSE;
+#RFID_Lesen := FALSE;
+#Done := FALSE;
+#Fahre_Zu_Position := FALSE;
+#Mode_Einlagern := FALSE;
+#Mode_Auslagern := FALSE;
+
+IF #R_TRIG_Reset.Q OR #R_TRIG_Stop.Q OR #Not_Aus THEN
+    #State := 0;
+    #Busy := FALSE;
+    #Error := #Not_Aus;
+    #RFID_Read_Armed := FALSE;
+    #Ziel_Fachnummer := 0;
+    #Soll_X := #Home_X;
+    #Soll_Z := #Home_Z;
+    #Paket_Uebernommen := FALSE;
+    IF #R_TRIG_Reset.Q THEN
+        #Error := FALSE;
+    END_IF;
+END_IF;
+
+IF NOT #Paket_Vor_Regal THEN
+    #Paket_Uebernommen := FALSE;
+END_IF;
+
+// fork extend fallback at state 55 if limit sensor missing (1.5 s)
+#TON_Fork(
+          IN := #State = 55,
+          PT := T#1500ms
+);
+
+// use taught offset; fallback 0.2 if FB pin Offset_Z = 0 in TIA
+IF #Offset_Z > 0.001 THEN
+    #Pos_Offset := #Offset_Z;
+ELSE
+    #Pos_Offset := 0.2;
+END_IF;
+
+CASE #State OF
+
+        // ---- 0: home, wait pallet ----
+    0:
+        #Busy := FALSE;
+        #Gabel_Einfahren := TRUE;
+        #Soll_X := #Home_X;
+        #Soll_Z := #Home_Z;
+
+        IF (#Auto_Mode AND #Paket_Vor_Regal AND NOT #Paket_Uebernommen
+            AND NOT #Einricht_Mode AND NOT #Not_Aus)
+            OR (#Hand_Mode AND #R_TRIG_Einlagern.Q
+            AND NOT #Einricht_Mode AND NOT #Not_Aus) THEN
+            #Busy := TRUE;
+            #Error := FALSE;
+            #RFID_Read_Armed := FALSE;
+            // W2 has no warehouse RFID reader. Never wait in 10.
+            IF "gldb_AktuellerFach_HMI_W2".Auswahl.Fachaktuell.RFID_CODE <> UDINT#0 THEN
+                #Akt_RFID_CODE := "gldb_AktuellerFach_HMI_W2".Auswahl.Fachaktuell.RFID_CODE;
+                #Akt_Artikelnummer := "gldb_AktuellerFach_HMI_W2".Auswahl.Fachaktuell.Artikelnummer;
+                #Akt_Materialart := "gldb_AktuellerFach_HMI_W2".Auswahl.Fachaktuell.Materialart;
+                #Akt_ProductTyp := "gldb_AktuellerFach_HMI_W2".Auswahl.Fachaktuell.ProductTyp;
+            ELSIF "4a_RFID_Code_Out" <> UDINT#0 THEN
+                #Akt_RFID_CODE := "4a_RFID_Code_Out";
+                #Akt_Artikelnummer := "4a_RFID_Artikelnummer_Out";
+                #Akt_Materialart := USINT#2;
+                #Akt_ProductTyp := UINT#0;
+            ELSIF "2a_Metal_VisionData_RFID_CODE" <> UDINT#0 THEN
+                #Akt_RFID_CODE := "2a_Metal_VisionData_RFID_CODE";
+                #Akt_Artikelnummer := "2a_Metal_VisionData_Artikelnummer";
+                #Akt_Materialart := USINT#2;
+                #Akt_ProductTyp := UINT#0;
+            ELSE
+                #Akt_RFID_CODE := UDINT#0;
+                #Akt_Artikelnummer := UINT#0;
+                #Akt_Materialart := USINT#2;
+                #Akt_ProductTyp := UINT#0;
+            END_IF;
+            IF #Akt_Materialart = USINT#0 THEN
+                #Akt_Materialart := USINT#2;
+            END_IF;
+            "gldb_AktuellerFach_HMI_W2".Auswahl.Fachaktuell.RFID_CODE := #Akt_RFID_CODE;
+            "gldb_AktuellerFach_HMI_W2".Auswahl.Fachaktuell.Artikelnummer := #Akt_Artikelnummer;
+            "gldb_AktuellerFach_HMI_W2".Auswahl.Fachaktuell.Materialart := #Akt_Materialart;
+            #State := 20;
+        END_IF;
+
+        // ---- 10: leftover wait state — leave immediately (no Reader 0) ----
+    10:
+        #RFID_Lesen := FALSE;
+        #RFID_Read_Armed := FALSE;
+        IF "4a_RFID_Code_Out" <> UDINT#0 THEN
+            #Akt_RFID_CODE := "4a_RFID_Code_Out";
+            #Akt_Artikelnummer := "4a_RFID_Artikelnummer_Out";
+        ELSIF "2a_Metal_VisionData_RFID_CODE" <> UDINT#0 THEN
+            #Akt_RFID_CODE := "2a_Metal_VisionData_RFID_CODE";
+            #Akt_Artikelnummer := "2a_Metal_VisionData_Artikelnummer";
+        END_IF;
+        #Akt_Materialart := USINT#2;
+        #State := 20;
+
+        // ---- 20: free Fach ----
+    20:
+        #Ziel_Fachnummer := 0;
+        FOR #i := 1 TO 54 DO
+            IF NOT "gldb_LagerverwaltungData_W2".Fach[#i].Belegt
+                AND NOT "gldb_LagerverwaltungData_W2".Fach[#i].Gesperrt THEN
+                #Ziel_Fachnummer := #i;
+                EXIT;
+            END_IF;
+        END_FOR;
+        IF #Ziel_Fachnummer > 0 THEN
+            #State := 30;
+        ELSE
+            #Error := TRUE;
+            #State := 900;
+        END_IF;
+
+        // ---- 30: band approach, fork in ----
+    30:
+        #Ziel_X := #Band_X;
+        #Ziel_Z := #Band_Z;
+        #Soll_X := #Ziel_X;
+        #Soll_Z := #Ziel_Z;
+        #Fahre_Zu_Position := TRUE;
+        #Mode_Einlagern := TRUE;
+        #Gabel_Einfahren := TRUE;
+        IF #Gabel_Eingefahren
+            AND #Position_Erreicht
+            AND (ABS(#Ist_X - #Ziel_X) <= 0.02)
+            AND (ABS(#Ist_Z - #Ziel_Z) <= 0.02) THEN
+            #State := 40;
+        END_IF;
+
+        // ---- 40: extend fork at Band_Z (0.0) ----
+    40:
+        #Soll_X := #Band_X;
+        #Soll_Z := #Band_Z;
+        #Fahre_Zu_Position := TRUE;
+        #Mode_Einlagern := TRUE;
+        IF #Foerderband_Seite = USINT#1 THEN
+            #Gabel_Rechts_Aus := TRUE;
+        ELSE
+            #Gabel_Links_Aus := TRUE;
+        END_IF;
+        IF #Gabel_Rechts_Ausgefahren OR #Gabel_Links_Ausgefahren THEN
+            #State := 41;
+        END_IF;
+
+        // ---- 41: lift to Band_Z_Lift (0.5), pick once ----
+    41:
+        #Ziel_X := #Band_X;
+        #Ziel_Z := #Band_Z_Lift;
+        #Soll_X := #Ziel_X;
+        #Soll_Z := #Ziel_Z;
+        #Fahre_Zu_Position := TRUE;
+        #Mode_Einlagern := TRUE;
+        IF #Foerderband_Seite = USINT#1 THEN
+            #Gabel_Rechts_Aus := TRUE;
+        ELSE
+            #Gabel_Links_Aus := TRUE;
+        END_IF;
+        #Palette_Aufnehmen := TRUE;
+        IF #Palette_Aufgenommen
+            AND #Position_Erreicht
+            AND (ABS(#Ist_X - #Ziel_X) <= 0.02)
+            AND (ABS(#Ist_Z - #Ziel_Z) <= 0.02) THEN
+            #State := 42;
+        END_IF;
+
+        // ---- 42: retract fork (Right OFF → Middle ON) ----
+    42:
+        #Ziel_X := #Band_X;
+        #Ziel_Z := #Band_Z_Lift;
+        #Soll_X := #Ziel_X;
+        #Soll_Z := #Ziel_Z;
+        #Fahre_Zu_Position := TRUE;
+        #Mode_Einlagern := TRUE;
+        #Gabel_Einfahren := TRUE;
+        IF #Gabel_Eingefahren
+            AND #Position_Erreicht
+            AND (ABS(#Ist_X - #Ziel_X) <= 0.02)
+            AND (ABS(#Ist_Z - #Ziel_Z) <= 0.02) THEN
+            #State := 50;
+        END_IF;
+
+        // ---- 50: approach Fach (mirror of 30) ----
+    50:
+        #Fach_X := "gldb_LagerverwaltungData_W2".Fach[#Ziel_Fachnummer].Position_X;
+        #Fach_Z := "gldb_LagerverwaltungData_W2".Fach[#Ziel_Fachnummer].Position_Z;
+        #Ziel_X := #Fach_X;
+        #Ziel_Z := #Fach_Z + #Pos_Offset;
+        #Soll_X := #Ziel_X;
+        #Soll_Z := #Ziel_Z;
+        #Fahre_Zu_Position := TRUE;
+        #Mode_Einlagern := TRUE;
+        #Gabel_Einfahren := TRUE;
+        IF #Gabel_Eingefahren
+            AND #Position_Erreicht
+            AND (ABS(#Ist_X - #Ziel_X) <= 0.02)
+            AND (ABS(#Ist_Z - #Ziel_Z) <= 0.02) THEN
+            #State := 55;
+        END_IF;
+
+        // ---- 55: extend fork at Fach_Z + Offset (mirror of 40) ----
+    55:
+        #Fach_X := "gldb_LagerverwaltungData_W2".Fach[#Ziel_Fachnummer].Position_X;
+        #Fach_Z := "gldb_LagerverwaltungData_W2".Fach[#Ziel_Fachnummer].Position_Z;
+        #Soll_X := #Fach_X;
+        #Soll_Z := #Fach_Z + #Pos_Offset;
+        #Fahre_Zu_Position := TRUE;
+        #Mode_Einlagern := TRUE;
+        IF #Foerderband_Seite = USINT#1 THEN
+            #Gabel_Links_Aus := TRUE;
+        ELSE
+            #Gabel_Rechts_Aus := TRUE;
+        END_IF;
+        IF #Gabel_Rechts_Ausgefahren
+            OR #Gabel_Links_Ausgefahren
+            OR #TON_Fork.Q THEN
+            #State := 56;
+        END_IF;
+
+        // ---- 56: lower to Fach_Z - Offset + drop (mirror of 41) ----
+    56:
+        #Fach_X := "gldb_LagerverwaltungData_W2".Fach[#Ziel_Fachnummer].Position_X;
+        #Fach_Z := "gldb_LagerverwaltungData_W2".Fach[#Ziel_Fachnummer].Position_Z;
+        #Ziel_X := #Fach_X;
+        #Ziel_Z := #Fach_Z - #Pos_Offset;
+        #Soll_X := #Ziel_X;
+        #Soll_Z := #Ziel_Z;
+        #Fahre_Zu_Position := TRUE;
+        #Mode_Einlagern := TRUE;
+        IF #Foerderband_Seite = USINT#1 THEN
+            #Gabel_Links_Aus := TRUE;
+        ELSE
+            #Gabel_Rechts_Aus := TRUE;
+        END_IF;
+        #Palette_Ablegen := TRUE;
+        IF #Palette_Abgelegt
+            AND (ABS(#Ist_X - #Ziel_X) <= 0.05)
+            AND (ABS(#Ist_Z - #Ziel_Z) <= 0.05) THEN
+            #State := 58;
+        END_IF;
+
+        // ---- 58: retract fork at drop height (mirror of 42) ----
+    58:
+        #Fach_X := "gldb_LagerverwaltungData_W2".Fach[#Ziel_Fachnummer].Position_X;
+        #Fach_Z := "gldb_LagerverwaltungData_W2".Fach[#Ziel_Fachnummer].Position_Z;
+        #Ziel_X := #Fach_X;
+        #Ziel_Z := #Fach_Z - #Pos_Offset;
+        #Soll_X := #Ziel_X;
+        #Soll_Z := #Ziel_Z;
+        #Fahre_Zu_Position := TRUE;
+        #Mode_Einlagern := TRUE;
+        #Gabel_Einfahren := TRUE;
+        IF #Gabel_Eingefahren
+            AND #Position_Erreicht
+            AND (ABS(#Ist_X - #Ziel_X) <= 0.02)
+            AND (ABS(#Ist_Z - #Ziel_Z) <= 0.02) THEN
+            #State := 60;
+        END_IF;
+
+        // ---- 57/59: unused (jump to next valid state) ----
+    57:
+        #State := 58;
+    59:
+        #State := 60;
+
+        // ---- 60: warehouse DB ----
+    60:
+        "gldb_AktuellerFach_HMI_W2".Auswahl.Fachaktuell.Fachnummer := INT_TO_USINT(#Ziel_Fachnummer);
+        "gldb_AktuellerFach_HMI_W2".Auswahl.Fachaktuell.RFID_CODE := #Akt_RFID_CODE;
+        "gldb_AktuellerFach_HMI_W2".Auswahl.Fachaktuell.Artikelnummer := #Akt_Artikelnummer;
+        "gldb_AktuellerFach_HMI_W2".Auswahl.Fachaktuell.Materialart := #Akt_Materialart;
+        "gldb_AktuellerFach_HMI_W2".Auswahl.Fachaktuell.ProductTyp := #Akt_ProductTyp;
+        "gldb_AktuellerFach_HMI_W2".Auswahl.Fachaktuell.Position_X :=
+        "gldb_LagerverwaltungData_W2".Fach[#Ziel_Fachnummer].Position_X;
+        "gldb_AktuellerFach_HMI_W2".Auswahl.Fachaktuell.Position_Z :=
+        "gldb_LagerverwaltungData_W2".Fach[#Ziel_Fachnummer].Position_Z;
+
+        #instEinlagern(Execute := TRUE);
+        IF #instEinlagern.Done THEN
+            IF #Auto_Mode THEN
+                #Paket_Uebernommen := TRUE;
+            END_IF;
+            #State := 70;
+        ELSIF #instEinlagern.Error THEN
+            #Error := TRUE;
+            #State := 900;
+        END_IF;
+
+        // ---- 70: home ----
+    70:
+        #Ziel_X := #Home_X;
+        #Ziel_Z := #Home_Z;
+        #Soll_X := #Ziel_X;
+        #Soll_Z := #Ziel_Z;
+        #Fahre_Zu_Position := TRUE;
+        #Mode_Einlagern := TRUE;
+        #Gabel_Einfahren := TRUE;
+        IF #Gabel_Eingefahren
+            AND #Position_Erreicht
+            AND (ABS(#Ist_X - #Ziel_X) <= 0.02)
+            AND (ABS(#Ist_Z - #Ziel_Z) <= 0.02) THEN
+            #State := 80;
+        END_IF;
+
+        // ---- 80: done ----
+    80:
+        #Busy := FALSE;
+        #Done := TRUE;
+        #State := 0;
+
+        // ---- 900: error ----
+    900:
+        #Busy := FALSE;
+        #Error := TRUE;
+        #Gabel_Einfahren := TRUE;
+
+    ELSE
+        #State := 900;
+        #Error := TRUE;
+
+END_CASE;
+
+#State_Out := #State;
+#Ziel_Fachnummer_Out := #Ziel_Fachnummer;
+#Busy := #State <> 0 AND #State <> 80 AND NOT #Error;
+
+"Soll_X_W2" := #Soll_X;
+"Soll_Z_W2" := #Soll_Z;
+"Fahre_Zu_Position_W2" := #Fahre_Zu_Position;
+"Gabel_Rechts_Cmd_W2" := #Gabel_Rechts_Aus;
+"Gabel_Links_Cmd_W2" := #Gabel_Links_Aus;
+"Gabel_Mitte_Cmd_W2" := #Gabel_Einfahren;
+"Palette_Aufnehmen_Cmd_W2" := #Palette_Aufnehmen;
+"Palette_Ablegen_Cmd_W2" := #Palette_Ablegen;

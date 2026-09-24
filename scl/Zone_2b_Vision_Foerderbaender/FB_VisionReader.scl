@@ -1,0 +1,275 @@
+//============================================================================
+// Author: Dereje Hailemariam
+// Datum: 28.08.2026
+// Version: 2.10
+// Beschreibung: Plastic Vision FB — lid+base BEFORE assembly → later RFID tag
+//
+// v2.10: arm ONLY on R_Allow (4b_Done edge) — no Both_Ready re-arm / latch disarm
+// v2.9: ONE %M20.0 rising edge per Write_Armed — RFID FB owns tag-wait/retry
+//
+// Allow_Write = 4b_Done(1) @ %M10.0
+//============================================================================
+
+FUNCTION_BLOCK "FB_VisionReader"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 2.10
+
+VAR_INPUT
+    Enable                      : Bool := TRUE;
+    Vision_Lid_Value            : DInt := 0;
+    Vision_Base_Value           : DInt := 0;
+    Allow_Write                 : Bool := FALSE; // 4b_Done(1)
+
+    RFID_Bereit                 : Bool := FALSE;
+    RFID_Busy                   : Bool := FALSE;
+    RFID_Done                   : Bool := FALSE;
+    Reset                       : Bool := FALSE;
+END_VAR
+
+VAR_OUTPUT
+    Lid_Detecting               : Bool;
+    Base_Detecting              : Bool;
+    Lid_Valid                   : Bool;
+    Base_Valid                  : Bool;
+    Lid_Reject_Metal            : Bool;
+    Base_Reject_Metal           : Bool;
+    Latch_Lid                   : Int;
+    Latch_Base                  : Int;
+
+    Both_Ready                  : Bool;
+    Same_Color                  : Bool;
+    Lid_Is_Blue                 : Bool;
+    Lid_Is_Green                : Bool;
+    Base_Is_Blue                : Bool;
+    Base_Is_Green               : Bool;
+
+    Color_Code                  : USInt;
+    Materialart                 : USInt;
+    ProductTyp                  : UInt;
+    Artikelnummer               : UInt;
+    RFID_Code                   : UDInt;
+
+    Prod_Year                   : UInt;
+    Prod_Month                  : USInt;
+    Prod_Day                    : USInt;
+
+    Write_Req                   : Bool;
+    Combo_Done                  : Bool;
+    Busy                        : Bool;
+    Waiting_For_Write           : Bool;
+    Error                       : Bool;
+    State                       : Int;
+END_VAR
+
+VAR RETAIN
+    Artikelnummer_Retain        : UInt := UINT#0;
+END_VAR
+
+VAR
+    R_Allow                     : R_TRIG;
+    R_JobSend                   : R_TRIG;
+    lid_code                    : DInt;
+    base_code                   : DInt;
+    new_lid                     : Int;
+    new_base                    : Int;
+    Written                     : Bool := FALSE;
+    Write_Armed                 : Bool := FALSE;
+    Job_Sent                    : Bool := FALSE;
+    Stamped                     : Bool := FALSE;
+    sys_dt                      : DTL;
+    RetVal                      : Int;
+    yy                          : DInt;
+    yymmdd                      : DInt;
+END_VAR
+
+BEGIN
+    #Error := FALSE;
+    #Write_Req := FALSE;
+    #Waiting_For_Write := FALSE;
+    #R_Allow(CLK := #Allow_Write);
+
+    IF #Reset OR NOT #Enable THEN
+        #Lid_Detecting := FALSE;
+        #Base_Detecting := FALSE;
+        #Lid_Valid := FALSE;
+        #Base_Valid := FALSE;
+        #Lid_Reject_Metal := FALSE;
+        #Base_Reject_Metal := FALSE;
+        #Latch_Lid := 0;
+        #Latch_Base := 0;
+        #Both_Ready := FALSE;
+        #Same_Color := FALSE;
+        #Lid_Is_Blue := FALSE;
+        #Lid_Is_Green := FALSE;
+        #Base_Is_Blue := FALSE;
+        #Base_Is_Green := FALSE;
+        #Color_Code := USINT#0;
+        #Materialart := USINT#0;
+        #ProductTyp := UINT#0;
+        #Artikelnummer := #Artikelnummer_Retain;
+        #RFID_Code := UDINT#0;
+        #Prod_Year := UINT#0;
+        #Prod_Month := USINT#0;
+        #Prod_Day := USINT#0;
+        #Combo_Done := FALSE;
+        #Busy := FALSE;
+        #Written := FALSE;
+        #Write_Armed := FALSE;
+        #Job_Sent := FALSE;
+        #Stamped := FALSE;
+        #State := 0;
+        #R_Allow(CLK := FALSE);
+        #R_JobSend(CLK := FALSE);
+        RETURN;
+    END_IF;
+
+    #Artikelnummer := #Artikelnummer_Retain;
+
+    #lid_code := #Vision_Lid_Value;
+    #base_code := #Vision_Base_Value;
+
+    #Lid_Detecting := (#lid_code >= 1) AND (#lid_code <= 9);
+    #Base_Detecting := (#base_code >= 1) AND (#base_code <= 9);
+    #Lid_Reject_Metal := (#lid_code >= 7) AND (#lid_code <= 9);
+    #Base_Reject_Metal := (#base_code >= 7) AND (#base_code <= 9);
+    #Lid_Valid := (#lid_code >= 1) AND (#lid_code <= 6);
+    #Base_Valid := (#base_code >= 1) AND (#base_code <= 6);
+
+    IF #Lid_Valid THEN
+        #new_lid := DINT_TO_INT(#lid_code);
+        IF (#Latch_Lid = 0) OR ((#new_lid <> #Latch_Lid) AND NOT #Written) THEN
+            IF (#Latch_Lid <> 0) AND (#new_lid <> #Latch_Lid)
+               AND NOT #Write_Armed AND NOT #Job_Sent THEN
+                #Stamped := FALSE;
+            END_IF;
+            #Latch_Lid := #new_lid;
+            IF NOT #Written THEN
+                #Combo_Done := FALSE;
+            END_IF;
+        END_IF;
+    END_IF;
+
+    IF #Base_Valid THEN
+        #new_base := DINT_TO_INT(#base_code);
+        IF (#Latch_Base = 0) OR ((#new_base <> #Latch_Base) AND NOT #Written) THEN
+            IF (#Latch_Base <> 0) AND (#new_base <> #Latch_Base)
+               AND NOT #Write_Armed AND NOT #Job_Sent THEN
+                #Stamped := FALSE;
+            END_IF;
+            #Latch_Base := #new_base;
+            IF NOT #Written THEN
+                #Combo_Done := FALSE;
+            END_IF;
+        END_IF;
+    END_IF;
+
+    IF #Written THEN
+        #Combo_Done := TRUE;
+        #Busy := FALSE;
+        #Write_Req := FALSE;
+        #State := 3;
+        IF (NOT #Lid_Valid) AND (NOT #Base_Valid) THEN
+            #Latch_Lid := 0;
+            #Latch_Base := 0;
+            #Written := FALSE;
+            #Combo_Done := FALSE;
+            #Stamped := FALSE;
+            #Write_Armed := FALSE;
+            #Job_Sent := FALSE;
+            #RFID_Code := UDINT#0;
+            #State := 1;
+        END_IF;
+        RETURN;
+    END_IF;
+
+    #Both_Ready := (#Latch_Lid >= 1) AND (#Latch_Lid <= 6)
+              AND (#Latch_Base >= 1) AND (#Latch_Base <= 6);
+
+    #Lid_Is_Blue := (#Latch_Lid >= 1) AND (#Latch_Lid <= 3);
+    #Lid_Is_Green := (#Latch_Lid >= 4) AND (#Latch_Lid <= 6);
+    #Base_Is_Blue := (#Latch_Base >= 1) AND (#Latch_Base <= 3);
+    #Base_Is_Green := (#Latch_Base >= 4) AND (#Latch_Base <= 6);
+
+    IF NOT #Both_Ready THEN
+        #Same_Color := FALSE;
+        #Color_Code := USINT#0;
+        #Materialart := USINT#0;
+        #ProductTyp := UINT#0;
+        #RFID_Code := UDINT#0;
+        #Busy := FALSE;
+        #Write_Req := FALSE;
+        #State := 1;
+        RETURN;
+    END_IF;
+
+    #Materialart := USINT#1;
+    #ProductTyp := INT_TO_UINT(#Latch_Lid * 10 + #Latch_Base);
+    #Same_Color := (#Lid_Is_Blue AND #Base_Is_Blue) OR (#Lid_Is_Green AND #Base_Is_Green);
+
+    IF #Lid_Is_Blue AND #Base_Is_Blue THEN
+        #Color_Code := USINT#1;
+    ELSIF #Lid_Is_Green AND #Base_Is_Green THEN
+        #Color_Code := USINT#2;
+    ELSE
+        #Color_Code := USINT#3;
+    END_IF;
+
+    IF NOT #Stamped THEN
+        #RetVal := RD_SYS_T(OUT => #sys_dt);
+        #Prod_Year := #sys_dt.YEAR;
+        #Prod_Month := #sys_dt.MONTH;
+        #Prod_Day := #sys_dt.DAY;
+
+        #yy := UINT_TO_DINT(#Prod_Year) MOD 100;
+        #Artikelnummer := DINT_TO_UINT(
+            #yy * 1000
+            + USINT_TO_DINT(#Materialart) * 100
+            + USINT_TO_DINT(#Color_Code));
+        #Artikelnummer_Retain := #Artikelnummer;
+
+        #yymmdd := #yy * 10000
+            + USINT_TO_DINT(#Prod_Month) * 100
+            + USINT_TO_DINT(#Prod_Day);
+        #RFID_Code := DINT_TO_UDINT(
+            #yymmdd * 1000
+            + USINT_TO_DINT(#Materialart) * 100
+            + USINT_TO_DINT(#Color_Code));
+        #Stamped := TRUE;
+    END_IF;
+
+    // ONE arm per rising edge 4b_Done only (Both_Ready must already be latched)
+    IF #Both_Ready AND NOT #Written AND NOT #Write_Armed AND #R_Allow.Q THEN
+        #Write_Armed := TRUE;
+        #Job_Sent := FALSE;
+    END_IF;
+
+    IF NOT #Write_Armed THEN
+        #Waiting_For_Write := #Both_Ready AND NOT #Allow_Write;
+        #Busy := FALSE;
+        #Job_Sent := FALSE;
+        #Write_Req := FALSE;
+        IF #Both_Ready THEN
+            #State := 4;
+        END_IF;
+        RETURN;
+    END_IF;
+
+    #Busy := TRUE;
+    #State := 2;
+
+    #R_JobSend(CLK := NOT #Job_Sent AND NOT #RFID_Busy);
+    IF #R_JobSend.Q THEN
+        #Job_Sent := TRUE;
+        #Write_Req := TRUE;
+    END_IF;
+
+    IF #Job_Sent AND #RFID_Done AND NOT #RFID_Busy THEN
+        #Written := TRUE;
+        #Combo_Done := TRUE;
+        #Busy := FALSE;
+        #Write_Armed := FALSE;
+        #Job_Sent := FALSE;
+        #State := 3;
+    END_IF;
+
+END_FUNCTION_BLOCK

@@ -1,0 +1,217 @@
+Category;Screen;HMI_Object;PLC_Tag_or_Path;DataType;Address_or_DB;Access;Notes
+04_Rack;Overview;Rect Fach_01 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[1];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_01 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[1];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_01 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[1];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_01;HMI_Fachnummer_W2;UInt;RW;SetValue := 1
+04_Rack;Overview;Rect Fach_02 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[2];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_02 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[2];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_02 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[2];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_02;HMI_Fachnummer_W2;UInt;RW;SetValue := 2
+04_Rack;Overview;Rect Fach_03 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[3];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_03 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[3];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_03 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[3];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_03;HMI_Fachnummer_W2;UInt;RW;SetValue := 3
+04_Rack;Overview;Rect Fach_04 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[4];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_04 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[4];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_04 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[4];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_04;HMI_Fachnummer_W2;UInt;RW;SetValue := 4
+04_Rack;Overview;Rect Fach_05 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[5];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_05 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[5];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_05 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[5];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_05;HMI_Fachnummer_W2;UInt;RW;SetValue := 5
+04_Rack;Overview;Rect Fach_06 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[6];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_06 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[6];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_06 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[6];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_06;HMI_Fachnummer_W2;UInt;RW;SetValue := 6
+04_Rack;Overview;Rect Fach_07 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[7];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_07 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[7];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_07 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[7];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_07;HMI_Fachnummer_W2;UInt;RW;SetValue := 7
+04_Rack;Overview;Rect Fach_08 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[8];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_08 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[8];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_08 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[8];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_08;HMI_Fachnummer_W2;UInt;RW;SetValue := 8
+04_Rack;Overview;Rect Fach_09 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[9];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_09 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[9];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_09 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[9];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_09;HMI_Fachnummer_W2;UInt;RW;SetValue := 9
+04_Rack;Overview;Rect Fach_10 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[10];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_10 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[10];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_10 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[10];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_10;HMI_Fachnummer_W2;UInt;RW;SetValue := 10
+04_Rack;Overview;Rect Fach_11 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[11];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_11 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[11];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_11 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[11];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_11;HMI_Fachnummer_W2;UInt;RW;SetValue := 11
+04_Rack;Overview;Rect Fach_12 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[12];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_12 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[12];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_12 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[12];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_12;HMI_Fachnummer_W2;UInt;RW;SetValue := 12
+04_Rack;Overview;Rect Fach_13 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[13];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_13 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[13];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_13 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[13];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_13;HMI_Fachnummer_W2;UInt;RW;SetValue := 13
+04_Rack;Overview;Rect Fach_14 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[14];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_14 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[14];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_14 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[14];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_14;HMI_Fachnummer_W2;UInt;RW;SetValue := 14
+04_Rack;Overview;Rect Fach_15 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[15];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_15 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[15];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_15 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[15];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_15;HMI_Fachnummer_W2;UInt;RW;SetValue := 15
+04_Rack;Overview;Rect Fach_16 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[16];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_16 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[16];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_16 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[16];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_16;HMI_Fachnummer_W2;UInt;RW;SetValue := 16
+04_Rack;Overview;Rect Fach_17 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[17];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_17 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[17];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_17 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[17];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_17;HMI_Fachnummer_W2;UInt;RW;SetValue := 17
+04_Rack;Overview;Rect Fach_18 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[18];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_18 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[18];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_18 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[18];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_18;HMI_Fachnummer_W2;UInt;RW;SetValue := 18
+04_Rack;Overview;Rect Fach_19 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[19];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_19 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[19];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_19 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[19];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_19;HMI_Fachnummer_W2;UInt;RW;SetValue := 19
+04_Rack;Overview;Rect Fach_20 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[20];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_20 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[20];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_20 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[20];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_20;HMI_Fachnummer_W2;UInt;RW;SetValue := 20
+04_Rack;Overview;Rect Fach_21 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[21];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_21 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[21];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_21 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[21];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_21;HMI_Fachnummer_W2;UInt;RW;SetValue := 21
+04_Rack;Overview;Rect Fach_22 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[22];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_22 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[22];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_22 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[22];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_22;HMI_Fachnummer_W2;UInt;RW;SetValue := 22
+04_Rack;Overview;Rect Fach_23 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[23];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_23 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[23];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_23 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[23];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_23;HMI_Fachnummer_W2;UInt;RW;SetValue := 23
+04_Rack;Overview;Rect Fach_24 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[24];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_24 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[24];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_24 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[24];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_24;HMI_Fachnummer_W2;UInt;RW;SetValue := 24
+04_Rack;Overview;Rect Fach_25 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[25];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_25 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[25];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_25 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[25];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_25;HMI_Fachnummer_W2;UInt;RW;SetValue := 25
+04_Rack;Overview;Rect Fach_26 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[26];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_26 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[26];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_26 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[26];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_26;HMI_Fachnummer_W2;UInt;RW;SetValue := 26
+04_Rack;Overview;Rect Fach_27 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[27];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_27 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[27];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_27 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[27];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_27;HMI_Fachnummer_W2;UInt;RW;SetValue := 27
+04_Rack;Overview;Rect Fach_28 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[28];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_28 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[28];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_28 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[28];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_28;HMI_Fachnummer_W2;UInt;RW;SetValue := 28
+04_Rack;Overview;Rect Fach_29 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[29];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_29 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[29];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_29 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[29];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_29;HMI_Fachnummer_W2;UInt;RW;SetValue := 29
+04_Rack;Overview;Rect Fach_30 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[30];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_30 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[30];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_30 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[30];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_30;HMI_Fachnummer_W2;UInt;RW;SetValue := 30
+04_Rack;Overview;Rect Fach_31 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[31];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_31 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[31];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_31 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[31];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_31;HMI_Fachnummer_W2;UInt;RW;SetValue := 31
+04_Rack;Overview;Rect Fach_32 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[32];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_32 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[32];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_32 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[32];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_32;HMI_Fachnummer_W2;UInt;RW;SetValue := 32
+04_Rack;Overview;Rect Fach_33 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[33];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_33 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[33];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_33 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[33];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_33;HMI_Fachnummer_W2;UInt;RW;SetValue := 33
+04_Rack;Overview;Rect Fach_34 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[34];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_34 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[34];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_34 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[34];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_34;HMI_Fachnummer_W2;UInt;RW;SetValue := 34
+04_Rack;Overview;Rect Fach_35 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[35];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_35 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[35];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_35 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[35];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_35;HMI_Fachnummer_W2;UInt;RW;SetValue := 35
+04_Rack;Overview;Rect Fach_36 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[36];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_36 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[36];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_36 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[36];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_36;HMI_Fachnummer_W2;UInt;RW;SetValue := 36
+04_Rack;Overview;Rect Fach_37 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[37];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_37 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[37];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_37 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[37];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_37;HMI_Fachnummer_W2;UInt;RW;SetValue := 37
+04_Rack;Overview;Rect Fach_38 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[38];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_38 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[38];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_38 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[38];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_38;HMI_Fachnummer_W2;UInt;RW;SetValue := 38
+04_Rack;Overview;Rect Fach_39 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[39];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_39 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[39];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_39 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[39];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_39;HMI_Fachnummer_W2;UInt;RW;SetValue := 39
+04_Rack;Overview;Rect Fach_40 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[40];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_40 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[40];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_40 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[40];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_40;HMI_Fachnummer_W2;UInt;RW;SetValue := 40
+04_Rack;Overview;Rect Fach_41 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[41];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_41 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[41];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_41 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[41];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_41;HMI_Fachnummer_W2;UInt;RW;SetValue := 41
+04_Rack;Overview;Rect Fach_42 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[42];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_42 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[42];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_42 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[42];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_42;HMI_Fachnummer_W2;UInt;RW;SetValue := 42
+04_Rack;Overview;Rect Fach_43 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[43];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_43 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[43];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_43 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[43];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_43;HMI_Fachnummer_W2;UInt;RW;SetValue := 43
+04_Rack;Overview;Rect Fach_44 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[44];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_44 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[44];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_44 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[44];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_44;HMI_Fachnummer_W2;UInt;RW;SetValue := 44
+04_Rack;Overview;Rect Fach_45 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[45];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_45 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[45];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_45 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[45];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_45;HMI_Fachnummer_W2;UInt;RW;SetValue := 45
+04_Rack;Overview;Rect Fach_46 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[46];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_46 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[46];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_46 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[46];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_46;HMI_Fachnummer_W2;UInt;RW;SetValue := 46
+04_Rack;Overview;Rect Fach_47 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[47];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_47 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[47];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_47 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[47];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_47;HMI_Fachnummer_W2;UInt;RW;SetValue := 47
+04_Rack;Overview;Rect Fach_48 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[48];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_48 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[48];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_48 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[48];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_48;HMI_Fachnummer_W2;UInt;RW;SetValue := 48
+04_Rack;Overview;Rect Fach_49 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[49];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_49 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[49];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_49 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[49];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_49;HMI_Fachnummer_W2;UInt;RW;SetValue := 49
+04_Rack;Overview;Rect Fach_50 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[50];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_50 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[50];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_50 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[50];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_50;HMI_Fachnummer_W2;UInt;RW;SetValue := 50
+04_Rack;Overview;Rect Fach_51 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[51];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_51 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[51];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_51 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[51];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_51;HMI_Fachnummer_W2;UInt;RW;SetValue := 51
+04_Rack;Overview;Rect Fach_52 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[52];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_52 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[52];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_52 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[52];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_52;HMI_Fachnummer_W2;UInt;RW;SetValue := 52
+04_Rack;Overview;Rect Fach_53 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[53];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_53 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[53];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_53 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[53];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_53;HMI_Fachnummer_W2;UInt;RW;SetValue := 53
+04_Rack;Overview;Rect Fach_54 fill;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[54];USInt;DB;R;Range 0 frei 1 blau 2 gruen 3 mixed 4 metall 5 gesperrt
+04_Rack;Overview;Rect Fach_54 Belegt;gldb_AktuellerFach_HMI_W2.Lagerstatus.Belegt[54];Bool;DB;R;Fallback 2-colour fill
+04_Rack;Overview;Rect Fach_54 Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[54];Bool;DB;R;Visibility + flash border
+04_Rack;Overview;Click Fach_54;HMI_Fachnummer_W2;UInt;RW;SetValue := 54

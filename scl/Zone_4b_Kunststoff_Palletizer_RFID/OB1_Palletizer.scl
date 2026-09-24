@@ -1,0 +1,71 @@
+//============================================================================
+// Author: Dereje Hailemariam
+// Datum: 11.08.2026
+// Beschreibung: OB1 — FB_Palletizer via Gantry Pick & Place I/O
+// Instance: "FB_Palletizer_DB"
+// 2 assemblies per pallet (Place1 / Place2 slots)
+//============================================================================
+
+ORGANIZATION_BLOCK "OB1_Main"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 1.0
+
+BEGIN
+    "FB_Palletizer_DB"(
+        HMI_Start                   := "Plant_Enable",
+        HMI_Stop                    := NOT "Plant_Enable",
+        HMI_Reset                   := "HMI_Reset",
+        HMI_Auto                    := TRUE,
+        HMI_SingleCycle             := FALSE,
+
+        // Factory I/O Pick & Place # sensors
+        X_Pos_V                     := "Gantry_X_Pos_V",
+        Y_Pos_V                     := "Gantry_Y_Pos_V",
+        Z_Pos_V                     := "Gantry_Z_Pos_V",
+        Moving_Z                    := "Gantry_Moving_Z",
+        Moving_XY                   := "Gantry_Moving_XY",
+        Box_Detected                := "Gantry_Box_Detected",
+        C_Limit                     := "Gantry_C_Limit",
+        Pallet_Present              := "Pallet_Present",
+
+        // Teach
+        Pick_X_V                    := 1.1,
+        Pick_Y_V                    := 6.4,
+        Pick_Z_V                    := 8.4,
+        Place1_X_V                  := 6.1,
+        Place1_Y_V                  := 6.4,
+        Place1_Z_V                  := 10.0,
+        Place2_X_V                  := 7.1,
+        Place2_Y_V                  := 6.4,
+        Place2_Z_V                  := 10.0,
+        Safe_Z_V                    := 0.0,
+        Use_Rotate                  := FALSE,
+        Assemblies_Per_Pallet       := 2,
+
+        // Factory I/O Pick & Place # actuators
+        X_SetPoint_V                => "Gantry_X_SetPoint_V",
+        Y_SetPoint_V                => "Gantry_Y_SetPoint_V",
+        Z_SetPoint_V                => "Gantry_Z_SetPoint_V",
+        C_Plus                      => "Gantry_C_Plus",
+        Grab                        => "Gantry_Grab",
+        Emit_Pallet                 => "Emit_Pallet",
+        Warning_Light               => "Warning_Light",
+
+        Pallet_Ready                => "Pallet_Ready",
+        Loading_Pallet_Active       => "Loading_Pallet_Active",
+        Busy                        => "Busy",
+        Done                        => "Done",
+        State                       => "State",
+        Assembly_Count              => "Assembly_Count",
+
+        HMI_Lamp_Ready              => "HMI_Lamp_Ready",
+        HMI_Lamp_Running            => "HMI_Lamp_Running",
+        HMI_Lamp_Done               => "HMI_Lamp_Done",
+        HMI_Lamp_Stopped            => "HMI_Lamp_Stopped",
+        HMI_Lamp_Auto               => "HMI_Lamp_Auto",
+        HMI_Lamp_Manual             => "HMI_Lamp_Manual",
+        HMI_Cycle_Count             => "HMI_Cycle_Count",
+        HMI_Step_Text_ID            => "HMI_Step_Text_ID"
+    );
+
+END_ORGANIZATION_BLOCK

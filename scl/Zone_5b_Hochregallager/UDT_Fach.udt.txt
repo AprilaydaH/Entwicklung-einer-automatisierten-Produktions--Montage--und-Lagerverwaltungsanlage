@@ -1,0 +1,31 @@
+//============================================================================
+// UDT_Fach  V1.2 — one warehouse compartment (Hochregal Fach 1..54)
+// TIA: PLC data types → Add → paste STRUCT members (or External source)
+//
+// Product coding (from FB_VisionReader / RFID):
+//   Materialart   1=Plastic  2=Metal
+//   Color_Code    1=Blue  2=Green  3=Mixed (plastic lid/base)
+//   Artikelnummer YY*1000 + Materialart*100 + Color_Code   (remanent product no.)
+//   ProductTyp    Lid*10 + Base   (e.g. 26 = BlueLid+GreenBase)  | metal: HMI
+//   RFID_CODE     YYMMDD*1000 + Materialart*100 + Color_Code  (pallet tag)
+//============================================================================
+
+TYPE
+    "UDT_Fach" : STRUCT
+        Fachnummer          : USInt;      // 1..54
+        Materialart         : USInt;      // 1=Plastic  2=Metal  0=empty
+        Color_Code          : USInt;      // 1=Blue  2=Green  3=Mixed  0=n/a
+        Artikelnummer       : UInt;       // YY*1000 + Mat*100 + Color
+        ProductTyp          : UInt;       // Lid*10+Base or metal type
+        Kennzeichnung       : String[40];
+        "Datum eingelagert" : String[30]; // text for HMI
+        Datum_Ziffer        : DTL;        // timestamp at Einlagern
+        RFID_CODE           : UDInt;      // from FB_RFID_ReadWrite
+        Belegt              : Bool;
+        Gesperrt            : Bool;
+        Position_X          : Real;       // teach — kept on Auslagern
+        Position_Z          : Real;
+        RegalSeite          : USInt;      // 1=right, else left
+        Inf_Text            : String[100];
+    END_STRUCT;
+END_TYPE

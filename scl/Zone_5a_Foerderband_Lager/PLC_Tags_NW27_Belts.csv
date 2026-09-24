@@ -1,0 +1,12 @@
+Name;Path;Data Type;Logical Address;Comment
+5b_1_to_Warehouse;Forderband;Bool;%E13.0;NW27 — pallet on section 1 (already in TIA)
+5b_2_to_Warehouse;Forderband;Bool;%E13.1;NW27 — pallet on section 2
+5b_3_to_Warehouse;Forderband;Bool;%E13.2;NW27 — pallet on section 3
+5b_Diffuse Sensor 48;Forderband;Bool;%E13.4;NW27 — near metal WH infeed
+5a_Metal_Pallet_vor_Regal;Warehouse_2_FIO;Bool;%E15.0;NW27 stop + W2 Gate sensor
+5b_Roller Conveyor (4m) 0;Forderband;Bool;%A13.0;NW27 motor
+5b_Curved Roller Conveyor 2 CCW;Forderband;Bool;%A13.1;NW27 motor
+5b_Roller Conveyor (2m) 1;Forderband;Bool;%A13.2;NW27 motor
+5b_Curved Roller Conveyor 4;Forderband;Bool;%A13.3;NW27 motor
+5b_Roller Conveyor (6m) 0;Forderband;Bool;%A13.4;NW27 motor
+5b_Curved Roller Conveyor 3 CCW;Forderband;Bool;%A13.5;NW27 motor

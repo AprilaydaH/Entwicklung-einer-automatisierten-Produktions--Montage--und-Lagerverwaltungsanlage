@@ -1,0 +1,20 @@
+//============================================================================
+// UDT_AktuellerFach_HMI — create AFTER the three HMI child types
+//
+// TIA order:
+//   1) UDT_Fach
+//   2) UDT_HMI_Auswahl.udt.txt
+//   3) UDT_HMI_Lagerstatus.udt.txt
+//   4) UDT_HMI_Meldung.udt.txt
+//   5) this file
+//
+// Global DB: gldb_AktuellerFach_HMI : UDT_AktuellerFach_HMI
+//============================================================================
+
+TYPE
+    "UDT_AktuellerFach_HMI" : STRUCT
+        Auswahl             : "UDT_HMI_Auswahl";
+        Lagerstatus         : "UDT_HMI_Lagerstatus";
+        Meldung             : "UDT_HMI_Meldung";
+    END_STRUCT;
+END_TYPE

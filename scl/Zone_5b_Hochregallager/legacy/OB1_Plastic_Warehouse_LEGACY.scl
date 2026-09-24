@@ -1,0 +1,33 @@
+//============================================================================
+// LEGACY — do not paste into TIA Main OB1 for go-live
+// Use: WAREHOUSE_1_SETUP.md §3 (FB network order in TIA)
+//============================================================================
+// Author: Dereje Hailemariam
+// Datum: 24.08.2026
+// Version: 1.1
+// PLASTIC WAREHOUSE ONLY — end-to-end (finish this before metal)
+//
+// Flow:
+//   1) Vision Lid+Base MC → latch colors / Artikelnummer
+//   2) Pallet under RFID at Pick & Place / 4b → WRITE tag (see OB1_RFID_at_PickPlace)
+//   3) Warehouse Auto → optional Reader 5 READ → Einlagern → Fach[]
+//
+// Instances (TIA):
+//   FB_VisionReader_Plastic
+//   RFID_Read_Write_DB_1          (Reader at P&P — write)
+//   RFID_Read_Write_DB_2          (Reader 5 at Hochregal — read, optional)
+//   Warehouse Automatik           (separate FBs — not wrapper)
+//
+// Globals: gldb_LagerverwaltungData, gldb_AktuellerFach_HMI, gldb_Meldungen
+//
+// Gate: Paket_Fuer_Hochregal = Paket_Vor_Regal AND (Combo_Done OR Pallet_Tagged)
+//       Tag must already be written upstream at P&P
+//============================================================================
+
+ORGANIZATION_BLOCK "OB1_Main"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 1.0
+
+BEGIN
+    // ... full legacy OB1 — see git history or TIA project
+END_ORGANIZATION_BLOCK

@@ -1,0 +1,74 @@
+Category;Screen;HMI_Object;PLC_Tag_or_Path;DataType;Address_or_DB;Access;Notes
+00_Header;Header;Radio Einricht;Mode_Einricht_W2;Bool;%M70.0;RW;Clear Auto+Hand on press
+00_Header;Header;Radio Auto;Mode_Auto_W2;Bool;%M70.1;RW;
+00_Header;Header;Radio Hand;Mode_Hand_W2;Bool;%M70.2;RW;
+00_Header;Header;Lamp Not-Aus;Not_Aus_W2;Bool;%M70.3;R;
+00_Header;Header;Lamp Busy;HRL_2_Busy;Bool;%M74.0;R;Yellow
+00_Header;Header;Lamp Done;HRL_2_Done;Bool;%M74.1;R;Green
+00_Header;Header;Lamp Error;HRL_2_Error;Bool;%M74.2;R;Red
+00_Header;Header;IO State;HMI_State_W2;Int;%MW228;R;
+00_Header;Header;Btn STOP;HMI_Stop_W2;Bool;%M71.6;Momentary;Large red
+01_Operate;Operate;Btn Start Einlagern;HMI_Start_Einlagern_W2;Bool;%M71.3;Momentary;
+01_Operate;Operate;Btn Start Auslagern;HMI_Start_Auslagern_W2;Bool;%M71.4;Momentary;No sequencer yet
+01_Operate;Operate;Btn Reset;HMI_Reset_W2;Bool;%M71.5;Momentary;
+01_Operate;Operate;Btn Reset Meldung;HMI_Reset_Meldung_W2;Bool;%M70.5;Momentary;
+01_Operate;Operate;Btn Suchen;HMI_Suchen_W2;Bool;%M71.1;Momentary;
+01_Operate;Operate;Btn Freies Fach;HMI_FreiesFach_W2;Bool;%M71.2;Momentary;
+01_Operate;Operate;Btn Löschen;HMI_Loeschen_W2;Bool;%M71.0;Momentary;Hand/Einricht only
+01_Operate;Operate;IO Fachnummer;HMI_Fachnummer_W2;UInt;%MW180;RW;
+01_Operate;Operate;IO RFID_CODE;gldb_AktuellerFach_HMI_W2.Auswahl.Fachaktuell.RFID_CODE;UDInt;DB;RW;<>0 skips RFID
+01_Operate;Operate;IO Artikelnummer;gldb_AktuellerFach_HMI_W2.Auswahl.Fachaktuell.Artikelnummer;UInt;DB;RW;
+01_Operate;Operate;IO Materialart;gldb_AktuellerFach_HMI_W2.Auswahl.Fachaktuell.Materialart;USInt;DB;RW;Default 2 Metall
+01_Operate;Operate;IO ProductTyp;gldb_AktuellerFach_HMI_W2.Auswahl.Fachaktuell.ProductTyp;UInt;DB;RW;
+01_Operate;Operate;IO Color_Code;gldb_AktuellerFach_HMI_W2.Auswahl.Fachaktuell.Color_Code;USInt;DB;RW;
+01_Operate;Operate;IO Ziel-Fach;HMI_Ziel_Fach_W2;Int;%MW230;R;
+01_Operate;Operate;IO Belegt;HRL_2_Anzahl_Belegt;UInt;%MW232;R;
+01_Operate;Operate;IO Frei;HRL_2_Anzahl_Frei;UInt;%MW234;R;
+01_Operate;Operate;IO Info_Code;gldb_AktuellerFach_HMI_W2.Meldung.Info_Code;UInt;DB;R;
+01_Operate;Operate;IO Info_Text;gldb_AktuellerFach_HMI_W2.Meldung.Info_Text;String;DB;R;
+01_Operate;Operate;IO Lagerstatus_Text;gldb_AktuellerFach_HMI_W2.Lagerstatus.Lagerstatus_Text;String;DB;R;
+01_Operate;Operate;Lamp Paket_Vor_Regal;Paket_Vor_Regal_W2;Bool;%M72.0;R;
+01_Operate;Operate;Lamp Paket für Hochregal;Paket_Fuer_Hochregal_W2;Bool;%M72.1;R;
+03_Overview;Overview;IO RFID_CODE_4a;4a_RFID_Code_Out;UDInt;%MD236;R;DB_103 write — main product
+03_Overview;Overview;IO Artikel_4a;4a_RFID_Artikelnummer;UInt;%MW150;R;
+03_Overview;Overview;Lamp 4a Done;4a_RFID_Done;Bool;%M21.1;R;Green after pallet write
+03_Overview;Overview;Lamp 4a Tag;4a_RFID_Tag_Present;Bool;%M21.3;R;
+03_Overview;Overview;Lamp Paket_Vor_Regal;Paket_Vor_Regal_W2;Bool;%M72.0;R;
+03_Overview;Overview;Lamp Paket für Hochregal;Paket_Fuer_Hochregal_W2;Bool;%M72.1;R;
+03_Overview;Overview;IO Belegt;HRL_2_Anzahl_Belegt;UInt;%MW232;R;
+03_Overview;Overview;IO Frei;HRL_2_Anzahl_Frei;UInt;%MW234;R;
+03_Overview;Overview;IO Info_Text;gldb_AktuellerFach_HMI_W2.Meldung.Info_Text;String;DB;R;
+03_Overview;Overview;IO Ist_X;Ist_X_W2;Real;%MD196;R;
+03_Overview;Overview;IO Ist_Z;Ist_Z_W2;Real;%MD200;R;
+03_Overview;Overview;Rack occupancy;gldb_AktuellerFach_HMI_W2.Lagerstatus.Farbe[1..54];USInt;DB;R;See HMI_Tags_Rack_W2.csv + docs/03_Technik/HMI_Regal_Animation.md
+03_Overview;Overview;Rack Ziel;gldb_AktuellerFach_HMI_W2.Lagerstatus.Ziel[1..54];Bool;DB;R;Flash border on HMI_Ziel_Fach_W2
+03_Overview;Overview;Lamp Palette auf Gabel;Palette_Aufgenommen_W2;Bool;%M72.2;R;
+03_Overview;Overview;Lamp Gabel Links;Gabel_Links_Ausgefahren_W2;Bool;%M72.6;R;
+03_Overview;Overview;Lamp Gabel Rechts;Gabel_Rechts_Ausgefahren_W2;Bool;%M72.5;R;
+03_Overview;Overview;Lamp Gabel Mitte;Gabel_Eingefahren_W2;Bool;%M72.7;R;
+02_Setup;Setup;IO Ist_X;Ist_X_W2;Real;%MD196;R;
+02_Setup;Setup;IO Ist_Z;Ist_Z_W2;Real;%MD200;R;
+02_Setup;Setup;IO Soll X;HMI_Soll_X_W2;Real;%MD252;RW;
+02_Setup;Setup;IO Soll Z;HMI_Soll_Z_W2;Real;%MD256;RW;
+02_Setup;Setup;IO Jog Step;HMI_Jog_Step_W2;Real;%MD260;RW;
+02_Setup;Setup;Btn Ist→Soll;HMI_Copy_Ist_to_Soll_W2;Bool;%M71.7;Momentary;
+02_Setup;Setup;Btn X+;HMI_Soll_X_Plus_W2;Bool;%M75.7;Momentary;
+02_Setup;Setup;Btn X−;HMI_Soll_X_Minus_W2;Bool;%M76.0;Momentary;
+02_Setup;Setup;Btn Z+;HMI_Soll_Z_Plus_W2;Bool;%M76.1;Momentary;
+02_Setup;Setup;Btn Z−;HMI_Soll_Z_Minus_W2;Bool;%M76.2;Momentary;
+02_Setup;Setup;IO Home_X;Home_X_W2;Real;%MD212;RW;
+02_Setup;Setup;IO Home_Z;Home_Z_W2;Real;%MD216;RW;
+02_Setup;Setup;IO Ausgabe_X;Ausgabe_X_W2;Real;%MD220;RW;
+02_Setup;Setup;IO Ausgabe_Z;Ausgabe_Z_W2;Real;%MD224;RW;
+02_Setup;Setup;IO Band_X;Band_X_W2;Real;%MD264;RW;
+02_Setup;Setup;IO Band_Z;Band_Z_W2;Real;%MD268;RW;
+02_Setup;Setup;IO Band_Z_Lift;Band_Z_Lift_W2;Real;%MD272;RW;
+02_Setup;Setup;Btn Ist→Band;HMI_Copy_Ist_to_Band_W2;Bool;%M76.3;Momentary;
+02_Setup;Setup;IO Pitch_X;HMI_Pitch_X_W2;Real;%MD184;RW;
+02_Setup;Setup;IO Pitch_Z;HMI_Pitch_Z_W2;Real;%MD188;RW;
+02_Setup;Setup;IO Spalten;HMI_Spalten_W2;Int;%MW192;RW;Default 6
+02_Setup;Setup;IO Spalten_Rechts;HMI_Spalten_Rechts_W2;Int;%MW194;RW;Default 3
+02_Setup;Setup;IO Fachnummer;HMI_Fachnummer_W2;UInt;%MW180;RW;
+02_Setup;Setup;Btn Pos speichern;HMI_Pos_Speichern_W2;Bool;%M70.6;Momentary;
+02_Setup;Setup;Btn Raster berechnen;HMI_Raster_Berechnen_W2;Bool;%M70.7;Momentary;
+02_Setup;Setup;Btn Initialisieren;HMI_Initialisieren_W2;Bool;%M70.4;Momentary;

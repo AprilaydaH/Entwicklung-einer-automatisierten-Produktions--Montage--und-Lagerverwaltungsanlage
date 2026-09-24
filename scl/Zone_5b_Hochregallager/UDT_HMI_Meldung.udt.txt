@@ -1,0 +1,11 @@
+//============================================================================
+// UDT_HMI_Meldung
+//============================================================================
+
+TYPE
+    "UDT_HMI_Meldung" : STRUCT
+        Info_Code           : UInt;       // 0..17 — see INFO_CODES.md
+        Info_Text           : String[100];
+        Funktion_Meldung_Ok : Bool;
+    END_STRUCT;
+END_TYPE

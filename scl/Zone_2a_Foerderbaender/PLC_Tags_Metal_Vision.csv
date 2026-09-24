@@ -1,0 +1,23 @@
+Name;Path;Data Type;Logical Address;Comment
+2a_Vision Sensor 2 (Value);2a_VisionDataSensors;DInt;%ED170;FIO metal Lid (%ID170)
+2a_Vision Sensor 3 (Value);2a_VisionDataSensors;DInt;%ED174;FIO metal Base (%ID174)
+4a_Done;4a_Palletizer;Bool;%M10.6;Gantry Done — Allow_Write
+2a_VisionData_Combo_Done;2a_VisionDataSensors;Bool;%M56.0;Zone 2A Vision combo → Warehouse_2 Gate
+2a_Metal_VisionData_Combo_Done;2a_VisionDataSensors;Bool;%M56.0;Alias of 2a_VisionData_Combo_Done
+2a_Metal_Vision_Reset;2a_VisionDataSensors;Bool;%M57.1;Pulse Reset
+2a_Metal_HMI_RFID_Write;2a_VisionDataSensors;Bool;%M57.0;Write_Req → metal RFID later
+2a_Metal_VisionData_Both_Ready;2a_VisionDataSensors;Bool;%M56.1;Lid8+Base9 latched
+2a_Metal_VisionData_Busy;2a_VisionDataSensors;Bool;%M56.2;
+2a_Metal_VisionData_Error;2a_VisionDataSensors;Bool;%M56.3;
+2a_Metal_Vision_Lid_Valid;2a_VisionDataSensors;Bool;%M56.4;Code=8
+2a_Metal_Vision_Base_Valid;2a_VisionDataSensors;Bool;%M56.5;Code=9
+2a_Metal_Vision_Lid_Reject_Plastic;2a_VisionDataSensors;Bool;%M56.6;Code 1..6
+2a_Metal_Vision_Base_Reject_Plastic;2a_VisionDataSensors;Bool;%M56.7;Code 1..6
+2a_Metal_VisionData_Waiting_For_Write;2a_VisionDataSensors;Bool;%M57.2;
+2a_Metal_VisionData_RFID_CODE;2a_VisionDataSensors;UDInt;%MD276;Production date YYMMDD
+2a_Metal_VisionData_Artikelnummer;2a_VisionDataSensors;UInt;%MW280;Sequential article
+2a_Metal_VisionData_Materialart;2a_VisionDataSensors;USInt;%MB284;Always 2=Metall
+2a_Metal_VisionData_Prod_Year;2a_VisionDataSensors;UInt;%MW286;
+2a_Metal_VisionData_Prod_Month;2a_VisionDataSensors;USInt;%MB288;
+2a_Metal_VisionData_Prod_Day;2a_VisionDataSensors;USInt;%MB289;
+2a_Metal_VisionData_State;2a_VisionDataSensors;Int;%MW290;1 sense 2 write 3 done 4 wait

@@ -1,0 +1,301 @@
+Name;Path;DataType;LogicalAddress;Comment
+3a_Material_Placed_PP_Metal;Standard-Variablentabelle;Bool;%M0.2;
+Clock_Byte;Standard-Variablentabelle;Byte;%MB20;
+4a_HMI_Start;Gantry;Bool;%M8.0;Zone 4A HMI (same as previous Palletizer screen)
+4a_HMI_Stop;Gantry;Bool;%M8.1;Zone 4A
+4a_HMI_Reset;Gantry;Bool;%M8.2;Zone 4A
+4a_HMI_Auto;Gantry;Bool;%M8.3;Zone 4A
+4a_HMI_SingleCycle;Gantry;Bool;%M8.4;Zone 4A
+4a_Pallet_Ready;Gantry;Bool;%M10.3;HMI compatibility (palletizer name)
+4a_Loading_Pallet_Active;Gantry;Bool;%M10.4;TRUE while Grab
+4a_Busy;Gantry;Bool;%M10.5;Zone 4A Busy
+4a_Done;Gantry;Bool;%M10.6;Zone 4A Done
+4a_State;Gantry;Int;%MW12;Zone 4A step
+4a_Assembly_Count;Gantry;Int;%MW14;HMI compatibility
+4a_HMI_Lamp_Ready;Gantry;Bool;%M11.0;Zone 4A
+4a_HMI_Lamp_Running;Gantry;Bool;%M11.1;Zone 4A
+4a_HMI_Lamp_Done;Gantry;Bool;%M11.2;Zone 4A
+4a_HMI_Lamp_Stopped;Gantry;Bool;%M11.3;Zone 4A
+4a_HMI_Lamp_Auto;Gantry;Bool;%M11.4;Zone 4A
+4a_HMI_Lamp_Manual;Gantry;Bool;%M11.5;Zone 4A
+4a_HMI_Cycle_Count;Gantry;Int;%MW16;Zone 4A
+4a_HMI_Step_Text_ID;Gantry;Int;%MW18;Zone 4A
+1a_M_C_0_ANWESEND_Sensor;Standard-Variablentabelle;Bool;%E0.0;1a | Factory I/O: 1a_M_C_0_ANWESEND_Sensor
+1a_M_C_1_ANWESEND_Sensor;Standard-Variablentabelle;Bool;%E0.1;1a | Factory I/O: 1a_M_C_1_ANWESEND_Sensor
+1b_plastic_raw_material_sensor_1;Standard-Variablentabelle;Bool;%E1.0;1b | Factory I/O: 1b_plastic_raw_material_sensor_1
+1b_Plastic_raw_material_sensor_2;Standard-Variablentabelle;Bool;%E1.1;1b | Factory I/O: 1b_Plastic_raw_material_sensor_2
+2a_Eck_Foerderband_MBase;Standard-Variablentabelle;Bool;%E2.0;2a | Factory I/O: 2a_Eck_Foerderband_MBase
+2a_Eck_Foerderband_MLid;Standard-Variablentabelle;Bool;%E2.1;2a | Factory I/O: 2a_Eck_Foerderband_MLid
+2a_Worked_Part_from_MC_out;Standard-Variablentabelle;Bool;%E2.2;2a | Factory I/O: 2a_Worked_Part_from_MC_out
+2a_Worked_Part_from_MC_out_2;Standard-Variablentabelle;Bool;%E2.3;2a | Factory I/O: 2a_Worked_Part_from_MC_out_2
+3b_Diffuse_Sensor_12;Standard-Variablentabelle;Bool;%E7.4;2b | Factory I/O: 2b_Diffuse Sensor 12
+2b_Diffuse_Sensor_39;Standard-Variablentabelle;Bool;%E3.1;2b | Factory I/O: 2b_Diffuse Sensor 39
+2b_Diffuse_Sensor_42;Standard-Variablentabelle;Bool;%E3.2;2b | Factory I/O: 2b_Diffuse Sensor 42
+3a_Baugruppe_Left_Positioner_2_Clamped;Standard-Variablentabelle;Bool;%E4.0;3a | Factory I/O: 3a_Baugruppe_Left Positioner 2 (Clamped)
+3a_Part_Left_1;Standard-Variablentabelle;Bool;%E4.1;3a | Factory I/O: 3a_Part_Left_1
+3a_Right_Positioner_0_Limit;Standard-Variablentabelle;Bool;%E4.2;3a | Factory I/O: 3a_Right Positioner 0 (Limit)
+3a_Right_Positioner_0_Clamped;Standard-Variablentabelle;Bool;%E4.3;3a | Factory I/O: 3a_Right Positioner 0 (Clamped)
+3a_Sensor_at_PP_Base;Standard-Variablentabelle;Bool;%E4.4;3a | Factory I/O: 3a_Sensor_at_PP_Base
+3a_Sensor_at_PP_Lid;Standard-Variablentabelle;Bool;%E4.5;3a | Factory I/O: 3a_Sensor_at_PP_Lid
+3a_Sensor_Before_PP_Base;Standard-Variablentabelle;Bool;%E4.6;3a | Factory I/O: 3a_Sensor_Before_PP_Base
+3a_Sensor_Before_PP_Lid;Standard-Variablentabelle;Bool;%E4.7;3a | Factory I/O: 3a_Sensor_Before_PP_Lid
+3a_Two_Axis_Pick_and_Place_0_Moving_X;Standard-Variablentabelle;Bool;%E5.0;3a | Factory I/O: 3a_Two-Axis Pick & Place 0 (Moving X)
+3a_Two_Axis_Pick_and_Place_0_Moving_Z;Standard-Variablentabelle;Bool;%E5.1;3a | Factory I/O: 3a_Two-Axis Pick & Place 0 (Moving Z)
+3a_Two_Axis_Pick_and_Place_0_Rotating;Standard-Variablentabelle;Bool;%E5.2;3a | Factory I/O: 3a_Two-Axis Pick & Place 0 (Rotating)
+3a_Two_Axis_Pick_and_Place_0_Item_Detected;Standard-Variablentabelle;Bool;%E5.3;3a | Factory I/O: 3a_Two-Axis Pick & Place 0 (Item Detected)
+3a_Two_Axis_Pick_and_Place_0_Gripper_Rotating;Standard-Variablentabelle;Bool;%E5.4;3a | Factory I/O: 3a_Two-Axis Pick & Place 0 (Gripper Rotating)
+3b_Diffuse_Sensor_36;Standard-Variablentabelle;Bool;%E6.0;3b | Factory I/O: 3b_Diffuse Sensor 36
+3b_Diffuse_Sensor_38;Standard-Variablentabelle;Bool;%E6.1;3b | Factory I/O: 3b_Diffuse Sensor 38
+3b_Diffuse_Sensor_40;Standard-Variablentabelle;Bool;%E6.2;3b | Factory I/O: 3b_Diffuse Sensor 40
+3b_Left_Positioner_1_Limit;Standard-Variablentabelle;Bool;%E6.3;3b | Factory I/O: 3b_Left Positioner 1 (Limit)
+3b_Left_Positioner_1_Clamped;Standard-Variablentabelle;Bool;%E6.4;3b | Factory I/O: 3b_Left Positioner 1 (Clamped)
+3b_Right_Positioner_3_Limit;Standard-Variablentabelle;Bool;%E6.5;3b | Factory I/O: 3b_Right Positioner 3 (Limit)
+3b_Right_Positioner_3_Clamped;Standard-Variablentabelle;Bool;%E6.6;3b | Factory I/O: 3b_Right Positioner 3 (Clamped)
+3b_Two_Axis_Pick_and_Place_1_Moving_X;Standard-Variablentabelle;Bool;%E6.7;3b | Factory I/O: 3b_Two-Axis Pick & Place 1 (Moving X)
+3b_Two_Axis_Pick_and_Place_1_Moving_Z;Standard-Variablentabelle;Bool;%E7.0;3b | Factory I/O: 3b_Two-Axis Pick & Place 1 (Moving Z)
+3b_Two_Axis_Pick_and_Place_1_Rotating;Standard-Variablentabelle;Bool;%E7.1;3b | Factory I/O: 3b_Two-Axis Pick & Place 1 (Rotating)
+3b_Two_Axis_Pick_and_Place_1_Item_Detected;Standard-Variablentabelle;Bool;%E7.2;3b | Factory I/O: 3b_Two-Axis Pick & Place 1 (Item Detected)
+3b_Two_Axis_Pick_and_Place_1_Gripper_Rotating;Standard-Variablentabelle;Bool;%E7.3;3b | Factory I/O: 3b_Two-Axis Pick & Place 1 (Gripper Rotating)
+4a_at_Palletizer_machine;Standard-Variablentabelle;Bool;%E8.0;4a | Factory I/O: 4a_at_palletierer machine | DUPLICATE source name - verify mapping
+4a_vor_Palletizer_Band_set;Standard-Variablentabelle;Bool;%E8.1;4a | Factory I/O: 4a_vor_Palletizer_Band_set
+4a_Pallet_at_Palletizer;Standard-Variablentabelle;Bool;%E8.2;4a | Factory I/O: 4a_Pallet_at_Palletizer
+4a_at_Palletizer_machine_2;Standard-Variablentabelle;Bool;%E8.3;4a | Factory I/O: 4a_at_palletierer machine | DUPLICATE source name - verify mapping
+4a_Pallet_Present;Standard-Variablentabelle;Bool;%E8.4;4a | Factory I/O: 4a_Pallet_Present
+4a_Pick_and_Place_1_Moving_Z;Standard-Variablentabelle;Bool;%E8.5;4a | Factory I/O: 4a_Pick & Place 1 (Moving-Z)
+4a_Pick_and_Place_1_Moving_XY;Standard-Variablentabelle;Bool;%E8.6;4a | Factory I/O: 4a_Pick & Place 1 (Moving-XY)
+1a_Emitter_1_Emit;Standard-Variablentabelle;Bool;%A0.0;1a | Factory I/O: 1a_Emitter 1 (Emit)
+1a_Emitter_2_Emit;Standard-Variablentabelle;Bool;%A0.1;1a | Factory I/O: 1a_Emitter 2 (Emit)
+1a_M_C_1_AN_WESEND_Belt_Conveyor_2m;Standard-Variablentabelle;Bool;%A0.2;1a | Factory I/O: 1a_M_C_1_AN_WESEND_Belt Conveyor (2m)
+1a_M_C_ANWESEND_Belt_Conveyor_2m;Standard-Variablentabelle;Bool;%A0.3;1a | Factory I/O: 1a_M_C_ANWESEND_Belt Conveyor (2m)
+1b_DC_0_Belt_Conveyor_2m;Standard-Variablentabelle;Bool;%A1.0;1b | Factory I/O: 1b_DC_0_Belt_Conveyor(2m)
+1b_Emitter_5_Emit;Standard-Variablentabelle;Bool;%A1.1;1b | Factory I/O: 1b_Emitter 5 (Emit)
+1b_raw_material_emitter_2;Standard-Variablentabelle;Bool;%A1.2;1b | Factory I/O: 1b_raw_material_emitter__2
+2a_After_DC_Our_0;Standard-Variablentabelle;Bool;%A2.0;2a | Factory I/O: 2a_After_DC_Our_0
+2a_After_MC_out_0;Standard-Variablentabelle;Bool;%A2.1;2a | Factory I/O: 2a_After_MC_out_0
+2a_After_Metal_MC_Base_Conveyor;Standard-Variablentabelle;Bool;%A2.2;2a | Factory I/O: 2a_After_Metal_MC_Base_Conveyor
+2a_After_Metal_MC_Lid_Conveyor;Standard-Variablentabelle;Bool;%A2.3;2a | Factory I/O: 2a_After_Metal_MC_Lid_Conveyor
+2a_Motor_Before_PP_Base;Standard-Variablentabelle;Bool;%A2.4;2a | Factory I/O: 2a_Motor_Before_PP_Base
+2a_Motor_Before_PP_Lid;Standard-Variablentabelle;Bool;%A2.5;2a | Factory I/O: 2a_Motor_Before_PP_Lid
+2b_After_Plastic_DC_out_0;Standard-Variablentabelle;Bool;%A3.0;2b | Factory I/O: 2b_After_Plastic_DC_out_0
+2b_After_Plastic_MC_out_1;Standard-Variablentabelle;Bool;%A3.1;2b | Factory I/O: 2b_After_Plastic_MC_out_1
+2b_After_Plastic_MC_out_2;Standard-Variablentabelle;Bool;%A3.2;2b | Factory I/O: 2b_After_Plastic_MC_out_2
+2b_Curved_Belt_Conveyor_6_CW;Standard-Variablentabelle;Bool;%A3.3;2b | Factory I/O: 2b_Curved Belt Conveyor 6 CW | DUPLICATE source name - verify mapping
+2b_Curved_Belt_Conveyor_6_CW_2;Standard-Variablentabelle;Bool;%A3.4;2b | Factory I/O: 2b_Curved Belt Conveyor 6 CW | DUPLICATE source name - verify mapping
+2b_Curved_Belt_Conveyor_8_C2;Standard-Variablentabelle;Bool;%A3.5;2b | Factory I/O: 2b_Curved Belt Conveyor 8 C2
+3a_Left_Positioner_2_Raise;Standard-Variablentabelle;Bool;%A4.0;3a | Factory I/O: 3a_Left Positioner 2 (Raise)
+3a_Left_Positioner_Metal_Baugruppe_Clamp;Standard-Variablentabelle;Bool;%A4.1;3a | Factory I/O: 3a_Left Positioner _Metal_Baugruppe(Clamp)
+3a_Motor_at_PP_Base;Standard-Variablentabelle;Bool;%A4.2;3a | Factory I/O: 3a_Motor_at_PP_Base
+3a_Motor_at_PP_Lid;Standard-Variablentabelle;Bool;%A4.3;3a | Factory I/O: 3a_Motor_at_PP_Lid
+3a_Nach_Waage_Curved_Belt_Conveyor_0_CW;Standard-Variablentabelle;Bool;%A4.4;3a | Factory I/O: 3a_Nach_Waage_Curved Belt Conveyor 0 CW
+3a_Right_Lid_Positioner_0_Clamp;Standard-Variablentabelle;Bool;%A4.5;3a | Factory I/O: 3a_Right_Lid_Positioner 0 (Clamp)
+3a_Right_Lid_Positioner_0_Raise;Standard-Variablentabelle;Bool;%A4.6;3a | Factory I/O: 3a_Right_Lid_Positioner 0 (Raise)
+3a_Two_Axis_Pick_and_Place_0_Grab;Standard-Variablentabelle;Bool;%A4.7;3a | Factory I/O: 3a_Two-Axis Pick & Place 0 (Grab)
+3a_Two_Axis_Pick_and_Place_0_Rotate_CW;Standard-Variablentabelle;Bool;%A5.0;3a | Factory I/O: 3a_Two-Axis Pick & Place 0 Rotate CW
+3a_Two_Axis_Pick_and_Place_0_Gripper_CW;Standard-Variablentabelle;Bool;%A5.1;3a | Factory I/O: 3a_Two-Axis Pick & Place 0 Gripper CW
+3a_Two_Axis_Pick_and_Place_0_Rotate_CCW;Standard-Variablentabelle;Bool;%A5.2;3a | Factory I/O: 3a_Two-Axis Pick & Place 0 Rotate CCW
+3a_Two_Axis_Pick_and_Place_0_Gripper_CCW;Standard-Variablentabelle;Bool;%A5.3;3a | Factory I/O: 3a_Two-Axis Pick & Place 0 Gripper CCW
+3a_Waage_Conveyor_Scale_0_Plus;Standard-Variablentabelle;Bool;%A5.4;3a | Factory I/O: 3a_Waage_Conveyor Scale 0 (+)
+3b_Belt_Conveyor_2m_6;Standard-Variablentabelle;Bool;%A6.0;3b | Factory I/O: 3b_Belt Conveyor (2m) 6
+3b_Belt_Conveyor_2m_13;Standard-Variablentabelle;Bool;%A6.1;3b | Factory I/O: 3b_Belt Conveyor (2m) 13
+3b_Conveyor_Scale_2_Plus;Standard-Variablentabelle;Bool;%A6.2;3b | Factory I/O: 3b_Conveyor Scale 2 (+)
+3b_Conveyor_Scale_2;Standard-Variablentabelle;Bool;%A6.3;3b | Factory I/O: 3b_Conveyor Scale 2 (-)
+3b_Left_Positioner_1_Clamp;Standard-Variablentabelle;Bool;%A6.4;3b | Factory I/O: 3b_Left Positioner 1 (Clamp)
+3b_Left_Positioner_1_Raise;Standard-Variablentabelle;Bool;%A6.5;3b | Factory I/O: 3b_Left Positioner 1 (Raise) | DUPLICATE source name - verify mapping
+3b_Right_Positioner_3_Clamp;Standard-Variablentabelle;Bool;%A6.6;3b | Factory I/O: 3b_Right Positioner 3 (Clamp)
+3b_Right_Positioner_1_Raise;Standard-Variablentabelle;Bool;%A6.7;3b | Factory I/O: 3b_Left Positioner 1 (Raise) | DUPLICATE source name - verify mapping
+3b_Two_Axis_Pick_and_Place_1_Grab;Standard-Variablentabelle;Bool;%A7.0;3b | Factory I/O: 3b_Two-Axis Pick & Place 1 (Grab)
+3b_Two_Axis_Pick_and_Place_1_Rotate_CW;Standard-Variablentabelle;Bool;%A7.1;3b | Factory I/O: 3b_Two-Axis Pick & Place 1 Rotate CW
+3b_Two_Axis_Pick_and_Place_1_Rotate_CCW;Standard-Variablentabelle;Bool;%A7.2;3b | Factory I/O: 3b_Two-Axis Pick & Place 1 Rotate CCW | DUPLICATE source name - verify mapping
+3b_Two_Axis_Pick_and_Place_1_Rotate_CCW_2;Standard-Variablentabelle;Bool;%A7.3;3b | Factory I/O: 3b_Two-Axis Pick & Place 1 Rotate CCW | DUPLICATE source name - verify mapping
+3b_Two_Axis_Pick_and_Place_1_Gripper_CCW;Standard-Variablentabelle;Bool;%A7.4;3b | Factory I/O: 3b_Two-Axis Pick & Place 1 Gripper CCW
+4a_Warning_Light_1;Standard-Variablentabelle;Bool;%A8.0;4a | Factory I/O: 4a_Warning Light 1
+4a_Pick_and_Place_1_C_Plus;Standard-Variablentabelle;Bool;%A8.1;4a | Factory I/O: 4a_Pick & Place 1 C(+)
+4a_Pick_and_Place_1_Grab;Standard-Variablentabelle;Bool;%A8.2;4a | Factory I/O: 4a_Pick & Place 1 (Grab)
+4a_Belt_Conveyor_at_palletizer_4m_7;Standard-Variablentabelle;Bool;%A8.3;4a | Factory I/O: 4a_Belt _Conveyor_at_palletizer (4m) 7
+4a_Palletizer_Belt_Conveyor_4m_0;Standard-Variablentabelle;Bool;%A8.4;4a | Factory I/O: 4a_Palletizer_Belt Conveyor (4m) 0
+4a_Roller_Conveyor_6m_4;Standard-Variablentabelle;Bool;%A8.5;4a | Factory I/O: 4a_Roller Conveyor (6m) 4
+3a_Two_Axis_Pick_and_Place_0_X_Position_V;Standard-Variablentabelle;Real;%ED30;3a | Factory I/O: 3a_Two-Axis Pick & Place 0 X Position (V)
+3a_Two_Axis_Pick_and_Place_0_Z_Position_V;Standard-Variablentabelle;Real;%ED34;3a | Factory I/O: 3a_Two-Axis Pick & Place 0 Z Position (V)
+3a_Waage_0_Weight_V;Standard-Variablentabelle;Real;%ED38;3a | Factory I/O: 3a_Waage 0 Weight (V)
+4a_Pick_and_Place_1_X_Position_V;Standard-Variablentabelle;Real;%ED42;4a | Factory I/O: 4a_Pick & Place 1 X Position (V)
+4a_Pick_and_Place_1_Y_Position_V;Standard-Variablentabelle;Real;%ED46;4a | Factory I/O: 4a_Pick & Place 1 Y Position (V)
+4a_Pick_and_Place_1_Z_Position_V;Standard-Variablentabelle;Real;%ED50;4a | Factory I/O: 4a_Pick & Place 1 Z Position (V)
+3a_Two_Axis_Pick_and_Place_0_Z_Set_Point_V;Standard-Variablentabelle;Real;%AD20;3a | Factory I/O: 3a_Two-Axis Pick & Place 0 Z Set Point (V)
+3a_Two_Axis_Pick_and_Place_0_X_Set_Point_V;Standard-Variablentabelle;Real;%AD16;3a | Factory I/O: 3a_Two-Axis Pick & Place 0 X Set Point (V)
+Gewicht;Standard-Variablentabelle;DInt;%AD24;System | Factory I/O: Gewicht
+4a_Pick_and_Place_1_X_Set_Point_V;Standard-Variablentabelle;Real;%AD40;4a | Factory I/O: 4a_Pick & Place 1 X Set Point (V)
+4a_Pick_and_Place_1_Y_Set_Point_V;Standard-Variablentabelle;Real;%AD44;4a | Factory I/O: 4a_Pick & Place 1 Y Set Point(V)
+4a_Pick_and_Place_1_Z_Set_Point_V;Standard-Variablentabelle;Real;%AD48;4a | Factory I/O: 4a_Pick & Place 1 Z Set Point (V)
+1b_DC_1_Belt Conveyor (2m);Forderband;Bool;%A1.3;
+2b_Eck_Foerderband_MLid;Forderband;Bool;%A3.6;
+Aut_Start_Mode;Forderband;Bool;%E5.5;
+Weight_ok;Forderband;Bool;%A5.5;
+Waage0_Reset;Forderband;Bool;%E5.7;
+4a_Roller Conveyor (2m) 2;Forderband;Bool;%A8.6;
+4a_Emitt_Pallet;Forderband;Bool;%A8.7;
+4a_pick_and_place__C_Limit;Forderband;Bool;%E8.7;
+2b_Worked_Part_from_MC_out_1;Standard-Variablentabelle;Bool;%E3.0;
+2b_Worked_Part_from_MC_out_2;Standard-Variablentabelle;Bool;%E3.3;
+3b_Diffuse_Sensor_0;Standard-Variablentabelle;Bool;%E7.5;
+4b_HMI_Start(1);Gantry_2;Bool;%M9.0;
+4b_HMI_Stop(1);Gantry_2;Bool;%M9.1;
+4b_HMI_Reset(1);Gantry_2;Bool;%M9.2;
+4b_HMI_Auto(1);Gantry_2;Bool;%M9.3;
+4b_HMI_SingleCycle(1);Gantry_2;Bool;%M9.4;
+4b_Pallet_Ready(1);Gantry_2;Bool;%M9.5;
+4b_Loading_Pallet_Active(1);Gantry_2;Bool;%M9.6;
+4b_Busy(1);Gantry_2;Bool;%M9.7;
+4b_Done(1);Gantry_2;Bool;%M10.0;
+4b_State(1);Gantry_2;Int;%MW30;
+4b_Assembly_Count(1);Gantry_2;Int;%MW34;
+4b_HMI_Lamp_Ready(1);Gantry_2;Bool;%M10.1;
+4b_HMI_Lamp_Running(1);Gantry_2;Bool;%M10.2;
+4b_HMI_Lamp_Done(1);Gantry_2;Bool;%M12.3;
+4b_HMI_Lamp_Stopped(1);Gantry_2;Bool;%M12.4;
+4b_HMI_Lamp_Auto(1);Gantry_2;Bool;%M12.5;
+4b_HMI_Lamp_Manual(1);Gantry_2;Bool;%M12.6;
+4b_HMI_Cycle_Count(1);Gantry_2;Int;%MW32;
+4b_HMI_Step_Text_ID(1);Gantry_2;Int;%MW36;
+3b_Two-Axis Pick & Place 1 X Position (V);Forderband;Real;%ED54;
+3b_Two-Axis Pick & Place 1 Z Set Point (V);Forderband;Real;%AD32;
+3b_Two-Axis Pick & Place 1 X Set Point (V);Forderband;Real;%AD28;
+3b_Pick_and_Place_Done;Forderband;Bool;%M0.3;
+3b_Two-Axis Pick & Place 1 Z Position (V);Forderband;Real;%ED58;
+3b_Waage 2 Weight (V);Forderband;Real;%ED62;
+3b_Diffuse_Sensor_11;Standard-Variablentabelle;Bool;%E7.6;
+3b_stack_light;Forderband;Bool;%A7.5;
+4b_Diffuse Sensor 41;Standard-Variablentabelle;Bool;%E10.2;
+4b_Diffuse_Sensor_10;Standard-Variablentabelle;Bool;%E10.0;
+4b_Roller Conveyor (6m) 1;Forderband;Bool;%A10.5;
+4b_Stacker_BeltConveyor_Plastic(6m);Standard-Variablentabelle;Bool;%A10.6;
+4b_Belt Conveyor (4m) 6;Forderband;Bool;%A10.0;
+4b_Roller Conveyor (2m) 3;Forderband;Bool;%A10.4;
+4b_Pallet_Present;Forderband;Bool;%E10.3;
+4b_Diffuse_Sensor_26;Forderband;Bool;%E10.1;
+3a_Curved Belt Conveyor 5 CW;Forderband;Bool;%A5.7;
+3b_NAch_Waage_Curved_Belt;Forderband;Bool;%A7.6;
+4a_Pick & Place 1 (Box Detected);Standard-Variablentabelle;Bool;%E9.0;
+4b_Warning_Light_6;Standard-Variablentabelle;Bool;%A10.7;
+4b_Pick & Place 0 (C Limit);Standard-Variablentabelle;Bool;%E10.4;
+4b_Pick & Place 0 (Moving-Z);Standard-Variablentabelle;Bool;%E10.5;
+4b_Pick & Place 0 (Moving-XY);Standard-Variablentabelle;Bool;%E10.6;
+4b_Pick & Place 0 (Box Detected);Standard-Variablentabelle;Bool;%E10.7;
+4b_Pick & Place 0 X Position (V);Standard-Variablentabelle;Real;%ED86;
+4b_Pick & Place 0 Y Position (V);Standard-Variablentabelle;Real;%ED90;
+4b_Pick & Place 0 Z Position (V);Standard-Variablentabelle;Real;%ED94;
+4b_Pick & Place 1 Y Set Point(V);Standard-Variablentabelle;Real;%AD60;
+4b_Pick & Place 1 X Set Point (V);Standard-Variablentabelle;Real;%AD64;
+4b_Pick & Place 1 Z Set Point (V);Standard-Variablentabelle;Real;%AD68;
+4b_Pick & Place 1 C(+);Standard-Variablentabelle;Bool;%A10.2;
+4b_Pick & Place 1 (Grab);Standard-Variablentabelle;Bool;%A10.3;
+Motor;Forderband;Bool;%A0.4;
+4b_Diffuse Sensor 13;Forderband;Bool;%E11.0;
+5a_to_warehouse;Forderband;Bool;%E12.0;
+5a_Roller Conveyor (6m) 2;Forderband;Bool;%A12.0;
+5a_Curved Roller Conveyor 1 CCW;Forderband;Bool;%A12.1;
+5b_1_to_Warehouse;Forderband;Bool;%E13.0;
+5b_Curved Roller Conveyor 2 CCW;Forderband;Bool;%A13.1;
+5b_Roller Conveyor (4m) 0;Forderband;Bool;%A13.0;
+5b_2_to_Warehouse;Forderband;Bool;%E13.1;
+5b_3_to_Warehouse;Forderband;Bool;%E13.2;
+5b_Roller Conveyor (2m) 1;Forderband;Bool;%A13.2;
+5b_Curved Roller Conveyor 4;Forderband;Bool;%A13.3;
+5b_Roller Conveyor (6m) 0;Forderband;Bool;%A13.4;
+5b_Curved Roller Conveyor 3 CCW;Forderband;Bool;%A13.5;
+5a_Diffuse Sensor 21;Forderband;Bool;%E12.1;
+5a_Roller Conveyor (2m) 0;Forderband;Bool;%A12.4;
+5a_Curved Roller Conveyor 0 CW;Forderband;Bool;%A12.3;
+5a_Diffuse Sensor 25;Forderband;Bool;%E12.2;
+5a_Roller Conveyor (6m) 3;Forderband;Bool;%A12.7;
+5a_Roller Conveyor (4m) 5;Forderband;Bool;%A12.5;
+4b_RFID Reader 2 Execute Command;Forderband;Bool;%A11.1;
+4a_RFID Reader 1 Command;RFID_Reader;DInt;%AD76;
+4b_RFID Reader 2 Memory Index;RFID_Reader;DInt;%AD112;
+4b_RFID Reader 2 Write Data;RFID_Reader;DInt;%AD108;
+4a_RFID Reader 1 Status;RFID_Reader;DInt;%ED102;
+4a_RFID Reader 1 Command ID;RFID_Reader;DInt;%ED110;
+4a_RFID Reader 1 Read Data;RFID_Reader;DInt;%ED106;
+4b_RFID Reader 2 Command ID;RFID_Reader;DInt;%ED138;
+4b_RFID Reader 2 Status;RFID_Reader;DInt;%ED130;
+4b_RFID Reader 2 Read Data;RFID_Reader;DInt;%ED134;
+4a_RFID Reader 1 Execute Command;Forderband;Bool;%A9.0;
+4b_RFID Reader 2 Command;RFID_Reader;DInt;%AD104;
+4a_RFID Reader 1 Memory Index;RFID_Reader;DInt;%AD84;
+4a_RFID Reader 1 Write Data;RFID_Reader;DInt;%AD80;
+2b_Vision Sensor Base(Value);2b_VisionDataSensors;DInt;%ED146;
+2b_Vision Sensor Lid (Value);2b_VisionDataSensors;DInt;%ED142;
+Memory_Index;Forderband;DInt;%MD2;
+RFID_Code_IN;Forderband;UDInt;%MD22;
+Artikelnummer_In;Forderband;UInt;%MW6;
+Material_Art_In;Forderband;USInt;%MB1;
+ProductType_In;Forderband;UInt;%MW26;
+2b_HMI_RFID_Bereit;2b_VisionDataSensors;Bool;%M30.0;
+2b_HMI_RFID_Busy;2b_VisionDataSensors;Bool;%M30.1;
+2b_HMI_RFID_Done;2b_VisionDataSensors;Bool;%M30.4;
+2b_HMI_RFID_Reset;2b_VisionDataSensors;Bool;%M30.5;
+2b_VisionData_Artikelnumber;2b_VisionDataSensors;UInt;%MW28;
+2b_VisionData_ProductType;2b_VisionDataSensors;UInt;%MW38;
+2b_VisionData_Combo_Done;2b_VisionDataSensors;Bool;%M40.0;
+2a_VisionData_Write_Req;2b_VisionDataSensors;Bool;%M20.1;
+2b_VisionData_RFID_CODE;2b_VisionDataSensors;UDInt;%MD42;
+2b_HMI_RFID_Write;Forderband;Bool;%M20.0;
+2b_VisionData_Materialart;2b_VisionDataSensors;USInt;%MB46;
+2b_VisionData_Both_Ready;Forderband;Bool;%M40.1;
+2b_VisionData_State;Forderband;Int;%MW48;
+2b_VisionData_Color_Code;Forderband;Int;%MW50;
+5b_RFID_Lesen;RFID_Reader;Bool;%M0.0;
+Mode_Einricht;Warehouse;Bool;%M60.0;
+Mode_Auto;Warehouse;Bool;%M60.1;
+Mode_Hand;Warehouse;Bool;%M60.2;
+Not_Aus;Warehouse;Bool;%M60.3;
+HMI_Initialisieren;Warehouse;Bool;%M60.4;
+HMI_Reset_Meldung;Warehouse;Bool;%M60.5;
+HMI_Pos_Speichern;Warehouse;Bool;%M60.6;
+HMI_Raster_Berechnen;Warehouse;Bool;%M60.7;
+HMI_Loeschen;Warehouse;Bool;%M61.0;
+HMI_Suchen;Warehouse;Bool;%M61.1;
+HMI_FreiesFach;Warehouse;Bool;%M61.2;
+HMI_Start_Einlagern;Warehouse;Bool;%M61.3;
+HMI_Start_Auslagern;Warehouse;Bool;%M61.4;
+HMI_Reset;Warehouse;Bool;%M61.5;
+HMI_Stop;Warehouse;Bool;%M61.6;
+HMI_Fachnummer;Warehouse;UInt;%MW80;
+HMI_Pitch_X;Warehouse;Real;%MD84;
+HMI_Pitch_Z;Warehouse;Real;%MD88;
+HMI_Spalten;Warehouse;Int;%MW92;
+HMI_Spalten_Rechts;Warehouse;Int;%MW94;
+Paket_Vor_Regal;Warehouse;Bool;%M62.0;
+Paket_Fuer_Hochregal;Warehouse;Bool;%M62.1;
+Palette_Aufgenommen;Warehouse;Bool;%M62.2;
+Palette_Abgelegt;Warehouse;Bool;%M62.3;
+Position_Erreicht;Warehouse;Bool;%M62.4;
+Gabel_Rechts_Ausgefahren;Warehouse;Bool;%M62.5;
+Gabel_Links_Ausgefahren;Warehouse;Bool;%M62.6;
+Gabel_Eingefahren;Warehouse;Bool;%M62.7;
+Ist_X;Warehouse;Real;%MD96;
+Ist_Z;Warehouse;Real;%MD100;
+Soll_X;Warehouse;Real;%MD104;
+Soll_Z;Warehouse;Real;%MD108;
+Home_X;Warehouse;Real;%MD112;
+Home_Z;Warehouse;Real;%MD116;
+Ausgabe_X;Warehouse;Real;%MD120;
+Ausgabe_Z;Warehouse;Real;%MD124;
+Fahre_Zu_Position;Warehouse;Bool;%M63.0;
+Palette_Aufnehmen_Cmd;Warehouse;Bool;%M63.1;
+Palette_Ablegen_Cmd;Warehouse;Bool;%M63.2;
+Gabel_Rechts_Cmd;Warehouse;Bool;%M63.3;
+Gabel_Links_Cmd;Warehouse;Bool;%M63.4;
+Gabel_Mitte_Cmd;Warehouse;Bool;%M63.5;
+HRL_Busy;Warehouse;Bool;%M64.0;
+HRL_Done;Warehouse;Bool;%M64.1;
+HRL_Error;Warehouse;Bool;%M64.2;
+HRL_Mode_Auto;Warehouse;Bool;%M64.3;
+HRL_Mode_Hand;Warehouse;Bool;%M64.4;
+HRL_Mode_Einricht;Warehouse;Bool;%M64.5;
+HMI_State;Warehouse;Int;%MW128;
+HMI_Ziel_Fach;Warehouse;Int;%MW130;
+HRL_Anzahl_Belegt;Warehouse;UInt;%MW132;
+HRL_Anzahl_Frei;Warehouse;UInt;%MW134;
+5b_Diffuse Sensor 48;Warehouse;Bool;%E13.4;
+5b_Pallet_vor_Regal;2b_VisionDataSensors;Bool;%E14.3;
+5b_Loading Conveyor 1;2b_VisionDataSensors;Bool;%A14.3;

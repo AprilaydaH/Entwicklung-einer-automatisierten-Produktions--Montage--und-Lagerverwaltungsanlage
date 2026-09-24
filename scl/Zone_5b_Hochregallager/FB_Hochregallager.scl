@@ -1,0 +1,217 @@
+//============================================================================
+// Author: Dereje Hailemariam
+// Datum: 20.08.2026
+// Version: 1.0
+// Beschreibung: Hochregallager — one FB for OB1
+//
+// Multi-instances (import these FBs first in TIA):
+//   FB_Berechn_Offset
+//   FB_Datenverwaltung_Lager
+//   FB_Loeschen
+//   FB_Suchen
+//   FB_Freies_Fach_Suchen
+//   Hochregal_Automatik_Betrieb   (already contains Einlagern/Auslagern/…)
+//   FB_Meldung
+//
+// Globals (unchanged): gldb_LagerverwaltungData, gldb_AktuellerFach_HMI, gldb_Meldungen
+//
+// RFID: wire FB_RFID_ReadWrite outputs into RFID_* inputs (plastic/metal).
+//       RFID_Lesen output → RFID reader Execute / RFID_Lesen pin.
+//============================================================================
+
+FUNCTION_BLOCK "FB_Hochregallager"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 1.0
+
+VAR_INPUT
+    // --- Modes (priority handled inside: Einricht > Auto > Hand) ---
+    Mode_Einricht               : Bool := FALSE;
+    Mode_Auto                   : Bool := FALSE;
+    Mode_Hand                   : Bool := FALSE;
+    Not_Aus                     : Bool := FALSE;
+
+    // --- HMI ---
+    HMI_Initialisieren          : Bool := FALSE;
+    HMI_Reset_Meldung           : Bool := FALSE;
+    HMI_Pos_Speichern           : Bool := FALSE;
+    HMI_Raster_Berechnen        : Bool := FALSE; // fill all 54 from Basis+Pitch
+    HMI_Fachnummer              : UInt := UINT#0;
+    HMI_Loeschen                : Bool := FALSE;
+    HMI_Suchen                  : Bool := FALSE;
+    HMI_FreiesFach              : Bool := FALSE;
+    HMI_Start_Einlagern         : Bool := FALSE;
+    HMI_Start_Auslagern         : Bool := FALSE;
+    HMI_Reset                   : Bool := FALSE;
+    HMI_Stop                    : Bool := FALSE;
+
+    // Raster pitch (0 = keep remanent values in gldb.Raster)
+    Pitch_X                     : Real := 0.0;
+    Pitch_Z                     : Real := 0.0;
+    Spalten                     : Int := 0;      // 0 = keep DB (default 6)
+    Spalten_Rechts              : Int := 0;      // 0 = keep DB (default 3)
+
+    // --- Process / Factory I/O ---
+    Paket_Vor_Regal             : Bool := FALSE;
+    Ist_X                       : Real := 0.0;
+    Ist_Z                       : Real := 0.0;
+    Palette_Aufgenommen         : Bool := FALSE;
+    Palette_Abgelegt            : Bool := FALSE;
+    Position_Erreicht           : Bool := FALSE;
+    Gabel_Rechts_Ausgefahren    : Bool := FALSE;
+    Gabel_Links_Ausgefahren     : Bool := FALSE;
+    Gabel_Eingefahren           : Bool := FALSE;
+
+    // --- RFID (from FB_RFID_ReadWrite; metal/plastic) ---
+    RFID_Busy                   : Bool := FALSE;
+    RFID_Bereit                 : Bool := TRUE;
+    RFID_Gueltig                : Bool := FALSE;
+    RFID_Fehler                 : Bool := FALSE;
+    RFID_Artikelnummer          : UInt := UINT#0;
+    RFID_Materialart            : USInt := USINT#0;
+    RFID_ProduktTyp             : UInt := UINT#0;
+    RFID_Code                   : UDInt := UDINT#0;
+
+    // --- Teach / parameters ---
+    Home_X                      : Real := 0.0;
+    Home_Z                      : Real := 0.0;
+    Ausgabe_X                   : Real := 0.0;
+    Ausgabe_Z                   : Real := 0.0;
+    Offset_Z                    : Real := 0.01;
+    Foerderband_Seite           : USInt := USINT#1; // 1=rechts
+END_VAR
+
+VAR_OUTPUT
+    Busy                        : Bool;
+    Done                        : Bool;
+    Error                       : Bool;
+    State                       : Int;
+    Ziel_Fachnummer             : Int;
+
+    Mode_Auto_Active            : Bool;
+    Mode_Hand_Active            : Bool;
+    Mode_Einricht_Active        : Bool;
+
+    Soll_X                      : Real;
+    Soll_Z                      : Real;
+    Fahre_Zu_Position           : Bool;
+    Palette_Aufnehmen           : Bool;
+    Palette_Ablegen             : Bool;
+    Gabel_Rechts_Aus            : Bool;
+    Gabel_Links_Aus             : Bool;
+    Gabel_Einfahren             : Bool;
+    RFID_Lesen                  : Bool;     // → FB_RFID / reader
+
+    DV_Fertig                   : Bool;
+    DV_Fehler                   : Bool;
+    Anzahl_Belegt               : UInt;
+    Anzahl_Frei                 : UInt;
+END_VAR
+
+VAR
+    Datenverwaltung             : "FB_Datenverwaltung_Lager";
+    Loeschen                    : "FB_Loeschen";
+    Suchen                      : "FB_Suchen";
+    FreiesFach                  : "FB_Freies_Fach_Suchen";
+    Automatik                   : "Hochregal_Automatik_Betrieb";
+    Meldung                     : "FB_Meldung";
+
+    auto_ok                     : Bool;
+    hand_ok                     : Bool;
+    einricht_ok                 : Bool;
+END_VAR
+
+BEGIN
+    //----- Mode priority: Einricht > Auto > Hand -----
+    #einricht_ok := #Mode_Einricht;
+    #auto_ok := #Mode_Auto AND NOT #einricht_ok;
+    #hand_ok := #Mode_Hand AND NOT #einricht_ok AND NOT #auto_ok;
+    #Mode_Einricht_Active := #einricht_ok;
+    #Mode_Auto_Active := #auto_ok;
+    #Mode_Hand_Active := #hand_ok;
+
+    //----- 1) Datenverwaltung (always) -----
+    #Datenverwaltung(
+        Initialisieren              := #HMI_Initialisieren,
+        Reset_Meldung               := #HMI_Reset_Meldung,
+        Position_Speichern          := #HMI_Pos_Speichern,
+        Raster_Berechnen            := #HMI_Raster_Berechnen,
+        HMI_Fachnummer              := #HMI_Fachnummer,
+        Einricht_Mode               := #einricht_ok,
+        Ist_X                       := #Ist_X,
+        Ist_Z                       := #Ist_Z,
+        Pitch_X                     := #Pitch_X,
+        Pitch_Z                     := #Pitch_Z,
+        Spalten                     := #Spalten,
+        Spalten_Rechts              := #Spalten_Rechts,
+        Fertig                      => #DV_Fertig,
+        Fehler                      => #DV_Fehler,
+        Anzahl_Belegt               => #Anzahl_Belegt,
+        Anzahl_Frei                 => #Anzahl_Frei
+    );
+
+    //----- 2) HMI data functions -----
+    #Loeschen(Execute := #HMI_Loeschen AND (#hand_ok OR #einricht_ok));
+
+    IF #HMI_Suchen THEN
+        #Suchen();
+    END_IF;
+
+    #FreiesFach(Start := #HMI_FreiesFach);
+
+    //----- 3) Automatik / Hand mechanics -----
+    #Automatik(
+        Auto_Mode                   := #auto_ok,
+        Hand_Mode                   := #hand_ok,
+        Einricht_Mode               := #einricht_ok,
+        Not_Aus                     := #Not_Aus,
+
+        HMI_Start_Einlagern         := #HMI_Start_Einlagern,
+        HMI_Start_Auslagern         := #HMI_Start_Auslagern,
+        Reset                       := #HMI_Reset OR "OB100_Startup_Init",
+        Stop                        := #HMI_Stop,
+
+        Paket_Vor_Regal             := #Paket_Vor_Regal,
+        RFID_Busy                   := #RFID_Busy,
+        RFID_Bereit                 := #RFID_Bereit,
+        RFID_Gueltig                := #RFID_Gueltig,
+        RFID_Fehler                 := #RFID_Fehler,
+        RFID_Artikelnummer          := #RFID_Artikelnummer,
+        RFID_Materialart            := #RFID_Materialart,
+        RFID_ProduktTyp             := #RFID_ProduktTyp,
+        RFID_Code                   := #RFID_Code,
+
+        Palette_Aufgenommen         := #Palette_Aufgenommen,
+        Palette_Abgelegt            := #Palette_Abgelegt,
+        Position_Erreicht           := #Position_Erreicht,
+        Gabel_Rechts_Ausgefahren    := #Gabel_Rechts_Ausgefahren,
+        Gabel_Links_Ausgefahren     := #Gabel_Links_Ausgefahren,
+        Gabel_Eingefahren           := #Gabel_Eingefahren,
+
+        Home_X                      := #Home_X,
+        Home_Z                      := #Home_Z,
+        Ausgabe_X                   := #Ausgabe_X,
+        Ausgabe_Z                   := #Ausgabe_Z,
+        Offset_Z                    := #Offset_Z,
+        Foerderband_Seite           := #Foerderband_Seite,
+
+        Busy                        => #Busy,
+        Done                        => #Done,
+        Error                       => #Error,
+        State_Out                   => #State,
+        Ziel_Fachnummer_Out         => #Ziel_Fachnummer,
+
+        Fahre_Zu_Position           => #Fahre_Zu_Position,
+        Soll_X                      => #Soll_X,
+        Soll_Z                      => #Soll_Z,
+        Palette_Aufnehmen           => #Palette_Aufnehmen,
+        Palette_Ablegen             => #Palette_Ablegen,
+        Gabel_Rechts_Aus            => #Gabel_Rechts_Aus,
+        Gabel_Links_Aus             => #Gabel_Links_Aus,
+        Gabel_Einfahren             => #Gabel_Einfahren,
+        RFID_Lesen                  => #RFID_Lesen
+    );
+
+    //----- 4) Meldung last -----
+    #Meldung();
+
+END_FUNCTION_BLOCK

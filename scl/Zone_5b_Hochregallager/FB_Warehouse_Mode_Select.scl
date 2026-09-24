@@ -1,0 +1,64 @@
+//============================================================================
+// Author: Dereje Hailemariam
+// Datum: 31.08.2026
+// Version: 1.0
+// Beschreibung: Exclusive warehouse mode — Einricht / Auto / Hand (radio)
+//
+// Call FIRST in OB1 (before Gate, Automatik, …).
+// IN_OUT tags: Mode_Einricht %M60.0, Mode_Auto %M60.1, Mode_Hand %M60.2
+//
+// HMI: SetBit on press is enough — PLC clears the other two on 0→1 edge.
+// Optional HMI: also ResetBit other modes on press (redundant with this FB).
+//============================================================================
+
+FUNCTION_BLOCK "FB_Warehouse_Mode_Select"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 1.0
+
+VAR_IN_OUT
+    Mode_Einricht               : Bool;
+    Mode_Auto                   : Bool;
+    Mode_Hand                   : Bool;
+END_VAR
+
+VAR
+    R_Einricht                  : R_TRIG;
+    R_Auto                      : R_TRIG;
+    R_Hand                      : R_TRIG;
+END_VAR
+
+BEGIN
+    #R_Einricht(CLK := #Mode_Einricht);
+    #R_Auto(CLK := #Mode_Auto);
+    #R_Hand(CLK := #Mode_Hand);
+
+    // New mode selected (rising edge) — that mode wins
+    IF #R_Einricht.Q THEN
+        #Mode_Einricht := TRUE;
+        #Mode_Auto := FALSE;
+        #Mode_Hand := FALSE;
+
+    ELSIF #R_Auto.Q THEN
+        #Mode_Auto := TRUE;
+        #Mode_Einricht := FALSE;
+        #Mode_Hand := FALSE;
+
+    ELSIF #R_Hand.Q THEN
+        #Mode_Hand := TRUE;
+        #Mode_Einricht := FALSE;
+        #Mode_Auto := FALSE;
+
+    ELSE
+        // Steady state — at most one ON (priority: Einricht > Auto > Hand)
+        IF #Mode_Einricht THEN
+            #Mode_Auto := FALSE;
+            #Mode_Hand := FALSE;
+        ELSIF #Mode_Auto THEN
+            #Mode_Einricht := FALSE;
+            #Mode_Hand := FALSE;
+        ELSIF #Mode_Hand THEN
+            #Mode_Einricht := FALSE;
+            #Mode_Auto := FALSE;
+        END_IF;
+    END_IF;
+END_FUNCTION_BLOCK

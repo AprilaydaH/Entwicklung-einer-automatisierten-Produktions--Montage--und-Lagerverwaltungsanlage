@@ -1,0 +1,13 @@
+//============================================================================
+// UDT_HMI_Regal — same type as Warehouse_1 (reuse if already in the PLC)
+// DB: gldb_HMI_Regal_W2
+// See scl/Zone_5b_Hochregallager/UDT_HMI_Regal.udt.txt for member comments.
+//============================================================================
+
+TYPE
+    "UDT_HMI_Regal" : STRUCT
+        Belegt              : Array[1..54] of Bool;
+        Ziel                : Array[1..54] of Bool;
+        Farbe               : Array[1..54] of USInt;
+    END_STRUCT;
+END_TYPE

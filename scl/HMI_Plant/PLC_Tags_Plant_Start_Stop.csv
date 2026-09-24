@@ -1,0 +1,16 @@
+Name;Path;Data Type;Logical Address;Comment
+HMI_Plant_Start;Plant_HMI;Bool;%M58.0;SET 1 — TP Übersicht Start (momentary)
+HMI_Plant_Stop;Plant_HMI;Bool;%M58.1;SET 1 — TP Übersicht Stop
+HMI_Plant_Not_Aus;Plant_HMI;Bool;%M58.2;SET 1 — TP Not-Aus
+HMI_Plant_Reset;Plant_HMI;Bool;%M58.3;SET 1 — TP Reset after Not-Aus
+Plant_Running;Plant_HMI;Bool;%M58.4;SET 1+2 — HMI green lamp (same status as FIO green)
+Plant_Not_Aus;Plant_HMI;Bool;%M58.5;SET 1+2 — HMI red lamp
+Plant_Enable;Plant_HMI;Bool;%M58.6;intern — Running AND NOT Not-Aus (not %M100.0)
+Plant_Ready;Plant_HMI;Bool;%M58.7;SET 1 — HMI ready lamp
+Production_Start;Plant_FIO;Bool;%E9.1;SET 2 — Factory I/O Start button (not %E18.0)
+Production_Stop;Plant_FIO;Bool;%E9.2;SET 2 — Factory I/O Stop button (not %E18.1)
+Main_Not_Aus;Plant_FIO;Bool;%E9.3;SET 2 — Factory I/O E-stop (not %E18.3)
+Main_Reset;Plant_FIO;Bool;%E9.4;SET 2 — Factory I/O Reset (was wrongly %M58.3)
+Main_Green_Stack_Light;Plant_FIO;Bool;%A15.5;SET 2 — FIO green := Plant_Running (not %A18.1)
+Main_Red_Light;Plant_FIO;Bool;%A15.6;SET 2 — FIO red := Plant_Not_Aus (not %A18.2)
+Main_Start_Button_Light;Plant_FIO;Bool;%A15.7;SET 2 — FIO start lamp := Plant_Ready (not %A18.3)

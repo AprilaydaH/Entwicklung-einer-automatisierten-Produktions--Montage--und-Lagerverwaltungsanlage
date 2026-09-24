@@ -1,0 +1,39 @@
+//============================================================================
+// OB1 — plant Übersicht: Planned / Actual production per day
+// Import tags: PLC_Tags_Prod_PerDay.csv
+// TIA: mark HMI_Prod_Actual_* and HMI_Prod_Day_Stamp REMANENT
+//
+// Actual = warehouse put-away Done (finished pallet in rack), not DB_4.
+// Planned = HMI setpoint (operator types the daily target).
+//
+// Place in an early network (e.g. after Mode Select). Needs:
+//   TEMP: sys_dt : DTL; today : DInt; yy : DInt
+//   STAT: R_W1 : R_TRIG; R_W2 : R_TRIG; R_Rst : R_TRIG
+//============================================================================
+
+#R_W1(CLK := "HRL_Done");
+#R_W2(CLK := "HRL_2_Done");
+#R_Rst(CLK := "HMI_Prod_Reset_Day");
+
+RD_SYS_T(OUT => #sys_dt);
+#yy := UINT_TO_DINT(#sys_dt.YEAR) MOD 100;
+#today := #yy * 10000
+    + USINT_TO_DINT(#sys_dt.MONTH) * 100
+    + USINT_TO_DINT(#sys_dt.DAY);
+
+IF ("HMI_Prod_Day_Stamp" <> #today) OR #R_Rst.Q THEN
+    "HMI_Prod_Actual_PerDay" := 0;
+    "HMI_Prod_Actual_Metal_PerDay" := 0;
+    "HMI_Prod_Actual_Plastic_PerDay" := 0;
+    "HMI_Prod_Day_Stamp" := #today;
+END_IF;
+
+IF #R_W1.Q THEN
+    "HMI_Prod_Actual_Plastic_PerDay" := "HMI_Prod_Actual_Plastic_PerDay" + 1;
+    "HMI_Prod_Actual_PerDay" := "HMI_Prod_Actual_PerDay" + 1;
+END_IF;
+
+IF #R_W2.Q THEN
+    "HMI_Prod_Actual_Metal_PerDay" := "HMI_Prod_Actual_Metal_PerDay" + 1;
+    "HMI_Prod_Actual_PerDay" := "HMI_Prod_Actual_PerDay" + 1;
+END_IF;

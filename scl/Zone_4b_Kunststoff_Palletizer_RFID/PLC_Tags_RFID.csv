@@ -1,0 +1,105 @@
+Category;Name;DataType;LogicalAddress;Comment
+01_HMI;HMI_RFID_Read;Bool;%M20.0;Pulse — RFID product read
+01_HMI;HMI_RFID_Write;Bool;%M20.1;From FB_VisionReader Write_Req
+01_HMI;HMI_RFID_Check;Bool;%M20.2;Pulse — tag present?
+01_HMI;HMI_RFID_Clear;Bool;%M20.3;Pulse — clear tag
+01_HMI;HMI_RFID_Reset;Bool;%M20.4;Reset Vision + RFID
+01_HMI;Memory_Index;DInt;%MD2;RFID Memory_Index (your TIA)
+01_HMI;RFID_Code_IN;UDInt;%MD22;Vision → RFID_Code_In (your TIA)
+01_HMI;Artikelnummer_In;UInt;%MW6;Vision Artikelnummer YY+Mat+Color
+01_HMI;Material_Art_In;USInt;%MB1;Vision Materialart (1=plastic)
+01_HMI;ProductType_In;UInt;%MW26;Vision ProductTyp Lid*10+Base
+02_FIO_IN;4b_RFID Reader 2 Command ID;DInt;%ID138;Zone 5a plastic warehouse
+02_FIO_IN;4b_RFID Reader 2 Status;DInt;%ID130;
+02_FIO_IN;4b_RFID Reader 2 Read Data;DInt;%ID134;
+02_FIO_IN;Vision_Lid_Value;DInt;%ID142;After Plastic Lid MC — All Numerical
+02_FIO_IN;Vision_Base_Value;DInt;%ID146;After Plastic Base MC — All Numerical
+03_FIO_OUT;4b_RFID Reader 2 Execute Command;Bool;%Q11.1;Your TIA %A11.1
+03_FIO_OUT;4b_RFID Reader 2 Command;DInt;%QD104;Prefer FIO export %QD104 (not %QD76 if 4a uses 76)
+03_FIO_OUT;4b_RFID Reader 2 Write Data;DInt;%QD108;
+03_FIO_OUT;4b_RFID Reader 2 Memory Index;DInt;%QD112;
+04_Vision;Vision_Lid_Detecting;Bool;%M23.0;
+04_Vision;Vision_Base_Detecting;Bool;%M23.1;
+04_Vision;Vision_Lid_Valid;Bool;%M23.2;
+04_Vision;Vision_Base_Valid;Bool;%M23.3;
+04_Vision;Vision_Lid_Reject_Metal;Bool;%M23.4;
+04_Vision;Vision_Base_Reject_Metal;Bool;%M23.5;
+04_Vision;Vision_Latch_Lid;Int;%MW68;
+04_Vision;Vision_Latch_Base;Int;%MW70;
+04_Vision;Vision_Both_Ready;Bool;%M23.6;
+04_Vision;Vision_Same_Color;Bool;%M23.7;
+04_Vision;Vision_Lid_Is_Blue;Bool;%M24.0;
+04_Vision;Vision_Lid_Is_Green;Bool;%M24.1;
+04_Vision;Vision_Base_Is_Blue;Bool;%M24.2;
+04_Vision;Vision_Base_Is_Green;Bool;%M24.3;
+04_Vision;Vision_Color_Code;USInt;%MB73;1 Blue 2 Green 3 Mixed
+04_Vision;Vision_Prod_Year;UInt;%MW74;Production year (clock)
+04_Vision;Vision_Prod_Month;USInt;%MB76;
+04_Vision;Vision_Prod_Day;USInt;%MB77;
+04_Vision;Vision_Combo_Done;Bool;%M24.4;RFID write OK — pallet tagged
+04_Vision;Vision_Busy;Bool;%M24.5;
+04_Vision;Vision_Error;Bool;%M24.6;
+04_Vision;Vision_State;Int;%MW78;1 wait 2 write 3 done
+05_RFID;RFID_Busy;Bool;%M21.0;
+05_RFID;RFID_Done;Bool;%M21.1;
+05_RFID;RFID_Error;Bool;%M21.2;
+05_RFID;RFID_State;Int;%MW42;
+05_RFID;RFID_Status_Code;Int;%MW44;
+05_RFID;RFID_Tag_Present;Bool;%M21.3;
+05_RFID;RFID_Serial_Number;DInt;%MD48;
+05_RFID;RFID_Data_Out;DInt;%MD52;
+05_RFID;RFID_Code_Out;UDInt;%MD56;
+05_RFID;RFID_Artikelnummer_Out;UInt;%MW60;
+05_RFID;RFID_Materialart_Out;USInt;%MB62;
+05_RFID;RFID_ProductTyp_Out;UInt;%MW64;
+05_RFID;RFID_Lamp_Ready;Bool;%M21.4;
+05_RFID;RFID_Lamp_Running;Bool;%M21.5;
+05_RFID;RFID_Lamp_Done;Bool;%M21.6;
+05_RFID;RFID_Lamp_Error;Bool;%M21.7;
+05_RFID;RFID_Bereit;Bool;%M22.0;
+05_RFID;RFID_Gueltig;Bool;%M22.1;
+05_RFID;RFID_Fehler;Bool;%M22.2;
+06_Gate;Part_Ready_For_Gantry;Bool;%M22.3;
+06_Gate;Assembled_Part_For_Gantry;Bool;%M22.4;
+06_Gate;RFID_Lesen;Bool;%M25.0;Hochregal State 10 → product read
+06_Gate;4b_Done(1);Bool;%M10.0;Palletizer Done — START Vision RFID write (Allow_Write)
+06_Gate;Paket_Vor_Regal;Bool;%M62.0;Warehouse loading sensor (5b)
+06_Gate;Paket_Fuer_Hochregal;Bool;%M62.1;Warehouse gate: sensor AND (Combo_Done OR Pallet_Tagged)
+06_Gate;RFID_Pallet_Tagged;Bool;%M22.5;FB_RFID Pallet_Tagged — write OK
+06_Gate;RFID_Write_Preview;DInt;%MD48;FB_RFID Write_Preview (RFID_Code_In)
+10_Metal_HMI;HMI_RFID_Metal_Read;Bool;%M30.0;Metal RFID — no vision
+10_Metal_HMI;HMI_RFID_Metal_Write;Bool;%M30.1;Pulse write metal product on pallet
+10_Metal_HMI;HMI_RFID_Metal_Check;Bool;%M30.2;
+10_Metal_HMI;HMI_RFID_Metal_Clear;Bool;%M30.3;
+10_Metal_HMI;HMI_RFID_Metal_Reset;Bool;%M30.4;
+10_Metal_HMI;RFID_Metal_Lesen;Bool;%M30.5;Hochregal / auto read
+10_Metal_HMI;RFID_Metal_Code_In;UDInt;%MD104;HMI or fixed — not from vision
+10_Metal_HMI;RFID_Metal_Artikelnummer_In;UInt;%MW108;
+10_Metal_HMI;RFID_Metal_Materialart_In;USInt;%MB110;Always 2 = metal
+10_Metal_HMI;RFID_Metal_ProductTyp_In;UInt;%MW112;HMI teach / article type
+11_Metal_FIO;RFID_Metal_Command_ID;DInt;%ID110;4a RFID Reader — MAP to your metal reader
+11_Metal_FIO;RFID_Metal_Status;DInt;%ID102;
+11_Metal_FIO;RFID_Metal_Read_Data;DInt;%ID106;
+11_Metal_FIO;RFID_Metal_Execute_Command;Bool;%Q20.3;BIND Execute for metal reader
+11_Metal_FIO;RFID_Metal_Command;DInt;%QD76;
+11_Metal_FIO;RFID_Metal_Write_Data;DInt;%QD80;
+11_Metal_FIO;RFID_Metal_Memory_Index;DInt;%QD84;
+12_Metal_Status;RFID_Metal_Busy;Bool;%M31.0;
+12_Metal_Status;RFID_Metal_Done;Bool;%M31.1;
+12_Metal_Status;RFID_Metal_Error;Bool;%M31.2;
+12_Metal_Status;RFID_Metal_State;Int;%MW114;
+12_Metal_Status;RFID_Metal_Status_Code;Int;%MW116;
+12_Metal_Status;RFID_Metal_Tag_Present;Bool;%M31.3;
+12_Metal_Status;RFID_Metal_Serial_Number;DInt;%MD118;
+12_Metal_Status;RFID_Metal_Data_Out;DInt;%MD122;
+12_Metal_Status;RFID_Metal_Code_Out;UDInt;%MD126;
+12_Metal_Status;RFID_Metal_Artikelnummer_Out;UInt;%MW130;
+12_Metal_Status;RFID_Metal_Materialart_Out;USInt;%MB132;
+12_Metal_Status;RFID_Metal_ProductTyp_Out;UInt;%MW134;
+12_Metal_Status;RFID_Metal_Lamp_Ready;Bool;%M31.4;
+12_Metal_Status;RFID_Metal_Lamp_Running;Bool;%M31.5;
+12_Metal_Status;RFID_Metal_Lamp_Done;Bool;%M31.6;
+12_Metal_Status;RFID_Metal_Lamp_Error;Bool;%M31.7;
+12_Metal_Status;RFID_Metal_Bereit;Bool;%M32.0;
+12_Metal_Status;RFID_Metal_Gueltig;Bool;%M32.1;
+12_Metal_Status;RFID_Metal_Fehler;Bool;%M32.2;

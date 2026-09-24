@@ -9,10 +9,19 @@ Thumbs.db
 Desktop.ini
 .DS_Store
 
-# IDE / TIA exports (lokal)
+# IDE / Office temp
 *.pdf
 !docs/**/*.pdf
+~$*
+tmp_*.txt
+__pycache__/
+*.pyc
 
 # Secrets
 .env
 *.pfx
+
+# Local extracts / traces (not source of truth)
+Trace_1_extract/
+rfid_trace_extract/
+*.ttcfgx

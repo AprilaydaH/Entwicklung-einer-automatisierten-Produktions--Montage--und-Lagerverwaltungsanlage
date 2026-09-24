@@ -1,0 +1,38 @@
+//============================================================================
+// FB_Plant_Start_Stop — FUP (TIA), not SCL
+// Author: Dereje Hailemariam
+// Instanz: FB_Plant_Start_Stop_DB
+//
+// OB1: EIN Aufruf NACH allen Zonen-FBs (nach NW 29, VOR NW 30
+//      "OB100_Startup_Init" := FALSE). Last-write: Q-Inhibit gewinnt.
+//
+// Prozess-Not-Aus für HMI + Factory I/O. Nicht das F-Programm der 1518F.
+// Tags: PLC_Tags_Plant_Start_Stop.csv
+// FUP-Netze: FB_Plant_Start_Stop.md
+//============================================================================
+
+"FB_Plant_Start_Stop_DB"(
+    HMI_Start     := "HMI_Plant_Start",
+    HMI_Stop      := "HMI_Plant_Stop",
+    HMI_Not_Aus   := "HMI_Plant_Not_Aus",
+    HMI_Reset     := "HMI_Plant_Reset",
+
+    FIO_Start     := "Production_Start",
+    FIO_Stop      := "Production_Stop",
+    FIO_Not_Aus   := "Main_Not_Aus",
+    FIO_Reset     := "Main_Reset",
+
+    Startup_Init  := "OB100_Startup_Init",
+
+    Plant_Running => "Plant_Running",
+    Plant_Not_Aus => "Plant_Not_Aus",
+    Plant_Enable  => "Plant_Enable",
+    Plant_Ready   => "Plant_Ready",
+
+    FIO_Green     => "Main_Green_Stack_Light",
+    FIO_Red       => "Main_Red_Light",
+    FIO_StartLamp => "Main_Start_Button_Light",
+
+    Not_Aus       := "Not_Aus",
+    Not_Aus_W2    := "Not_Aus_W2"
+);

@@ -1,0 +1,60 @@
+//============================================================================
+// OB1 Network 5 — Zone_2a_VisionData_Sensors
+// Instance: %DB102 "2a_VisionSensorData_DB"
+//
+// IMPORTANT: Stock %FB17 VisionSensorData = PLASTIC (Materialart=1, colors,
+// Reject_Metal on codes 7..9). For metal line either:
+//   A) Change this DB's FB type → FB_VisionReader_Metal (recommended), or
+//   B) Copy FB17 → VisionSensorData_Metal and paste metal stamp (no color).
+// Do NOT change FB17 body if NW 7 plastic still uses it.
+//
+// Product (metal): Materialart=2, Artikelnr (seq), RFID_Code=YYMMDD — no color.
+//============================================================================
+
+"2a_VisionSensorData_DB"(
+    Enable := TRUE,
+
+    // Factory I/O — your live tags (%ID170 / %ID174 = %ED170 / %ED174)
+    Vision_Lid_Value := "2a_Vision Sensor 2 (Value)",   // %ED170 — swap with 3 if lid/base reversed
+    Vision_Base_Value := "2a_Vision Sensor 3 (Value)", // %ED174
+
+    // Arm RFID write after metal palletizer (phase1: leave FALSE / unconnected)
+    Allow_Write := "4a_Done",   // %M10.6 — same as gantry "Done" if already named that
+
+    // Phase1: no metal RFID reader yet
+    RFID_Bereit := FALSE,
+    RFID_Busy := FALSE,
+    RFID_Done := FALSE,
+    Reset := "2a_Metal_Vision_Reset",
+
+    // --- wire these (metal product) ---
+    Artikelnummer => "2a_Metal_VisionData_Artikelnummer",
+    Prod_Year => "2a_Metal_VisionData_Prod_Year",
+    Prod_Month => "2a_Metal_VisionData_Prod_Month",
+    Prod_Day => "2a_Metal_VisionData_Prod_Day",
+    Materialart => "2a_Metal_VisionData_Materialart",
+    RFID_Code => "2a_Metal_VisionData_RFID_CODE",
+    Both_Ready => "2a_Metal_VisionData_Both_Ready",
+    Combo_Done => "2a_VisionData_Combo_Done",   // Zone 2A → Warehouse_2 Gate
+    Write_Req => "2a_Metal_HMI_RFID_Write",
+    Busy => "2a_Metal_VisionData_Busy",
+    Error => "2a_Metal_VisionData_Error",
+    State => "2a_Metal_VisionData_State",
+    Lid_Valid => "2a_Metal_Vision_Lid_Valid",
+    Base_Valid => "2a_Metal_Vision_Base_Valid",
+
+    // Leave UNWIRED (not used on metal):
+    // Same_Color, Lid_Is_Blue/Green, Base_Is_Blue/Green, Color_Code, ProductTyp
+);
+
+// Hand feed Warehouse_2 when Zone 2A Vision combo ready
+IF "2a_VisionData_Combo_Done" THEN
+    "gldb_AktuellerFach_HMI_W2".Auswahl.Fachaktuell.RFID_CODE :=
+        "2a_Metal_VisionData_RFID_CODE";
+    "gldb_AktuellerFach_HMI_W2".Auswahl.Fachaktuell.Artikelnummer :=
+        "2a_Metal_VisionData_Artikelnummer";
+    "gldb_AktuellerFach_HMI_W2".Auswahl.Fachaktuell.Materialart := USINT#2;
+    "gldb_AktuellerFach_HMI_W2".Auswahl.Fachaktuell.ProductTyp := UINT#0;
+    "gldb_AktuellerFach_HMI_W2".Auswahl.Fachaktuell.Color_Code := USINT#0;
+    "gldb_AktuellerFach_HMI_W2".Auswahl.Fachaktuell.Kennzeichnung := 'Metall';
+END_IF;

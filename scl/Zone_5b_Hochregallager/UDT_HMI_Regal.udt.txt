@@ -1,0 +1,26 @@
+//============================================================================
+// UDT_HMI_Regal — 54-cell occupancy map for WinCC Overview
+//
+// TIA: PLC data types → Add new type UDT_HMI_Regal → paste STRUCT members
+// DBs:  gldb_HMI_Regal      (Warehouse_1 plastic)
+//       gldb_HMI_Regal_W2   (Warehouse_2 metal)   same UDT, two DBs
+//
+// Access: Standard (not optimized) if Comfort cannot see ARRAY elements.
+//
+// Farbe  0 = frei (grey)
+//        1 = Kunststoff blau
+//        2 = Kunststoff grün
+//        3 = Mixed
+//        4 = Metall / keine Farbe (occupied)
+//        5 = gesperrt
+// Belegt mirrors Fach[n].Belegt (simple 2-colour animation)
+// Ziel   TRUE when n = HMI_Ziel_Fach (border flash)
+//============================================================================
+
+TYPE
+    "UDT_HMI_Regal" : STRUCT
+        Belegt              : Array[1..54] of Bool;
+        Ziel                : Array[1..54] of Bool;
+        Farbe               : Array[1..54] of USInt;
+    END_STRUCT;
+END_TYPE

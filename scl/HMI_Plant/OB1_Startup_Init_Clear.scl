@@ -1,0 +1,6 @@
+//============================================================================
+// OB1 — LETZTES Netzwerk (nach FB_Plant_Start_Stop, nach NW 29)
+// Löscht den OB100-Puls, sonst bleibt Automatik dauernd auf Reset.
+//============================================================================
+
+"OB100_Startup_Init" := FALSE;
